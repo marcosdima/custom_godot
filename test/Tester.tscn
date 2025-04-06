@@ -1,0 +1,60 @@
+[gd_scene load_steps=8 format=3 uid="uid://uljdflof7tvv"]
+
+[ext_resource type="Script" uid="uid://c28g4otop7p3q" path="res://src/contenedor/screen.gd" id="1_ppo5k"]
+[ext_resource type="Script" uid="uid://cqmtyokre6r85" path="res://test/tester.gd" id="1_ydswo"]
+[ext_resource type="Script" uid="uid://bceeslda0uscg" path="res://src/contenedor/contenedor.gd" id="2_ydswo"]
+[ext_resource type="Script" uid="uid://cjgqsigk1mvhg" path="res://src/element.gd" id="3_ydswo"]
+[ext_resource type="Script" uid="uid://dsxggwk6tfffd" path="res://src/components/custom_button.gd" id="5_i8hnb"]
+[ext_resource type="Script" uid="uid://dp5r131d8748d" path="res://src/components/custom_label.gd" id="6_8otx1"]
+[ext_resource type="FontFile" uid="uid://birydn2woln43" path="res://static/fonts/HelvetiHand.ttf" id="7_ic4rx"]
+
+[node name="Tester" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = -1152.0
+offset_bottom = -648.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_ydswo")
+
+[node name="Screen" type="Control" parent="."]
+anchors_preset = 0
+offset_right = 1324.0
+offset_bottom = 598.0
+script = ExtResource("1_ppo5k")
+bg = Color(0.900214, 0.783701, 0.759606, 1)
+rect = Color(0, 0, 0, 1)
+rect_size = 6
+metadata/_custom_type_script = "uid://c28g4otop7p3q"
+
+[node name="FlowContainer" type="Control" parent="Screen"]
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+script = ExtResource("2_ydswo")
+layout_type = 1
+margin = 30
+space_between = 4
+
+[node name="Button" type="Button" parent="Screen/FlowContainer"]
+layout_mode = 0
+offset_right = 8.0
+offset_bottom = 8.0
+script = ExtResource("3_ydswo")
+
+[node name="CustomButton" type="Control" parent="Screen/FlowContainer"]
+anchors_preset = 0
+script = ExtResource("5_i8hnb")
+
+[node name="CustomLabel" type="Control" parent="Screen/FlowContainer/CustomButton"]
+layout_mode = 3
+anchors_preset = 0
+script = ExtResource("6_8otx1")
+text = "Salír"
+font = ExtResource("7_ic4rx")
+font_size = 50
+test = true
+
+[connection signal="pressed" from="Screen/FlowContainer/Button" to="." method="_on_button_pressed"]
