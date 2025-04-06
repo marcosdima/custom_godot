@@ -17,7 +17,6 @@ func display_elements() -> void:
 	var elements_count = self.elements.size()
 	var contenedor_size = self.contenedor.get_available_size()
 	var space = self.contenedor.get_space().y
-	
 	var part = (contenedor_size.y - space * (elements_count - 1)) / elements_count
 	var acc = self.contenedor.get_current_position()
 

@@ -11,7 +11,10 @@ class_name Screen
 func _ready():
 	self.set_proportional_size(self.get_viewport().size)
 
+
 func _draw() -> void:
+	self.set_proportional_size(self.get_viewport().size)
+	
 	# Set position at (0, 0).
 	self.position = Vector2(0, 0)
 	

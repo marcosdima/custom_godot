@@ -1,13 +1,18 @@
-extends Element
+@tool
+extends CustomComponent
 
 class_name CustomLabel
 
 @export var text: String = ""
 @export var font: Font
 @export var font_size: int = 16
-@export var font_color: Color = Color.BLACK
+
+var text_area: Rect2
+
 
 func _draw():
+	super()
+	
 	var text_size = self.font.get_string_size(
 		self.text,
 		HORIZONTAL_ALIGNMENT_LEFT,
@@ -30,25 +35,22 @@ func _draw():
 		HORIZONTAL_ALIGNMENT_LEFT,
 		-1,
 		self.font_size,
-		Color.BLACK
+		self.curr_color
 	)
+	
+	self.text_area = Rect2(pos_x, (contenedor_size.y - metrics) * 0.5, text_size.x , text_size.y * 0.7)
+	self.text_area.position += self.position
 
 
-func handle_mouse_on():
-	#self.curr_color = self._color_from(self.hover_l)
-	queue_redraw()
+func has_point(point: Vector2) -> bool:
+	return self.text_area.has_point(point)
 
 
-func handle_on_mouse_out():
-	self.curr_color = self.color
-	queue_redraw()
-
-
-func handle_click(pos: Vector2):
-	#self.curr_color = self._color_from(self.click_l)
-	queue_redraw()
-
-
-func handle_release_click():
-	#self.curr_color = self._color_from(self.hover_l)
-	queue_redraw()
+func set_values(txt: String, path: String, f_size: int) -> void:
+	self.text = txt
+	self.font_size = f_size
+	
+	var f = FontFile.new()
+	f.load_dynamic_font(path)
+	
+	self.font = f

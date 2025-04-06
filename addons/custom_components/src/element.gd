@@ -1,3 +1,4 @@
+@tool
 extends Control
 
 class_name Element 
@@ -9,13 +10,17 @@ class_name Element
 @export var proportion_x: float = 1
 @export var proportion_y: float = 1
 
+var hit_area: Rect2 = Rect2(0,0,0,0)
+
 # With this can persist its size in proportion to any view.
 var view_proportion: Proportion = Proportion.new(1, 1)
 
 ## Set element's size accord its proportional size and the [param size_available].
 func set_proportional_size(size_available: Vector2):
-	self.size = self.view_proportion.get_size_from(size_available)
-	self.handle_resize()
+	if self.view_proportion:
+		self.size = self.view_proportion.get_size_from(size_available)
+		self.handle_resize()
+		self.set_hit_area()
 
 
 ## Setter of [param view_proportion].
@@ -25,10 +30,7 @@ func update_proportion(p: Proportion):
 
 ## [param point] exists in this element?
 func has_point(point: Vector2) -> bool:
-	var x_in_range = self.position.x <= point.x && point.x <=  self.position.x + self.size.x
-	var y_in_range = self.position.y <= point.y && point.y <=  self.position.y + self.size.y
-
-	return x_in_range && y_in_range
+	return self.hit_area.has_point(point)
 
 
 ## Retrieves only the direct descendants.
@@ -49,6 +51,10 @@ func get_direct_children() -> Array[Node]:
 func set_element_position(p: Vector2) -> void:
 	self.position = p
 
+
+func set_hit_area():
+	self.hit_area = Rect2(self.position.x, self.position.y, self.size.x, self.size.y)
+
 ##############################################################
 ## This functions will be overwritted by another sub-clases ##
 ##############################################################
@@ -62,7 +68,7 @@ func handle_resize():
 			c.set_proportional_size(self.size)
 
 
-func handle_click(pos: Vector2):
+func handle_click(_pos: Vector2):
 	pass
 
 
@@ -119,3 +125,9 @@ func _draw():
 
 func _ready() -> void:
 	self.view_proportion = Proportion.new(proportion_x, proportion_y)
+	self.set_hit_area()
+
+
+func _notification(what):
+	if what == NOTIFICATION_EDITOR_POST_SAVE:
+		self.queue_redraw()

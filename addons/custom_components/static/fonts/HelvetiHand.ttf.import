@@ -3,12 +3,12 @@
 importer="font_data_dynamic"
 type="FontFile"
 uid="uid://birydn2woln43"
-path="res://.godot/imported/HelvetiHand.ttf-053ebad586c1764d34b3490149c73784.fontdata"
+path="res://.godot/imported/HelvetiHand.ttf-57a91897ef954b884c5d139c87ecce14.fontdata"
 
 [deps]
 
-source_file="res://static/fonts/HelvetiHand.ttf"
-dest_files=["res://.godot/imported/HelvetiHand.ttf-053ebad586c1764d34b3490149c73784.fontdata"]
+source_file="res://addons/custom_components/static/fonts/HelvetiHand.ttf"
+dest_files=["res://.godot/imported/HelvetiHand.ttf-57a91897ef954b884c5d139c87ecce14.fontdata"]
 
 [params]
 

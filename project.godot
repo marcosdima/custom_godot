@@ -11,9 +11,13 @@ config_version=5
 [application]
 
 config/name="Custom"
-run/main_scene="uid://uljdflof7tvv"
+run/main_scene="uid://c3dyf58l2elxa"
 config/features=PackedStringArray("4.4", "Mobile")
 config/icon="res://icon.svg"
+
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/custom_components/plugin.cfg", "res://addons/customplugin/plugin.cfg")
 
 [rendering]
 
