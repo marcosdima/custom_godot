@@ -1,4 +1,18 @@
 {
-	"row": 0,
-	"column": 0,
+	"row": {
+		"type": "integer",
+		"value": 0,
+	},
+	"column": {
+		"type": "integer",
+		"value": 0,
+	},
+	"column_span": {
+		"type": "integer",
+		"value": 1,
+	},
+	"row_span": {
+		"type": "integer",
+		"value": 1,
+	},
 }

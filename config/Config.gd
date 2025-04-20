@@ -1,5 +1,3 @@
-extends Node
-
 class_name Config
 
 enum ElementConfig {
@@ -8,6 +6,7 @@ enum ElementConfig {
 	RailLayoutContenedor,
 	GridLayoutContenedor,
 	GridLayoutElement,
+	NONE,
 }
 
 ## Exported configuration dictionary
@@ -28,13 +27,10 @@ static func load_config(e: ElementConfig):
 		
 		# If the JSON is a dictionary...
 		if typeof(result) == TYPE_DICTIONARY:
-			
-			'''TODO: WARNIGN! This should not stay like this...'''
+			# Parse each field to its type...
 			for k in result.keys():
-				var value = result[k]
-				if typeof(value) == TYPE_FLOAT:
-					result[k] = int(value)
-			'''TODO: WARNIGN! This should not stay like this...'''
+				var value = ConfigField.new(k, result[k])
+				result[k] = value.parse_from()
 			
 			# If data exists...
 			if Config.data:

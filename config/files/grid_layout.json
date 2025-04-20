@@ -1,4 +1,10 @@
 {
-	"columns": 1,
-	"rows": 1,
+	"columns": {
+		"type": "integer",
+		"value": 1,
+	},
+	"rows": {
+		"type": "integer",
+		"value": 1,
+	},
 }

@@ -1,3 +1,6 @@
 {
-	"vertical": true,
+	"vertical": {
+		"type": "bool",
+		"value": true,
+	},
 }
