@@ -14,7 +14,7 @@ var fields_handler: Fields
 '''╭─[ Lifecycle Functions ]───────────────────────────────────────────────────────────────╮'''
 func _draw() -> void:
 	# Draw background.
-	var rect = Rect2(Vector2.ZERO + Margin.start(self), self.get_real_size()) 
+	var rect = Rect2(Margin.start(self), self.get_real_size()) 
 	self.draw_rect(rect, self.background, true)
 
 
@@ -35,7 +35,7 @@ func get_real_position() -> Vector2:
 
 
 func get_variable_field(field: Fields.VariableFields):
-	return self.variable_fields[self.fields_handler.get_key(field)]
+	return self.variable_fields[Fields.get_key(field)]
 
 
 func _set_fields():
