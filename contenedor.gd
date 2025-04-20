@@ -32,6 +32,7 @@ func _set_layout():
 
 '''╭─[ To-Overwrite methods ]───────────────────────────────────────────────────────────────╮'''
 func editor_settings() -> void:
-	self._set_layout()
-	#self.fields_handler.add_variable_field(Config.ElementConfig.Contenedor)
 	super()
+	
+	self._set_layout()
+	self.fields_handler.add_variable_field(Config.ElementConfig.Contenedor)
