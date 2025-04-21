@@ -31,7 +31,15 @@ func get_real_size() -> Vector2:
 
 
 func get_real_position() -> Vector2:
-	return self.position + Margin.start(self)
+	return self.global_position + Margin.start(self)
+
+
+func set_real_position(v: Vector2) -> void:
+	self.global_position = v
+
+
+func set_real_size(v: Vector2) -> void:
+	self.size = v
 
 
 func get_variable_field(field: Fields.VariableFields):

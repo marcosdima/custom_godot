@@ -15,8 +15,8 @@ func display_elements() -> void:
 	var acc = self._contenedor.get_real_position()
 	
 	for child in self._elements:
-		child.position = acc
-		child.size = Vector2(contenedor_size.x, part) if vertical else Vector2(part, contenedor_size.y) 
+		child.set_real_position(acc)
+		child.set_real_size(Vector2(contenedor_size.x, part) if vertical else Vector2(part, contenedor_size.y) )
 		acc += Vector2(0, part) if vertical else Vector2(part, 0)
 
 
