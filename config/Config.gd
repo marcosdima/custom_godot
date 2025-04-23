@@ -1,7 +1,6 @@
 class_name Config
 
 enum ElementConfig {
-	Base,
 	Contenedor,
 	RailLayoutContenedor,
 	GridLayoutContenedor,
@@ -97,7 +96,6 @@ static func get_config_path(e: ElementConfig) -> String:
 ## From ElementConfig enum get its data key.
 static func get_key(e: ElementConfig) -> String:
 	match e:
-		ElementConfig.Base: return "base"
 		ElementConfig.Contenedor: return "contenedor"
 		ElementConfig.RailLayoutContenedor: return "rail_layout"
 		ElementConfig.GridLayoutContenedor: return "grid_layout"

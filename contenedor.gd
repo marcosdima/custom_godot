@@ -4,6 +4,7 @@ extends Element
 class_name Contenedor
 
 '''╭─[ Export Variables ]──────────────────────────────────────────────────────────────────╮'''
+@export var full_size: bool = false
 @export var layout_type: Instantiator.LayoutType = Instantiator.LayoutType.Rail
 
 '''╭─[ Variables ]─────────────────────────────────────────────────────────────────────────╮'''
@@ -28,6 +29,12 @@ func get_direct_children() -> Array[Node]:
 func _set_layout():
 	self._layout = Instantiator.instantiate_layout(self.layout_type) as Layout
 	self._layout.set_contenedor(self)
+
+
+func _notification(what: int) -> void:
+	if self.full_size:
+		self.set_real_size(self.get_viewport().size)
+	super(what)
 
 
 '''╭─[ To-Overwrite methods ]───────────────────────────────────────────────────────────────╮'''

@@ -5,8 +5,17 @@ class_name Element
 
 '''╭─[ Export Variables ]──────────────────────────────────────────────────────────────────╮'''
 @export var background: Color = Color.TRANSPARENT
-@export var fields: Dictionary = {}
 @export var variable_fields: Dictionary = {}
+
+@export_group("Margin")
+@export var margin_top: int = 0
+@export var margin_right: int = 0
+@export var margin_bottom: int = 0
+@export var margin_left: int = 0
+
+@export_group("Border")
+@export var border_color: Color = Color.WHITE
+@export var border_width: int = 1
 
 '''╭─[ Variables ]─────────────────────────────────────────────────────────────────────────╮'''
 var fields_handler: Fields
