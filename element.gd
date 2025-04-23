@@ -10,6 +10,7 @@ class_name Element
 
 '''╭─[ Variables ]─────────────────────────────────────────────────────────────────────────╮'''
 var fields_handler: Fields
+var input_handler: InputHandler
 
 '''╭─[ Lifecycle Functions ]───────────────────────────────────────────────────────────────╮'''
 func _draw() -> void:
@@ -23,6 +24,12 @@ func _notification(what: int) -> void:
 	if what == NOTIFICATION_EDITOR_POST_SAVE and Engine.is_editor_hint():
 		self.editor_settings()
 		self.queue_redraw()
+
+
+func _input(event: InputEvent) -> void:
+	if !self.input_handler:
+		self.input_handler = InputHandler.new(self)
+	self.input_handler.handle_input(event)
 
 
 '''╭─[ Setters and Getters ]───────────────────────────────────────────────────────────────╮'''
@@ -42,15 +49,24 @@ func set_real_size(v: Vector2) -> void:
 	self.size = v
 
 
-func get_variable_field(field: Fields.VariableFields):
+func get_variable_field(field: Fields.VariableFields) -> Variant:
 	return self.variable_fields[Fields.get_key(field)]
 
 
-func _set_fields():
+func _set_fields() -> void:
 	self.fields_handler = Fields.new(self)
+
+
+func get_area() -> Rect2:
+	return Rect2(self.get_real_position(), self.get_real_size())
 
 
 '''╭─[ To-Overwrite methods ]───────────────────────────────────────────────────────────────╮'''
 ## This function will be called every time the editor is saved.
 func editor_settings() -> void:
 	self._set_fields()
+
+
+## This function will be called by InputHandler if 
+func emit(_e: InputHandler.Evento) -> void:
+	pass

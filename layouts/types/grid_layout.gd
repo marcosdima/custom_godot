@@ -2,8 +2,6 @@ extends Layout
 
 class_name GridLayout
 
-'''╭─[ Methods ]───────────────────────────────────────────────────────────────────────────╮'''
-
 '''╭─[ Setters and Getters ]───────────────────────────────────────────────────────────────╮'''
 func set_element_position(e: Element):
 	var row = self.get_element_value(e, 'row')
