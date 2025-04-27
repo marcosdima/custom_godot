@@ -10,7 +10,10 @@ func set_element_position(e: Element):
 	
 	var move = Vector2(cell_size.x * column, cell_size.y * row)
 	e.set_real_position(move + self._contenedor.get_real_position())
-	e.set_real_size(cell_size)
+	
+	var c_span = self.get_element_value(e, 'column_span')
+	var r_span =  self.get_element_value(e, 'row_span')
+	e.set_real_size(cell_size * Vector2(c_span, r_span))
 
 
 func get_contenedor_rows():
@@ -26,12 +29,9 @@ func get_contenedor_cell_size(e: Element):
 	var columns = self.get_contenedor_columns()
 	var contenedor_size = self._contenedor.get_real_size()
 	
-	var c_span = self.get_element_value(e, 'column_span')
-	var r_span =  self.get_element_value(e, 'row_span')
-	
 	return Vector2(
-		(contenedor_size.x / columns) * c_span,
-		(contenedor_size.y / rows) * r_span,
+		contenedor_size.x / columns,
+		contenedor_size.y / rows,
 	)
 
 

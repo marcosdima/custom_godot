@@ -1,0 +1,84 @@
+extends Node
+class_name AnimationHandler
+
+enum Moments {
+	Ready,
+	OnClick,
+}
+
+enum Do {
+	Nothing,
+	Appear,
+	Slide,
+}
+
+var _element: Element
+
+func _init(e: Element) -> void:
+	self._element = e
+	self._set_animations_structure()
+	
+	self._element.connect('ready', self._handle_moment(Moments.Ready))
+	self._element.connect(
+		InputHandler.Evento.find_key(InputHandler.Evento.ClickOn).to_snake_case(), 
+		self._handle_moment(Moments.OnClick)
+	)
+
+
+func _set_animations_structure() -> void:
+	# This set keys and default animation type. (Editor mode)
+	if self._element.animations.is_empty():
+		var aux: Dictionary = {}
+		for key in Moments.keys():
+			aux[key] = AnimationType.new()
+		self._element.set_animations(aux)
+
+
+func _handle_moment(moment: Moments):
+	var key = Moments.find_key(moment)
+	return self._trigger_animation(self._element.animations[key])
+
+
+'''╭─[ Animations ]───────────────────────────────────────────────────────────────────────╮'''
+func _trigger_animation(type: AnimationType):
+	match type.do:
+		Do.Appear: return self._appear
+		Do.Slide: 
+			if type.settings and type.settings.has('direction'):
+				return func(): self._slide(type.settings['direction'])
+			else:
+				return func(): self._slide('up')
+		_: return func(): return
+
+
+func _appear():
+	self._element.modulate.a = 0.0
+	var tween = self._element.create_tween()
+	tween.tween_property(self._element, "modulate:a", 1.0, 1.0)
+
+
+func _slide(direction: String):
+	# Multiplier for the movement (10% of size)
+	var movement_strength = 0.1
+	
+	self._element.modulate.a = 0.0
+	var offset = Vector2.ZERO
+	
+	## TODO: Animation settings.
+	match direction.to_lower():
+		"up":
+			offset.y = self._element.size.y * movement_strength
+		"down":
+			offset.y = -self._element.size.y * movement_strength
+		"left":
+			offset.x = self._element.size.x * movement_strength
+		"right":
+			offset.x = -self._element.size.x * movement_strength
+		_:
+			push_warning("Invalid direction: %s" % direction)
+
+	self._element.position += offset
+
+	var tween = self._element.create_tween()
+	tween.tween_property(self._element, "modulate:a", 1.0, 0.2).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+	tween.tween_property(self._element, "position", self._element.position - offset, 0.2).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)

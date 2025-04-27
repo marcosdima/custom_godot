@@ -4,11 +4,16 @@ extends Element
 class_name Contenedor
 
 '''╭─[ Export Variables ]──────────────────────────────────────────────────────────────────╮'''
-@export var full_size: bool = false
 @export var layout_type: Instantiator.LayoutType = Instantiator.LayoutType.Rail
 
 '''╭─[ Variables ]─────────────────────────────────────────────────────────────────────────╮'''
 var _layout: Layout
+
+'''╭─[ Lifecycle Functions ]───────────────────────────────────────────────────────────────╮'''
+func _ready() -> void:
+	super()
+	self._set_layout()
+
 
 '''╭─[ Setters and Getters  ]──────────────────────────────────────────────────────────────╮'''
 ## Retrieves only the direct descendants.
@@ -31,15 +36,9 @@ func _set_layout():
 	self._layout.set_contenedor(self)
 
 
-func _notification(what: int) -> void:
-	if self.full_size:
-		self.set_real_size(self.get_viewport().size)
-	super(what)
-
-
 '''╭─[ To-Overwrite methods ]───────────────────────────────────────────────────────────────╮'''
 func editor_settings() -> void:
-	super()
-	
-	self._set_layout()
 	self.fields_handler.add_variable_field(Config.ElementConfig.Contenedor)
+	self._set_layout()
+	self._layout.move_elements()
+	super()

@@ -6,15 +6,16 @@ var _contenedor: Contenedor
 
 '''╭─[ Methods ]───────────────────────────────────────────────────────────────────────────╮'''
 func move_elements() -> void:
-	for child in self._contenedor.get_children():
+	for child in self._contenedor.get_direct_children():
 		self.handle_element(child)
+		if child is Contenedor:
+			child._layout.move_elements()
 
 
 '''╭─[ Setters and Getters ]───────────────────────────────────────────────────────────────╮'''
 func set_contenedor(c: Contenedor) -> void:
 	self._contenedor = c
 	self.set_contenedor_variable_fields()
-	self.move_elements()
 
 
 '''╭─[ To-Overwrite methods ]───────────────────────────────────────────────────────────────╮'''
