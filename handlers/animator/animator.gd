@@ -3,13 +3,14 @@ class_name AnimationHandler
 
 enum Moments {
 	Ready,
-	OnClick,
+	ReleasedOn,
 }
 
 enum Do {
 	Nothing,
 	Appear,
 	Slide,
+	Pop,
 }
 
 var _element: Element
@@ -20,8 +21,8 @@ func _init(e: Element) -> void:
 	
 	self._element.connect('ready', self._handle_moment(Moments.Ready))
 	self._element.connect(
-		InputHandler.Evento.find_key(InputHandler.Evento.ClickOn).to_snake_case(), 
-		self._handle_moment(Moments.OnClick)
+		InputHandler.Evento.find_key(InputHandler.Evento.ClickReleasedOn).to_snake_case(), 
+		self._handle_moment(Moments.ReleasedOn)
 	)
 
 
@@ -43,6 +44,7 @@ func _handle_moment(moment: Moments):
 func _trigger_animation(type: AnimationType):
 	match type.do:
 		Do.Appear: return self._appear
+		Do.Pop: return self._pop
 		Do.Slide: 
 			if type.settings and type.settings.has('direction'):
 				return func(): self._slide(type.settings['direction'])
@@ -76,9 +78,25 @@ func _slide(direction: String):
 			offset.x = -self._element.size.x * movement_strength
 		_:
 			push_warning("Invalid direction: %s" % direction)
-
+	
 	self._element.position += offset
-
+	
 	var tween = self._element.create_tween()
 	tween.tween_property(self._element, "modulate:a", 1.0, 0.2).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
 	tween.tween_property(self._element, "position", self._element.position - offset, 0.2).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+
+
+func _pop():
+	var element_size = self._element.size
+	var element_position = self._element.position
+	
+	var init_size = element_size * 0.70
+	var diff = element_size - init_size
+	
+	var tween = self._element.create_tween()
+	
+	self._element.size = init_size
+	self._element.position += (diff / 2)
+	var duration = 0.1
+	tween.parallel().tween_property(self._element, "size", element_size, duration)
+	tween.parallel().tween_property(self._element, "position", element_position, duration)
