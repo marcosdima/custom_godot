@@ -6,7 +6,7 @@ class_name GridLayout
 func set_element_position(e: Element):
 	var row = self.get_element_value(e, 'row')
 	var column = self.get_element_value(e, 'column')
-	var cell_size = self.get_contenedor_cell_size(e)
+	var cell_size = self.get_contenedor_cell_size()
 	
 	var move = Vector2(cell_size.x * column, cell_size.y * row)
 	e.set_real_position(move + self._contenedor.get_real_position())
@@ -24,7 +24,7 @@ func get_contenedor_columns():
 	return self.get_contenedor_value('columns')
 
 
-func get_contenedor_cell_size(e: Element):
+func get_contenedor_cell_size():
 	var rows = self.get_contenedor_rows()
 	var columns = self.get_contenedor_columns()
 	var contenedor_size = self._contenedor.get_real_size()
