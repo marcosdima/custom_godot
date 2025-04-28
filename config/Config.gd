@@ -90,7 +90,7 @@ static func get_config(e: ElementConfig) -> Dictionary:
 
 ## From ElementConfig enum get its configuration file path.
 static func get_config_path(e: ElementConfig) -> String:
-	return "res://addons/custom/src/config/files/" + Config.get_key(e) + ".json"
+	return "res://addons/custom_godot/config/files/" + Config.get_key(e) + ".json"
 
 
 ## From ElementConfig enum get its data key.

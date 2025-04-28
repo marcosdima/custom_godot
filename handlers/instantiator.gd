@@ -23,7 +23,7 @@ static func instantiate_layout(t: LayoutType) -> RefCounted:
 
 
 static func get_path_from(t: LayoutType) -> String:
-	var base = "res://src/layouts/types/"
+	var base = "res://addons/custom_godot/layouts/types/"
 	
 	match t:
 		LayoutType.Grid: base += "grid_layout.gd"
