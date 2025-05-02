@@ -31,7 +31,6 @@ func handle_connect() -> void:
 
 func _set_animations_structure(e: Element) -> void:
 	# This set keys and default animation type. (Editor mode)
-	e.animations = {}
 	if e.animations.is_empty():
 		var aux: Dictionary = {}
 		for key in Moments.keys():
@@ -68,27 +67,30 @@ func _appear():
 
 func _slide(direction: String):
 	# Multiplier for the movement (10% of size)
-	var movement_strength = 0.1
-	
+	var movement_strength = 0.7
+	var real_size = self._element.size
 	var offset = Vector2.ZERO
 	
 	## TODO: Animation settings.
 	match direction.to_lower():
 		"up":
-			offset.y = self._element.size.y * movement_strength
+			offset.y = real_size.y * movement_strength
 		"down":
-			offset.y = -self._element.size.y * movement_strength
+			offset.y = -real_size.y * movement_strength
 		"left":
-			offset.x = self._element.size.x * movement_strength
+			offset.x = real_size.x * movement_strength
 		"right":
-			offset.x = -self._element.size.x * movement_strength
+			offset.x = -real_size.x * movement_strength
 		_:
 			push_warning("Invalid direction: %s" % direction)
 	
-	self._element.position += offset
+	var _move_back = func(f: float) -> void:
+		var new_size = real_size + (offset * f)
+		self._element.set_real_size(new_size)
 	
 	var tween = self._element.create_tween()
-	tween.tween_property(self._element, "position", self._element.position - offset, 0.2).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+	tween.tween_method(_move_back, 1.0, 0.0, 0.2)
+	self._element.queue_redraw()
 
 
 func _pop():

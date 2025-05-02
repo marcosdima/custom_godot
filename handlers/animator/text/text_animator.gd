@@ -5,6 +5,7 @@ enum TextDo {
 	Nothing,
 	Wave,
 	Fall,
+	Fly,
 }
 
 var text: Text
@@ -47,6 +48,7 @@ func _trigger_animation(key: String, settings: Dictionary):
 	match do:
 		TextDo.Wave: return self._wave
 		TextDo.Fall: return self._fall
+		TextDo.Fly: return self._fly
 		_: return super(key, settings)
 
 
@@ -72,13 +74,27 @@ func _wave():
 
 func _fall():
 	self.text.draw_last_char_at = 0
-	self.text.draw_n_chars = 1
-	
-	var tween = self.text.create_tween()
+	self.text.draw_n_chars = self.text.content.length() - 1
 	
 	var _move_last_letter = func(f: float) -> void:
 		self.text.draw_last_char_at = f
 		self.text.queue_redraw()
+		if f == 1.0:
+			self.text.draw_n_chars = -1
 	
-	tween.tween_method(_move_last_letter, 0.0, 1.0, 1)
-	self.text.draw_n_chars = -1
+	var tween = self.text.create_tween()
+	tween.tween_method(_move_last_letter, 0.0, 1.0, 0.2)
+
+
+func _fly():
+	self.text.draw_last_char_at = 1
+	self.text.draw_n_chars = self.text.content.length() - 1
+	
+	var _move_last_letter = func(f: float) -> void:
+		self.text.draw_last_char_at = f
+		self.text.queue_redraw()
+		if f == 0.0:
+			self.text.draw_n_chars = -1
+	
+	var tween = self.text.create_tween()
+	tween.tween_method(_move_last_letter, 1.0, 0.0, 0.2)
