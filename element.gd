@@ -6,8 +6,12 @@ class_name Element
 '''╭─[ Signals ]───────────────────────────────────────────────────────────────────────────╮'''
 signal mouse_in
 signal mouse_out
+signal mouse_still
 signal click_on
 signal click_released_on
+signal click_out
+signal focus
+signal un_focus
 
 '''╭─[ Variables ]─────────────────────────────────────────────────────────────────────────╮'''
 var fields_handler: Fields
@@ -76,10 +80,10 @@ func _input(event: InputEvent) -> void:
 
 func _ready() -> void:
 	self.animation_handler = AnimationHandler.new(self)
+	self.animation_handler.handle_connect()
 
 
 func _init() -> void:
-	self.set_animations({})
 	self.fields_handler = Fields.new(self)
 	self.animation_handler = AnimationHandler.new(self)
 
@@ -121,6 +125,6 @@ func editor_settings() -> void:
 
 
 ## This function will be called by InputHandler if 
-func emit(_e: InputHandler.Evento) -> void:
-	var signal_text = InputHandler.Evento.find_key(_e).to_snake_case()
+func emit(e: InputHandler.Evento) -> void:
+	var signal_text = InputHandler.Evento.find_key(e).to_snake_case()
 	self.emit_signal(signal_text)

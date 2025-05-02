@@ -21,6 +21,7 @@ func emit(e: InputHandler.Evento) -> void:
 	super(e)
 	match e:
 		InputHandler.Evento.MouseIn: self._on_mouse_in()
+		InputHandler.Evento.MouseStill: self._on_mouse_in()
 		InputHandler.Evento.MouseOut: self._on_mouse_out()
 		InputHandler.Evento.ClickOn: self._on_click_on()
 		InputHandler.Evento.ClickReleasedOn: self._on_mouse_released_on()

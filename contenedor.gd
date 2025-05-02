@@ -13,6 +13,7 @@ var _layout: Layout
 func _ready() -> void:
 	super()
 	self._set_layout()
+	self.editor_settings()
 
 
 '''╭─[ Setters and Getters  ]──────────────────────────────────────────────────────────────╮'''
@@ -38,7 +39,6 @@ func _set_layout():
 
 '''╭─[ To-Overwrite methods ]───────────────────────────────────────────────────────────────╮'''
 func editor_settings() -> void:
+	super()
 	self.fields_handler.add_variable_field(Config.ElementConfig.Contenedor)
 	self._set_layout()
-	self._layout.move_elements()
-	super()
