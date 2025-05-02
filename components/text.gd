@@ -21,13 +21,14 @@ func _ready() -> void:
 	self.set_area()
 	self.set_max_font_size()
 	self.text_animator = TextAnimationHandler.new(self)
+	self.text_animator.handle_connect()
 	self.draw_n_chars = -1
 
 
 func _draw():
 	super()
 	
-	var move_flag = self.draw_n_chars > 0
+	var move_flag = self.draw_n_chars > -1
 	
 	var text_content = self.content if !move_flag else self.content.substr(0, self.draw_n_chars)
 	var text_size = self.get_text_size(text_content) 
@@ -43,7 +44,7 @@ func _draw():
 	
 	draw_string(
 		self.font,
-		Vector2(pos_x, pos_y),
+		Margin.start(self) + Vector2(pos_x, pos_y),
 		text_content,
 		HORIZONTAL_ALIGNMENT_LEFT,
 		-1,
@@ -54,7 +55,7 @@ func _draw():
 	if move_flag and draw_n_chars < self.content.length() and self.draw_last_char_at < 1:
 		draw_string(
 			self.font,
-			Vector2(pos_x + text_size.x, pos_y * self.draw_last_char_at),
+			Margin.start(self) + Vector2(pos_x + text_size.x, pos_y * self.draw_last_char_at),
 			self.content[draw_n_chars],
 			HORIZONTAL_ALIGNMENT_LEFT,
 			-1,
@@ -65,8 +66,8 @@ func _draw():
 
 func _init() -> void:
 	super()
-	self.text_animations = {}
 	self.text_animator = TextAnimationHandler.new(self)
+	self.text_animator.handle_connect()
 
 
 '''╭─[ Setters and Getters  ]──────────────────────────────────────────────────────────────╮'''
@@ -121,3 +122,4 @@ func editor_settings() -> void:
 	self.set_area()
 	self.set_max_font_size()
 	self.text_animator = TextAnimationHandler.new(self)
+	self.draw_n_chars = -1
