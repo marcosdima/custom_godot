@@ -5,6 +5,9 @@ enum ElementConfig {
 	RailLayoutContenedor,
 	GridLayoutContenedor,
 	GridLayoutElement,
+	SausageContenedor,
+	SausageLayoutContenedor,
+	SausageLayoutElement,
 	NONE,
 }
 
@@ -95,9 +98,4 @@ static func get_config_path(e: ElementConfig) -> String:
 
 ## From ElementConfig enum get its data key.
 static func get_key(e: ElementConfig) -> String:
-	match e:
-		ElementConfig.Contenedor: return "contenedor"
-		ElementConfig.RailLayoutContenedor: return "rail_layout"
-		ElementConfig.GridLayoutContenedor: return "grid_layout"
-		ElementConfig.GridLayoutElement: return "grid_layout_element"
-		_: return "NON_HANDLED"
+	return ElementConfig.find_key(e).to_snake_case()

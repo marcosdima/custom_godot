@@ -40,7 +40,7 @@ func _draw():
 	# Caculate the right point to set the hight of the text.
 	var f_size = self.get_font_size_unit() * self.font_size
 	var metrics = self.font.get_ascent(f_size) - self.font.get_descent(f_size)
-	var pos_y = (contenedor_size.y + metrics) * 0.55
+	var pos_y = (contenedor_size.y + metrics) * 0.52
 	
 	draw_string(
 		self.font,
@@ -92,7 +92,7 @@ func get_text_size(s: String) -> Vector2:
 
 
 func get_font_size_unit() -> float:
-	return float(self.max_font_size) / 100.0
+	return float(self.max_font_size) / 100.0 if self.max_font_size > 0 else 10
 
 
 func set_max_font_size() -> void:

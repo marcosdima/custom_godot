@@ -35,9 +35,9 @@ func get_element_config(c: Config.ElementConfig) -> VariableFields:
 	var configs = Config.ElementConfig
 	
 	match c:
-		configs.GridLayoutElement: return VariableFields.Layout
+		configs.GridLayoutElement, configs.SausageLayoutElement: return VariableFields.Layout
 		configs.Contenedor: return VariableFields.Contenedor
-		configs.RailLayoutContenedor, configs.GridLayoutContenedor: return VariableFields.LayoutContendor
+		configs.RailLayoutContenedor, configs.GridLayoutContenedor, configs.SausageLayoutContenedor: return VariableFields.LayoutContendor
 		_:
 			push_error("c -> [", Config.ElementConfig.find_key(c),"] was not handled!")
 			return VariableFields.Null

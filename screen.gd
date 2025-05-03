@@ -22,14 +22,15 @@ func set_screen():
 			child._set_layout()
 
 
-func editor_settings() -> void:
-	super()
-	self.set_screen()
-
-
 func get_all_descendants(node: Node) -> Array:
 	var descendants = []
 	for child in node.get_children():
 		descendants.append(child)
 		descendants += get_all_descendants(child)
 	return descendants
+
+
+'''╭─[ To-Overwrite methods ]───────────────────────────────────────────────────────────────╮'''
+func editor_settings() -> void:
+	super()
+	self.set_screen()

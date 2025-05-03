@@ -14,6 +14,7 @@ static func _load_script(path: String) -> RefCounted:
 enum LayoutType {
 	Grid,
 	Rail,
+	Sausage,
 }
 
 ## Instantiate a layout node.
@@ -28,6 +29,7 @@ static func get_path_from(t: LayoutType) -> String:
 	match t:
 		LayoutType.Grid: base += "grid_layout.gd"
 		LayoutType.Rail: base += "rail_layout.gd"
+		LayoutType.Sausage: base += "sausage_layout.gd"
 		_: base += "NON_HANDLED"
 	
 	return base
