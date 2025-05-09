@@ -17,6 +17,12 @@ func set_contenedor(c: Contenedor) -> void:
 	self.move_elements()
 
 
+func get_space_between_magnitude() -> Vector2:
+	var c_size = self._contenedor.get_real_size()
+	var space = self._contenedor.get_variable_field(Fields.VariableFields.Contenedor)['space_between']
+	return (c_size / 100) * space
+
+
 '''╭─[ To-Overwrite methods ]───────────────────────────────────────────────────────────────╮'''
 ## Handle e as the specific layout should.
 func handle_element(e: Element) -> void:
