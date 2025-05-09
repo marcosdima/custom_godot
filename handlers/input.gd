@@ -8,7 +8,7 @@ enum Evento {
 	ClickReleasedOn,
 	Focus,
 	UnFocus,
-	MouseStill
+	MouseStill,
 }
 
 '''╭─[ Variables ]─────────────────────────────────────────────────────────────────────────╮'''
@@ -28,6 +28,10 @@ func _init(e: Element) -> void:
 func handle_input(input: InputEvent) -> void:
 	if input is InputEventMouse:
 		self._handle_mouse_event(input)
+
+
+static func get_evento_key(e: Evento) -> String:
+	return Evento.find_key(e).to_snake_case()
 
 
 '''╭─[ Mouse Handlers ]────────────────────────────────────────────────────────────────────╮'''

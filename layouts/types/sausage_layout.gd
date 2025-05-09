@@ -6,7 +6,7 @@ var next_start: Vector2 = Vector2.ZERO
 
 '''╭─[ Methods ]───────────────────────────────────────────────────────────────────────────╮'''
 func is_vertical() -> bool:
-	return self._contenedor.variable_fields[Fields.get_key(Fields.VariableFields.LayoutContendor)]['vertical'] # TODO: Hardoced!
+	return self._contenedor.variable_fields[Fields.get_key(Fields.VariableFields.LayoutContenedor)]['vertical'] # TODO: Hardoced!
 
 
 func get_element_fill(e: Element) -> float:
@@ -15,6 +15,9 @@ func get_element_fill(e: Element) -> float:
 
 '''╭─[ To-Overwrite methods ]───────────────────────────────────────────────────────────────╮'''
 func handle_element(e: Element):
+	if next_start == Vector2.ZERO:
+		self.next_start = self._contenedor.get_real_position()
+	
 	e.fields_handler.add_variable_field(Config.ElementConfig.SausageLayoutElement)
 	
 	var contenedor_size = self._contenedor.get_real_size()
@@ -28,8 +31,8 @@ func handle_element(e: Element):
 	
 	var new_size = Vector2(new_size_x, new_size_y)
 	
-	e.set_real_position(self.next_start)
 	e.set_real_size(new_size)
+	e.set_real_position(self.next_start)
 	
 	if self.is_vertical():
 		self.next_start.y += new_size_y

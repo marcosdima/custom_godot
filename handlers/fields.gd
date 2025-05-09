@@ -2,7 +2,7 @@ class_name Fields
 
 enum VariableFields {
 	Layout,
-	LayoutContendor,
+	LayoutContenedor,
 	Contenedor,
 	Null
 }
@@ -37,7 +37,7 @@ func get_element_config(c: Config.ElementConfig) -> VariableFields:
 	match c:
 		configs.GridLayoutElement, configs.SausageLayoutElement: return VariableFields.Layout
 		configs.Contenedor: return VariableFields.Contenedor
-		configs.RailLayoutContenedor, configs.GridLayoutContenedor, configs.SausageLayoutContenedor: return VariableFields.LayoutContendor
+		configs.RailLayoutContenedor, configs.GridLayoutContenedor, configs.SausageLayoutContenedor: return VariableFields.LayoutContenedor
 		_:
 			push_error("c -> [", Config.ElementConfig.find_key(c),"] was not handled!")
 			return VariableFields.Null
@@ -45,8 +45,8 @@ func get_element_config(c: Config.ElementConfig) -> VariableFields:
 
 ## From VariableFields enum get its key.
 static func get_key(vf: VariableFields) -> String:
-	match vf:
-		VariableFields.Layout: return "layout"
-		VariableFields.Contenedor: return "contenedor"
-		VariableFields.LayoutContendor: return "layout_contenedor"
-		_: return "Null"
+	return VariableFields.find_key(vf).to_snake_case()
+
+
+static func layout() -> String:
+	return Fields.get_key(VariableFields.Layout)

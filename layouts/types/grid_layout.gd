@@ -40,7 +40,7 @@ func get_element_value(e: Element, key: String):
 
 
 func get_contenedor_value(key: String):
-	return self._contenedor.get_variable_field(Fields.VariableFields.LayoutContendor)[key]
+	return self._contenedor.get_variable_field(Fields.VariableFields.LayoutContenedor)[key]
 
 
 '''╭─[ To-Overwrite methods ]───────────────────────────────────────────────────────────────╮'''
