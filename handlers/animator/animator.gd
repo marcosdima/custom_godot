@@ -6,7 +6,8 @@ enum Moments {
 	ClickReleasedOn,
 	ClickOut,
 	Focus,
-	UnFocus
+	UnFocus,
+	Trigger,
 }
 
 enum Do {
@@ -17,7 +18,8 @@ enum Do {
 }
 
 var _element: Element
-
+var resize_pos: Vector2 = Vector2.ZERO
+var resize_size: Vector2 = Vector2.ZERO
 
 func _init(e: Element) -> void:
 	self._element = e

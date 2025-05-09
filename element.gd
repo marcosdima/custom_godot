@@ -12,6 +12,8 @@ signal click_released_on
 signal click_out
 signal focus
 signal un_focus
+signal trigger
+signal resize
 
 '''╭─[ Variables ]─────────────────────────────────────────────────────────────────────────╮'''
 var fields_handler: Fields
@@ -103,10 +105,15 @@ func set_real_position(v: Vector2) -> void:
 
 func set_real_size(v: Vector2) -> void:
 	self.size = v
+	self.emit_signal('resize')
 
 
 func get_variable_field(field: Fields.VariableFields) -> Variant:
 	return self.variable_fields[Fields.get_key(field)]
+
+
+func set_variable_field(field: Fields.VariableFields, key: String, new_value: Variant) -> void:
+	self.variable_fields[Fields.get_key(field)][key] = new_value
 
 
 func get_area() -> Rect2:
