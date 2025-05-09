@@ -13,7 +13,7 @@ var area: Contenedor
 var text_animator: TextAnimationHandler
 var max_font_size: float = 0
 var draw_n_chars: int
-var draw_last_char_at: float = 1
+var draw_last_char_at: float = -1
 
 '''╭─[ Lifecycle Functions ]───────────────────────────────────────────────────────────────╮'''
 func _ready() -> void:
@@ -23,6 +23,12 @@ func _ready() -> void:
 	self.text_animator = TextAnimationHandler.new(self)
 	self.text_animator.handle_connect()
 	self.draw_n_chars = -1
+
+
+func _init() -> void:
+	super()
+	self.text_animator = TextAnimationHandler.new(self)
+	self.text_animator.handle_connect()
 
 
 func _draw():
@@ -62,12 +68,6 @@ func _draw():
 			f_size,
 			self.color
 		)
-
-
-func _init() -> void:
-	super()
-	self.text_animator = TextAnimationHandler.new(self)
-	self.text_animator.handle_connect()
 
 
 '''╭─[ Setters and Getters  ]──────────────────────────────────────────────────────────────╮'''

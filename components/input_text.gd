@@ -67,7 +67,7 @@ func set_components() -> void:
 	var t = Text.new()
 	t.content = self.placeholder
 	t.font_size = self.text_size
-	t.font = load("res://static/fonts/secrcode.ttf")
+	t.font = load("res://static/fonts/CaviarDreams.ttf")
 	t.color = self.color
 	c.add_child(t)
 	c.add_child(l)
