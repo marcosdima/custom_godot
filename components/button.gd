@@ -32,8 +32,8 @@ func set_contenedor() -> void:
 
 func set_text() -> void:
 	var t = Text.new()
-	t.content = self.label
-	t.font_size = self.text_size
+	t.content = self.label if !Engine.is_editor_hint() else "Button"
+	t.font_size = self.text_size if !Engine.is_editor_hint() else 10
 	t.font = load("res://static/fonts/CaviarDreams.ttf")
 	t.color = self.color
 	

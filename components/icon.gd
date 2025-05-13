@@ -19,17 +19,15 @@ enum DefaultIcons {
 	Football,
 	List,
 	Nothing,
+	Plus,
 }
 
 @export var icon_texture: CompressedTexture2D
 @export var default: DefaultIcons = DefaultIcons.Nothing
 
+var rotate = 0
+
 const icons_path = "res://static/images/icons"
-
-func _ready() -> void:
-	super()
-	self.set_texture()
-
 
 func set_texture() -> void:
 	if self.default != DefaultIcons.Nothing:
@@ -43,20 +41,23 @@ func set_texture() -> void:
 
 func _draw() -> void:
 	super()
+	self.set_texture()
+	
 	if self.icon_texture:
 		var contenedor_size = self.get_real_size()
 		var texture_size = icon_texture.get_size()
 		
 		var scale_aux = min(contenedor_size.x / texture_size.x, contenedor_size.y / texture_size.y)
-		
 		var final_size = texture_size * scale_aux * 0.7
-		var position_aux = Margin.start(self) / 2 + (contenedor_size - final_size) / 2
+		var position_aux = Margin.start(self) + (contenedor_size - final_size) / 2
 		
-		draw_texture_rect(self.icon_texture, Rect2(position_aux, final_size), false, self.color)
+		var angle = deg_to_rad(self.rotate)
+		var center = position_aux + final_size / 2  
+		
+		draw_set_transform(center, angle, Vector2(1, 1))
+		draw_texture_rect(self.icon_texture, Rect2(-final_size / 2, final_size), false, self.color)
+		draw_set_transform(Vector2.ZERO, 0, Vector2.ONE)
 
 
-'''╭─[ To-Overwrite methods ]───────────────────────────────────────────────────────────────╮'''
-## This function will be called every time the editor is saved.
-func editor_settings() -> void:
-	super()
-	self.set_texture()
+static func exists(k: String) -> bool:
+	return FileAccess.file_exists(icons_path + '/' + k.to_lower() + ".svg")

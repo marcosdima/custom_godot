@@ -17,11 +17,11 @@ func _ready() -> void:
 
 
 '''╭─[ Setters and Getters ]───────────────────────────────────────────────────────────────╮'''
-func _get_color_l(l: float) -> Color:
-	if self.aux_color == Color.TRANSPARENT:
-		return self.aux_color
+func _get_color_l(color: Color, l: float) -> Color:
+	if color == Color.TRANSPARENT:
+		return color
 	
-	return Color.from_hsv(self.aux_color.h, self.aux_color.s, l)
+	return Color.from_hsv(color.h, color.s, l)
 
 
 '''╭─[ Methods ]───────────────────────────────────────────────────────────────────────────╮'''
@@ -38,7 +38,7 @@ func emit(e: InputHandler.Evento) -> void:
 
 ## Handle MouseIn Evento.
 func _on_mouse_in() -> void:
-	self.color = self._get_color_l(self.hover_l)
+	self.color = self._get_color_l(self.aux_color, self.hover_l)
 
 
 ## Handle MouseOut Evento.
@@ -48,7 +48,7 @@ func _on_mouse_out() -> void:
 
 ## Handle ClickOn Evento.
 func _on_click_on() -> void:
-	self.color = self._get_color_l(self.click_l)
+	self.color = self._get_color_l(self.aux_color, self.click_l)
 
 
 ## Handle ClickReleasedOn Evento.

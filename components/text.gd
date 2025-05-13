@@ -44,7 +44,8 @@ func _draw():
 	var pos_x = (contenedor_size.x - text_size.x) * 0.5
 	
 	# Caculate the right point to set the hight of the text.
-	var f_size = self.get_font_size_unit() * self.font_size
+	var f_size = self.get_font_size_unit() * self.font_size 
+	f_size = f_size if f_size > 0 else 10
 	var metrics = self.font.get_ascent(f_size) - self.font.get_descent(f_size)
 	var pos_y = (contenedor_size.y + metrics) * 0.52
 	
@@ -83,11 +84,13 @@ func set_area() -> void:
 
 
 func get_text_size(s: String) -> Vector2:
+	var final_size = self.get_font_size_unit() * self.font_size as int
+	
 	return self.font.get_string_size(
 		s,
 		HORIZONTAL_ALIGNMENT_LEFT,
 		-1,
-		self.get_font_size_unit() * self.font_size as int
+		final_size if final_size > 0 else 10
 	)
 
 
