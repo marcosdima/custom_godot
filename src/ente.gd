@@ -15,19 +15,31 @@ signal on_ready
 @export var color: Color = Color.TRANSPARENT
 @export var border: Border
 
+@export_group("Test", "test_")
+@export var test_border: bool = false
+
+
 @export_group("")
 @export var animations: Dictionary = {}
 
+func initialization_routine() -> void:
+	if !self.border:
+		self.border = Border.new()
+		if self.test_border:
+			self.border.width = 1
+			self.border.color = Color.BLACK
+	Animator.set_animations(self)
+
+
 func _ready() -> void:
-	if !Engine.is_editor_hint():
-		Animator.connect_animator(self)
-		self.emit(Event.OnReady)
+	self.initialization_routine()
+	self.emit(Event.OnReady)
 
 
 func _notification(what: int) -> void:
 	## Remainder: This will be called with @tool scripts only.
 	if what == self.NOTIFICATION_EDITOR_POST_SAVE:
-		self.editor_settings()
+		self.initialization_routine()
 
 
 func _draw() -> void:
@@ -50,10 +62,15 @@ func _draw() -> void:
 
 
 func set_area(r: Rect2) -> void:
+	var flag = r.size != self.size
+	
 	self.global_position = r.position
 	self.size = r.size
+	
+	if flag:
+		self.emit(Event.Resize)
+	
 	self.queue_redraw()
-	self.emit(Event.Resize)
 
 
 ## Returns ente area.
@@ -74,10 +91,3 @@ func connect_event(e: Event, do_this: Callable) -> void:
 
 func get_event_key(e: Event) -> String:
 	return Event.find_key(e).to_snake_case()
-
-
-func editor_settings() -> void:
-	if !self.border:
-		self.border = Border.new()
-	Animator.set_animations(self)
-	self.queue_redraw()

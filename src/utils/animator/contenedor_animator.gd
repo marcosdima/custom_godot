@@ -36,13 +36,14 @@ static func do(c: Contenedor, this: AnimateContenedor) -> void:
 
 
 static func _simple(c: Contenedor, animate_c: AnimateContenedor) -> void:
-	var spaces = c.layout.get_sorted_spaces()
+	var spaces_keys = c.layout.get_sorted_spaces()
 	var animate = animate_c.animate_wrapper.animate
 	
-	for space in spaces:
-		animate.handle_start(c.layout.get_ente(space))
+	for k in spaces_keys:
+		var ente = c.get_ente_by_key(k)
+		animate.handle_start(ente)
 	
-	for space in c.layout.get_sorted_spaces():
-		var ente = c.layout.get_ente(space)
+	for k in spaces_keys:
+		var ente = c.get_ente_by_key(k)
 		Animator.do(ente, animate)
 		await c.get_tree().create_timer(animate_c.delay).timeout

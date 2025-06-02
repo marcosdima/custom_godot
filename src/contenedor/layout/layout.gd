@@ -8,107 +8,66 @@ enum LayoutType {
 
 var contenedor: Contenedor
 
-static func create(c: Contenedor, reset=false) -> Layout:
-	var ly = Layout.get_layout(c.layout_type)
+static func create(c: Contenedor,) -> void:
+	var ly: Layout
+	match c.layout_type:
+		LayoutType.Pages: ly = Pages.new()
+		LayoutType.Sausage: ly = Sausage.new()
+		LayoutType.Grid: ly = Grid.new()
+		_: ly = Layout.new()
 	ly.contenedor = c
+	c.layout = ly
 	
-	if reset:
-		c.content = {}
-		ly.add_spaces()
+	## Set sub_component from children.
+	ly.set_sub_spaces()
+	
+	if !c.config:
 		c.config = ly.get_config()
 	
-	## If content of config was not setted...
-	if c.content.is_empty() || c.config.is_empty():
-		ly.set_spaces()
+	c.queue_redraw()
+
+
+## Set spaces from contenedor children.
+func set_sub_spaces() -> void:
+	var sub_spaces = self.contenedor.sub_spaces
 	
-	
-	## This should catch new elements o remove old ones.
-	var child_count = c.get_children().size()
-	var content_size = c.content.size()
-	if child_count < content_size:
-		ly.remove_spaces()
-	elif child_count > content_size:
-		ly.add_spaces()
-	
-	ly.update_spaces()
-	
-	return ly
+	for child in self.contenedor.get_children():
+		if !sub_spaces.has(child.name):
+			var space = self.get_new_space()
+			self.contenedor.add_space(child.name, space)
 
 
-static func get_layout(ty: LayoutType) -> Layout:
-	match ty:
-		LayoutType.Pages: return Pages.new()
-		LayoutType.Sausage: return Sausage.new()
-		LayoutType.Grid: return Grid.new()
-		_: return Layout.new()
-
-
-func set_spaces() -> void:
-	self.add_spaces()
-	self.contenedor.config = self.get_config()
-
-
-func add_spaces() -> void:
-	var find_new = func(arr, t):
-		for s in arr:
-			if s.ente == t:
-				return true
-		return false
-	
-	for c in contenedor.get_children():
-		if !find_new.call(self.contenedor.content.values(), c):
-			self.add_apace(c)
-
-
-func remove_spaces() -> void:
-	var spaces = self.contenedor.content
-	var keys = spaces.keys()
-	for s_key in keys:
-		var space = spaces[s_key]
-		if !space.ente:
-			spaces.erase(s_key)
-
-
-## Add an space related to ente.
-func add_apace(e: Ente) -> void:
-	var new_space = self.set_space()
-	new_space.set_data(self)
-	self.contenedor.content[e.name] = new_space
-
-
+## [OVERWRITE] Recalculate sizes and stuff.
 func update_spaces() -> void:
 	printerr("This function, 'update_spaces', should be overwritten!")
 
 
-## This function should be overwritted if a new Space is implemented.
-func set_space() -> Space:
-	return Space.new()
-
-
-func get_ente(s: Space) -> Ente:
-	var k = self.contenedor.content.find_key(s)
-	for c in self.contenedor.get_children():
-		if c.name == k:
-			return c
-	printerr("Invalid key in children!")
-	return Ente.new()
-
-
+## [OVERWRITE] Returns the configuration necessary for this layout.
 func get_config() -> Dictionary:
 	return {}
 
 
-func get_contenedor_area() -> Rect2:
-	return self.contenedor.get_area()
+## [OVERWRITE] Get a new instance of Space.
+func get_new_space() -> Space:
+	return Space.new()
 
 
-func get_sorted_spaces(sort: Callable = func(a, b): return a.order < b.order) -> Array:
-	var sorted = self.contenedor.content.values()
+## Get spaces sorted by 'sort'. By default is by 'order'.
+func get_sorted_spaces(
+	sort: Callable = func(a, b):
+		var spaces = self.contenedor.sub_spaces
+		return spaces[a].order < spaces[b].order
+) -> Array:
+	var sorted = self.contenedor.sub_spaces.keys()
 	sorted.sort_custom(sort)
 	return sorted
 
 
 ## Set the area of 'ente' with margin included. 
-func set_ente_area(space: Space, area: Rect2) -> void:
-	var with_margin = Margin.calculate_with_margin(space.margin, area)
-	self.get_ente(space).set_area(with_margin)
+func set_ente_area(key: String, area: Rect2) -> void:
+	var space = self.contenedor.sub_spaces[key] as Space
+	var with_margin = Margin.calculate_with_margin(space.margin, area) if space.margin else area 
+	var ente = self.contenedor.get_ente_by_key(key) as Ente
+	
+	if ente:
+		ente.set_area(with_margin)

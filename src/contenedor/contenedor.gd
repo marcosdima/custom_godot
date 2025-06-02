@@ -2,27 +2,32 @@ extends Ente
 class_name Contenedor
 
 @export var layout_type: Layout.LayoutType = Layout.LayoutType.Pages
-@export var content: Dictionary
+
+@export var sub_spaces: Dictionary = {}
 @export var config: Dictionary
+
 @export var contenedor_animations: Dictionary
 
 var layout: Layout
-var ly_aux: Layout.LayoutType
 
-func _ready() -> void:
-	if !Engine.is_editor_hint():
-		ContenedorAnimator.set_contenedor_animations(self)
-		self.layout = Layout.create(self)
-		super()
-	self.ly_aux = self.layout_type
-
-
-## This funcion will be called at each save.
-func editor_settings() -> void:
+func initialization_routine() -> void:
 	super()
-	
-	var ly_change = self.ly_aux != self.layout_type
-	self.layout = Layout.create(self, ly_change)
-	self.ly_aux = self.layout_type
-	
+	self.set_layout()
 	ContenedorAnimator.set_contenedor_animations(self)
+
+
+func set_layout() -> void:
+	Layout.create(self)
+	self.layout.update_spaces()
+
+
+func get_ente_by_key(s: String):
+	for child in self.get_children():
+		if child.name == s:
+			return child
+
+
+func add_space(k: String, space: Space) -> void:
+	var aux = self.sub_spaces.duplicate()
+	aux[k] = space
+	self.sub_spaces = aux

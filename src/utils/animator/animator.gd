@@ -13,6 +13,9 @@ static func set_animations(e: Ente) -> void:
 			var animate = AnimateWrapper.new()
 			aux[event_key.to_snake_case()] = animate
 		e.animations = aux
+	
+	if !Engine.is_editor_hint():
+		Animator.connect_animator(e)
 
 
 static func connect_animator(e: Ente) -> void:

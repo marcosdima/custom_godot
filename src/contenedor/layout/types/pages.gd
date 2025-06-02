@@ -7,10 +7,11 @@ func update_spaces() -> void:
 		self.handle_space(sorted[i], i == 0)
 
 
-func handle_space(space: Space, first: bool) -> void:
+func handle_space(space_key: String, first: bool) -> void:
+	var ente = self.contenedor.get_ente_by_key(space_key)
 	if first:
 		var space_available = self.contenedor.get_area()
-		space.set_ente_area(space_available)
-		space.ente.visible = true
+		self.set_ente_area(ente.name, space_available)
+		ente.visible = true
 	else:
-		space.ente.visible = false
+		ente .visible = false
