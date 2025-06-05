@@ -1,7 +1,7 @@
 extends Component
 class_name InputComponent
 
-var value
+@export var value: String
 
 func _ready() -> void:
 	super()

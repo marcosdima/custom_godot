@@ -3,6 +3,7 @@ class_name Grid
 
 @export var rows: int = 1
 @export var columns: int = 1
+
 const ROWS = "rows"
 const COLUMNS = "columns"
 
@@ -20,37 +21,33 @@ func get_new_space() -> Space:
 func update_spaces() -> void:
 	self.rows = self.contenedor.config[ROWS]
 	self.columns = self.contenedor.config[COLUMNS]
-	var sub_spaces = self.contenedor.sub_spaces
+	var our_contenedor = self.contenedor
+	var sub_spaces = our_contenedor.sub_spaces
+	var cell_size = self.get_cell_size()
+	var contenedor_start = our_contenedor.get_area().position
 	
-	var sorted_by_row = {}
+	var aux_start = contenedor_start
+	var aux_y = 0
 	for r in range(self.rows):
-		sorted_by_row[r] = []
-		for s in self.get_sorted_spaces():
-			var space = self.contenedor.sub_spaces[s]
-			if space.row == r:
-				sorted_by_row[r].append(s)
-				sorted_by_row[r].sort_custom(func(a, b): return sub_spaces[a].column < sub_spaces[b].column)
-	
-	var last_r = 0
-	var available_area = self.contenedor.get_area()
-	var last_start = available_area.position
-	var last_line_y = 0
-	var s = get_cell_size()
-	
-	for r in sorted_by_row.keys():
-		last_r = int(r)
-		last_start = available_area.position + Vector2(0, last_line_y)
+		aux_start.y = contenedor_start.y + (aux_y * r)
+		aux_start.x = contenedor_start.x
 		
-		for space_key in sorted_by_row[r]:
-			var space = sub_spaces[space_key]
-			var column_blank = space.row - last_r
-			var pos = last_start + Vector2(s.x * column_blank, 0)
+		for c in range(self.columns):
+			var space_key = str(r) + str(c)
 			
-			var size_sp = s * Vector2(space.column_span, space.row_span)
-			self.set_ente_area(space_key, Rect2(pos, size_sp))
-			
-			last_start.x += size_sp.x
-			last_line_y = size_sp.y ## TOTHINK: This may produce some bugs if the row height is not uniform. 
+			if our_contenedor.sub_spaces.has(space_key):
+				var space = our_contenedor.sub_spaces[space_key] as GridSpace
+				
+				var span = Vector2(
+					space.column_span if space.column_span > 0 else 1,
+					space.row_span if space.row_span > 0 else 1
+				)
+				var real_cell_size = cell_size * span
+				
+				if real_cell_size > Vector2.ZERO:
+					self.set_ente_area(space_key, Rect2(aux_start, real_cell_size))
+				aux_start.x += real_cell_size.x
+				aux_y = real_cell_size.y
 
 
 func get_cell_size() -> Vector2:

@@ -4,12 +4,33 @@ class_name Ente
 enum Event {
 	Resize,
 	OnReady,
+	OnClick,
+	OnClickReleased,
+	OnFocus,
+	OnUnfocus,
+	MouseIn,
+	MouseOut,
+	MouseStill,
 }
 
 @warning_ignore("unused_signal")
 signal resize
 @warning_ignore("unused_signal")
 signal on_ready
+@warning_ignore("unused_signal")
+signal on_click
+@warning_ignore("unused_signal")
+signal on_click_released
+@warning_ignore("unused_signal")
+signal on_focus
+@warning_ignore("unused_signal")
+signal on_unfocus
+@warning_ignore("unused_signal")
+signal mouse_in
+@warning_ignore("unused_signal")
+signal mouse_out
+@warning_ignore("unused_signal")
+signal mouse_still
 
 @export_group("Background")
 @export var color: Color = Color.TRANSPARENT
@@ -18,27 +39,40 @@ signal on_ready
 @export_group("Test", "test_")
 @export var test_border: bool = false
 
-
 @export_group("")
 @export var animations: Dictionary = {}
+@export var refresh: bool:
+	set(value):
+		self.clean()
+		refresh = false
+
+var focus: bool = false
+var input_handler
 
 func initialization_routine() -> void:
 	if !self.border:
 		self.border = Border.new()
 		if self.test_border:
-			self.border.width = 1
+			self.border.width = 2
 			self.border.color = Color.BLACK
 	Animator.set_animations(self)
+	self.input_handler = InputHandler.new(self)
+
+
+func _init() -> void:
+	if !Engine.is_editor_hint():
+		self.initialization_routine()
 
 
 func _ready() -> void:
 	self.initialization_routine()
+	Animator.connect_animator(self)
 	self.emit(Event.OnReady)
 
 
 func _notification(what: int) -> void:
 	## Remainder: This will be called with @tool scripts only.
-	if what == self.NOTIFICATION_EDITOR_POST_SAVE:
+	if what == NOTIFICATION_EDITOR_POST_SAVE:
 		self.initialization_routine()
 
 
@@ -61,13 +95,16 @@ func _draw() -> void:
 	draw_style_box(bgr, Rect2(Vector2.ZERO, self.size))
 
 
+func _input(event: InputEvent) -> void:
+	self.input_handler.handle_input(event)
+
+
 func set_area(r: Rect2) -> void:
 	var flag = r.size != self.size
-	
 	self.global_position = r.position
-	self.size = r.size
 	
 	if flag:
+		self.size = r.size
 		self.emit(Event.Resize)
 	
 	self.queue_redraw()
@@ -91,3 +128,10 @@ func connect_event(e: Event, do_this: Callable) -> void:
 
 func get_event_key(e: Event) -> String:
 	return Event.find_key(e).to_snake_case()
+
+
+## [OVERWRITE] Set all as default.
+func clean() -> void:
+	self.color = Color.TRANSPARENT
+	self.animations = {}
+	self.border = Border.new()

@@ -17,24 +17,6 @@ static func create(c: Contenedor,) -> void:
 		_: ly = Layout.new()
 	ly.contenedor = c
 	c.layout = ly
-	
-	## Set sub_component from children.
-	ly.set_sub_spaces()
-	
-	if !c.config:
-		c.config = ly.get_config()
-	
-	c.queue_redraw()
-
-
-## Set spaces from contenedor children.
-func set_sub_spaces() -> void:
-	var sub_spaces = self.contenedor.sub_spaces
-	
-	for child in self.contenedor.get_children():
-		if !sub_spaces.has(child.name):
-			var space = self.get_new_space()
-			self.contenedor.add_space(child.name, space)
 
 
 ## [OVERWRITE] Recalculate sizes and stuff.

@@ -13,17 +13,18 @@ static func set_animations(e: Ente) -> void:
 			var animate = AnimateWrapper.new()
 			aux[event_key.to_snake_case()] = animate
 		e.animations = aux
-	
-	if !Engine.is_editor_hint():
-		Animator.connect_animator(e)
 
 
 static func connect_animator(e: Ente) -> void:
 	for event in e.animations.keys():
+		var aux_animations = e.animations
 		e.connect_event(
-				Ente.Event[event.to_pascal_case()],
-				func():
-					Animator.do(e, e.animations[event].animate)
+			Ente.Event[event.to_pascal_case()],
+			func():
+				if aux_animations.has(event):
+					Animator.do(e, aux_animations[event].animate)
+				else:
+					printerr("Missing: ", event, " at animations.")
 		)
 
 
