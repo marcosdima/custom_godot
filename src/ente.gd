@@ -38,47 +38,38 @@ signal mouse_still
 
 @export_group("Test", "test_")
 @export var test_border: bool = false
-
 @export_group("")
-@export var animations: Dictionary = {}
+
 @export var refresh: bool:
 	set(value):
 		self.clean()
 		refresh = false
+		self.editor_config()
+
+@export var animations: Dictionary = {}
 
 var focus: bool = false
 var input_handler
 
-func initialization_routine() -> void:
-	if !self.border:
-		self.border = Border.new()
-		if self.test_border:
-			self.border.width = 2
-			self.border.color = Color.BLACK
+## [OVERWRITE]  Start Ente in Editor procediments.
+func editor_config() -> void:
+	self.border = Border.new()
 	Animator.set_animations(self)
 	self.input_handler = InputHandler.new(self)
 
 
-func _init() -> void:
-	if !Engine.is_editor_hint():
-		self.initialization_routine()
-
-
 func _ready() -> void:
-	self.initialization_routine()
-	Animator.connect_animator(self)
+	self.editor_config()
 	self.emit(Event.OnReady)
-
-
-func _notification(what: int) -> void:
-	## Remainder: This will be called with @tool scripts only.
-	if what == NOTIFICATION_EDITOR_POST_SAVE:
-		self.initialization_routine()
 
 
 func _draw() -> void:
 	var bgr = StyleBoxFlat.new()
 	bgr.bg_color = self.color
+	
+	if self.test_border:
+		self.border.width = 2
+		self.border.color = Color.BLACK
 	
 	# Sets border width.
 	bgr.border_color = self.border.color
@@ -99,6 +90,11 @@ func _input(event: InputEvent) -> void:
 	self.input_handler.handle_input(event)
 
 
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_EDITOR_POST_SAVE:
+		self.editor_config()
+
+
 func set_area(r: Rect2) -> void:
 	var flag = r.size != self.size
 	self.global_position = r.position
@@ -106,8 +102,7 @@ func set_area(r: Rect2) -> void:
 	if flag:
 		self.size = r.size
 		self.emit(Event.Resize)
-	
-	self.queue_redraw()
+		self.queue_redraw()
 
 
 ## Returns ente area.

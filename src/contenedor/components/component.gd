@@ -1,23 +1,23 @@
 extends Contenedor
 class_name Component
 
-var children: Array = []
-
-func initialization_routine() -> void:
-	if self.children.is_empty():
-		self.children = self.get_contenedor_children() as Array[Ente]
-		for child in self.children:
-			child.initialization_routine()
-			self.add_children_def(child)
+## [OVERWRITE]  Start Ente in Editor procediments.
+func editor_config() -> void:
+	self.layout_type = self.get_layout_type()
 	
 	super()
 	
-	var ly_type = self.get_layout_type()
-	if ly_type != self.layout_type:
-		self.layout_type = ly_type
+	if self.children.is_empty():
+		for child in self.get_contenedor_children():
+			self.add_children_def(child)
 	
 	self.set_spaces()
 	self.layout.update_spaces()
+
+
+func _ready() -> void:
+	super()
+	self.editor_config()
 
 
 ## [OVERWRITE] Get Layout type.
@@ -32,12 +32,12 @@ func get_contenedor_children() -> Array:
 
 ## [OVERWRITE] Set all as default.
 func clean() -> void:
-	for child in self.children:
+	for c in self.children:
+		var child = c as Ente
 		if Engine.is_editor_hint():
 			self.remove_child.call_deferred(child)
 		else:
 			self.remove_child(child)
-	self.children = []
 	super()
 
 

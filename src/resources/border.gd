@@ -15,7 +15,7 @@ enum RadiusCorners {
 	BottomLeft,
 }
 
-@export var color: Color = Color.TRANSPARENT
+@export var color: Color
 @export var blend: bool = false
 @export_group("Width")
 @export var width: int = 0
@@ -32,3 +32,8 @@ enum RadiusCorners {
 @export var corner_radius_top_right: int = 0
 @export var corner_radius_bottom_right: int = 0
 @export var corner_radius_bottom_left: int = 0
+
+
+func init() -> void:
+	self.color = Color.TRANSPARENT
+	self.width = 0

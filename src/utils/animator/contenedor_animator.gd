@@ -43,6 +43,7 @@ static func _simple(c: Contenedor, animate_c: AnimateContenedor) -> void:
 		var ente = c.get_ente_by_key(k)
 		animate.handle_start(ente)
 	
+	await c.get_tree().create_timer(animate_c.delay).timeout
 	for k in spaces_keys:
 		var ente = c.get_ente_by_key(k)
 		Animator.do(ente, animate)

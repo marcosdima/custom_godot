@@ -16,8 +16,9 @@ static var save_position: Dictionary = {}
 
 func handle_start(e: Ente) -> void:
 	e.modulate.a = 0.0
-	if !self.save_position.has(e.name):
-		self.save_position[e.name] = e.global_position
+	var id = e.get_instance_id()
+	if !self.save_position.has(id):
+		self.save_position[id] = e.global_position
 	e.global_position = self.get_offset(e)
 
 
@@ -32,3 +33,7 @@ func get_offset(e: Ente) -> Vector2:
 		_: offset.x += s.x * self.start_at
 	
 	return offset
+
+
+static func get_save_position(e: Ente) -> Vector2:
+	return save_position[e.get_instance_id()]
