@@ -1,16 +1,13 @@
 extends Layout
 class_name Grid
 
-@export var rows: int = 1
-@export var columns: int = 1
-
 const ROWS = "rows"
 const COLUMNS = "columns"
 
 func get_config() -> Dictionary:
 	var s = super()
-	s[ROWS] = self.rows
-	s[COLUMNS] = self.columns
+	s[ROWS] = 1
+	s[COLUMNS] = 1
 	return s
 
 
@@ -18,31 +15,28 @@ func get_new_space() -> Space:
 	return GridSpace.new()
 
 
-func update_spaces() -> void:
-	self.rows = self.contenedor.config[ROWS]
-	self.columns = self.contenedor.config[COLUMNS]
-	var cell_size = self.get_cell_size()
+func calculate_spaces(c: Contenedor) -> void:
+	var rows = c.config[ROWS]
+	var columns = c.config[COLUMNS]
+	var cell_size = Grid.get_cell_size(c)
 	
 	var row_size = Vector2.ZERO
 	var spaces_size = Vector2.ZERO
 	var areas = {}
 	var rows_sizes = {}
 	
-	for r in range(self.rows):
+	for row in range(rows):
 		var aux_offset = Vector2(0, spaces_size.y)
 		row_size = Vector2.ZERO
 		
-		for c in range(self.columns):
-			var space_key = str(r) + str(c)
-			var sub_spaces = self.contenedor.sub_spaces
+		for col in range(columns):
+			var space_key = str(row) + str(col)
+			var spaces = c.spaces
 			
-			if sub_spaces.has(space_key):
+			if spaces.has(space_key):
 				var area = Rect2()
-				var space = sub_spaces[space_key]
-				var span = Vector2(
-					space.column_span if space.column_span > 0 else 1,
-					space.row_span if space.row_span > 0 else 1,
-				)
+				var space = spaces[space_key] as GridSpace
+				var span = Grid.get_span(space)
 				
 				var real_cell_size = cell_size * span
 				
@@ -55,18 +49,25 @@ func update_spaces() -> void:
 				
 				aux_offset.x += real_cell_size.x
 		
-		rows_sizes[r] = row_size
+		rows_sizes[row] = row_size
 		spaces_size.x = row_size.x if row_size.x > spaces_size.x else spaces_size.x
 		spaces_size.y += row_size.y
 	
-	var off_set = self.contenedor.get_start_offset(spaces_size)
+	var off_set = c.get_start_offset(spaces_size)
 	for ente_key in areas:
 		var area = areas[ente_key]
 		area.position += off_set
-		self.set_ente_area(ente_key, area)
+		Layout.set_ente_area(c, ente_key, area)
 
 
-func get_cell_size() -> Vector2:
-	var area = self.contenedor.get_area()
-	var s = area.size / Vector2(self.contenedor.config[COLUMNS], self.contenedor.config[ROWS])
+static func get_cell_size(c: Contenedor) -> Vector2:
+	var area = c.get_area()
+	var s = area.size / Vector2(c.config[COLUMNS], c.config[ROWS])
 	return s
+
+
+static func get_span(space: GridSpace) -> Vector2:
+	if !is_finite(space.row_span) or !is_finite(space.column_span):
+		return Vector2(1, 1)
+	
+	return Vector2(space.row_span, space.column_span)

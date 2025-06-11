@@ -3,67 +3,118 @@ extends InputComponent
 class_name TextInput
 
 @export var line_color: Color = Color.BLACK
-@export var placeholder: String = "Text"
+@export var placeholder: String = "Text":
+	set(value):
+		if value != placeholder:
+			placeholder = value
+			var placeh = self.get_placeholder()
+			placeh.content = value
+			Breader.set_as_default(placeh)
+@export var max_length: int = 10
+@export_group("Animations")
+@export var text_duration: float = 0.2
+var text_delay: float:
+	get():
+		return text_delay / self.get_text_legnth()
 
-const TEXT_NAME = "TextDisplay"
-const LINE_NAME = "Line"
+const PLACEHOLDER = "Placeholder"
+const CONTENT = "Content"
 
-var text: Text
-var line: Ente
+func _init() -> void:
+	super()
+	self.set_animations()
 
-## [OVERWRITE] Get Layout type.
-func get_layout_type() -> Layout.LayoutType:
-	return Layout.LayoutType.Sausage
+
+func _input(event: InputEvent) -> void:
+	super(event)
+	var handler = self.input_handler
+	
+	if event is InputEventKey and event.is_pressed() and handler.focus:
+		var key = handler.data[InputHandler.KEY]
+		var text = self.get_placeholder()
+		text.content += key
+		Breader.set_as_default(text)
+
+
+func set_animations() -> void:
+	var pholder = self.get_placeholder()
+	
+	## Go up.
+	var go_up = AnimateContenedor.new()
+	var slide_up = Slide.new()
+	slide_up.duration = self.text_duration
+	slide_up.direction = Slide.Direction.Down
+	go_up.animate_wrapper.animate = slide_up
+	go_up.delay = self.text_delay
+	
+	## Dissapear.
+	var dis_wrapper = AnimateWrapper.new()
+	var dissapear = Prop.new()
+	dis_wrapper.animate = dissapear
+	dissapear.duration = ((self.text_delay + self.text_duration) * self.get_text_legnth()) * 0.2
+	
+	var focus_key = self.get_event_key(Event.OnFocus)
+	pholder.contenedor_animations[focus_key] = go_up
+	pholder.animations[focus_key] = dis_wrapper
+	
+	# Goes to normal with unfocus
+	var appear_wrapper = AnimateWrapper.new()
+	var appear = Prop.new()
+	appear.start_value = 0
+	appear.end_value = 1
+	appear.duration = self.text_delay
+	appear_wrapper.animate = appear
+	
+	var go_down = AnimateContenedor.new()
+	var slide_down = Slide.new()
+	go_down.delay = self.text_delay
+	slide_down.duration = self.text_duration
+	slide_up.direction = Slide.Direction.Down
+	go_down.animate_wrapper.animate = slide_down
+	
+	var unfocus_key = self.get_event_key(Ente.Event.OnUnfocus)
+	pholder.contenedor_animations[unfocus_key] = go_down
+	pholder.animations[unfocus_key] = appear_wrapper
 
 
 ## [OVERWRITE] Get chlidren.
 func get_contenedor_children() -> Array:
-	if !self.text:
-		var t = Text.new()
-		t.font_size = 100
-		t.name = TEXT_NAME
-		t.placement_axis_x = Placement.Middle
-		t.placement_axis_y = Placement.Middle
-		self.text = t
-	if !self.line:
-		var l = Ente.new()
-		l.color = self.line_color
-		l.name = LINE_NAME
-		l.border = Border.new()
-		l.border.corner_radius_bottom_right = 50
-		l.border.corner_radius_bottom_left = 50
-		self.line = l
-	return [self.text, self.line]
-
-
-## (Contenedor) [OVERWRITE]  Do it to pre-set some configurations.
-func get_layout_config() -> Dictionary:
-	var aux = super()
-	aux[Sausage.VERTICAL] = true
-	return aux
+	var placeh = Text.new()
+	placeh.font_size = 100
+	placeh.name = PLACEHOLDER
+	placeh.placement_axis_x = Placement.Middle
+	placeh.placement_axis_y = Placement.Middle
+	placeh.content = self.placeholder
+	
+	var content = Text.new()
+	content.font_size = 100
+	content.name = CONTENT
+	content.placement_axis_x = Placement.Middle
+	content.placement_axis_y = Placement.Middle
+	
+	var aux = ""
+	for i in range(self.max_length): aux += " "
+	content.content = aux
+	
+	return [placeh, content]
 
 
 ## [OVERWRITE] Modifies spaces before update.
-func set_spaces() -> void:
-	if !self.sub_spaces.is_empty():
-		var t_space = self.sub_spaces[TEXT_NAME]
-		t_space.fill = 90
-		var l_space = self.sub_spaces[LINE_NAME]
-		l_space.fill = 10
-
-		l_space.margin = Margin.pancake()
-
-
-## [OVERWRITE] Set all as default.
-func clean() -> void:
-	self.text = null
-	self.line = null
-	super()
-
-
-func handle_on_focus():
-	print("Focus!")
+func set_space(space_key: String) -> void:
+	self.spaces[space_key].order = 1 if space_key == CONTENT else 2
 
 
 func get_text() -> Text:
-	return self.get_ente_by_key(TEXT_NAME)
+	return self.get_ente_by_key(CONTENT)
+
+
+func get_placeholder() -> Text:
+	return self.get_ente_by_key(PLACEHOLDER)
+
+
+func get_text_legnth() -> int:
+	var t = self.get_text()
+	if t:
+		return self.get_text().content.length()
+	else:
+		return 0

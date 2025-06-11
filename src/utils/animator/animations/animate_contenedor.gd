@@ -2,7 +2,7 @@ extends Resource
 class_name AnimateContenedor
 
 @export var do: ContenedorAnimator.AnimationsC = ContenedorAnimator.AnimationsC.Simple
-@export var delay: float = 1.1
+@export var delay: float = 0
 @export var animate_wrapper: AnimateWrapper
 
 func _init() -> void:

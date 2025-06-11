@@ -10,12 +10,6 @@ var column: int
 var text: Text
 var font = Font
 
-func _ready() -> void:
-	super()
-	self.text = self.get_parent()
-	self.font = self.text.font
-
-
 func _draw():
 	super()
 	

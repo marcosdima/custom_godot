@@ -2,26 +2,33 @@
 extends Component
 class_name Text
 
-@export_multiline var content: String:
+const ENTER = '\n'
+
+@export_multiline var content: String = "Text":
 	set(value):
-		content = value
-		self.clean()
+		if value != content:
+			content = value
+			Breader.set_as_default(self)
 @export_group("Font", "font_")
 @export var font: FontFile = load("res://static/fonts/CaviarDreams.ttf")
 @export var font_color: Color = Color.BLACK
-@export var font_size: int = 16
+@export var font_size: int = 100
 
-var flag_writted: bool = false
-var enter = '\n'
 var max_font_size: float = 0
 var max_line_size: int = 0
 
-## [OVERWRITE] Get Layout type.
+
+func _ready() -> void:
+	super()
+	self.connect_event(Event.Resize, func(): self.set_max_font_size())
+
+
+## [OVERWRITED]
 func get_layout_type() -> Layout.LayoutType:
 	return Layout.LayoutType.Grid
 
 
-## [OVERWRITE] Get chlidren.
+## [OVERWRITED]
 func get_contenedor_children() -> Array:
 	var aux_children = []
 	var text_config = self.parse_text_to_config() 
@@ -40,38 +47,56 @@ func get_contenedor_children() -> Array:
 	return aux_children
 
 
-## (Contenedor) [OVERWRITE]  Do it to pre-set some configurations.
-func get_layout_config() -> Dictionary:
-	var aux = super()
+## [OVERWRITED]
+func set_default_layout_config() -> void:
+	super()
 	var text_config = self.parse_text_to_config() 
-	aux[Grid.COLUMNS] = self.max_line_size
-	aux[Grid.ROWS] = text_config.size()
-	return aux
+	self.config[Grid.COLUMNS] = self.max_line_size
+	self.config[Grid.ROWS] = text_config.size()
 
 
 ## [OVERWRITE] Modifies spaces before update.
-func set_spaces() -> void:
-	for space_key in self.layout.get_sorted_spaces():
-		var c: Char = self.get_ente_by_key(space_key)
-		var space = self.sub_spaces[space_key]
-		var grid = self.layout as Grid
+func set_space(space_key: String) -> void:
+	var c: Char = self.get_ente_by_key(space_key)
+	
+	if c:
+		var space = self.spaces[space_key] as GridSpace
 		
 		var char_size = self._calculate_size(c.value, self.get_font_size())
-		var ente_size = grid.get_cell_size()
+		var ente_size = Grid.get_cell_size(self)
 		
 		var unit_x = char_size.x / ente_size.x
 		var unit_y = char_size.y / ente_size.y
 		
-		space.column_span = unit_x
-		space.row_span = unit_y * 0.8
+		space.column_span = unit_y * 0.8
+		space.row_span = unit_x
+		
 		space.column = int(c.name.substr(0, 1))
 		space.row = int(c.name.substr(1, 1))
+		super(space_key)
 
 
-## [OVERWRITE] Set all as default.
-func clean() -> void:
-	self.max_font_size = 0
-	super()
+func set_max_font_size() -> void:
+	var target = "a"
+	var aux_size = 22
+	var aux_font_size = self.get_metrics(aux_size)
+	var char_size = self._calculate_size(target, aux_font_size)
+	
+	var av_size = Grid.get_cell_size(self)
+	
+	var top = 200
+	while char_size < av_size and top > 0:
+		aux_size += 0.1 if av_size.x - char_size.x < 10 else 1.0
+		char_size = self._calculate_size(target, aux_size)
+		top -= 1
+	self.max_font_size = aux_size 
+
+
+func get_font_size() -> int:
+	if self.max_font_size == 0:
+		self.set_max_font_size()
+	@warning_ignore('narrowing_conversion')
+	return self.font_size * (self.max_font_size / 100)
 
 
 func parse_text_to_config() -> Dictionary:
@@ -82,7 +107,7 @@ func parse_text_to_config() -> Dictionary:
 	var response = {}
 	
 	for c in self.content:
-		if c != enter:
+		if c != ENTER:
 			char_count += 1
 		else:
 			## Add a line to respose.
@@ -100,32 +125,12 @@ func parse_text_to_config() -> Dictionary:
 	return response
 
 
-func get_font_size() -> int:
-	if self.max_font_size == 0:
-		var target = "a"
-		var aux_size = 16
-		var aux_font_size = self.get_metrics(aux_size)
-		var char_size = self._calculate_size(target, aux_font_size)
-		
-		var av_size = self.layout.get_cell_size()
-		
-		var top = 200
-		while char_size < av_size and top > 0:
-			aux_size += 0.1 if av_size.x - char_size.x < 10 else 1.0
-			char_size = self._calculate_size(target, aux_size)
-			top -= 1
-		self.max_font_size = aux_size 
-	
-	@warning_ignore('narrowing_conversion')
-	return self.font_size * (self.max_font_size / 100)
-
-
-func _calculate_size(c: String, font_size_p: float) -> Vector2:
+func _calculate_size(c: String, font_size_p: int) -> Vector2:
 	return self.font.get_string_size(
 		c,
 		HORIZONTAL_ALIGNMENT_LEFT,
 		-1,
-		font_size_p as int
+		font_size_p if font_size_p > 0 else 10
 	)
 
 
@@ -134,4 +139,5 @@ func get_char_size(c: Char) -> Vector2:
 
 
 func get_metrics(s: float) -> int:
+	@warning_ignore("narrowing_conversion")
 	return self.font.get_ascent(s) - self.font.get_descent(s)

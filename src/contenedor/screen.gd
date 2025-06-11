@@ -2,15 +2,22 @@
 extends Contenedor
 class_name Screen
 
-## [OVERWRITE]  Start Ente in Editor procediments.
-func editor_config() -> void:
+func _ready() -> void:
 	super()
-	if self.size == Vector2.ZERO or self.size == Vector2(40, 40):
-		self.set_area(Rect2(Vector2.ZERO, self.get_parent_area_size()))
-	elif !Engine.is_editor_hint():
-		self.connect_event(
-			Ente.Event.Resize,
-			func():
-				print("Window resize")
-				self.set_area(Rect2(Vector2.ZERO, self.get_parent_area_size()))
-		)
+	self.set_viewport_area()
+	self.get_viewport().connect("size_changed", self.set_viewport_area)
+
+
+## [OVERWRITE]  Start Ente in Editor procediments.
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_EDITOR_POST_SAVE:
+		self.set_viewport_area()
+
+
+func set_viewport_area() -> void:
+	self.set_area(Rect2(Vector2.ZERO, self.get_parent_area_size()))
+	Layout.set_contenedor(self)
+	
+	for c in self.get_children():
+		if c is Contenedor:
+			Breader.check(c)

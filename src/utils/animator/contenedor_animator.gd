@@ -20,7 +20,6 @@ static func set_contenedor_animations(c: Contenedor) -> void:
 static func connect_contenedor_animator(c: Contenedor) -> void:
 	for event in c.contenedor_animations.keys():
 		var animate_c = c.contenedor_animations[event] as AnimateContenedor
-		
 		if animate_c.animate_wrapper.animate:
 			c.connect_event(
 					Ente.Event[event.to_pascal_case()],
@@ -36,15 +35,24 @@ static func do(c: Contenedor, this: AnimateContenedor) -> void:
 
 
 static func _simple(c: Contenedor, animate_c: AnimateContenedor) -> void:
-	var spaces_keys = c.layout.get_sorted_spaces()
-	var animate = animate_c.animate_wrapper.animate
+	var spaces_keys = Layout.get_sorted_spaces(c)
+	var animate_base = animate_c.animate_wrapper.animate
 	
+	if animate_base.active:
+		return
+	animate_base.custom_start = c.get_area().position
+	animate_base.lock()
+	
+	var animate_indv = {}
 	for k in spaces_keys:
+		var animate = animate_base.duplicate()
 		var ente = c.get_ente_by_key(k)
 		animate.handle_start(ente)
+		animate_indv[k] = animate
 	
 	await c.get_tree().create_timer(animate_c.delay).timeout
 	for k in spaces_keys:
-		var ente = c.get_ente_by_key(k)
-		Animator.do(ente, animate)
+		animate_indv[k].execute(c.get_ente_by_key(k))
 		await c.get_tree().create_timer(animate_c.delay).timeout
+	
+	animate_base.unlock()

@@ -1,18 +1,14 @@
 extends Layout
 class_name Pages
 
-func update_spaces() -> void:
-	var sorted = self.get_sorted_spaces()
+func calculate_spaces(c: Contenedor) -> void:
+	var sorted = Layout.get_sorted_spaces(c)
 	for i in range(sorted.size()):
-		self.handle_space(sorted[i], i == 0)
+		Pages.handle_space(c, sorted[i], i == 0)
 
 
-func handle_space(space_key: String, first: bool) -> void:
-	var ente = self.contenedor.get_ente_by_key(space_key)
-	
-	if first:
-		var space_available = self.contenedor.get_area()
-		self.set_ente_area(ente.name, space_available)
-		ente.visible = true
-	else:
-		ente.visible = false
+static func handle_space(c: Contenedor, space_key: String, first: bool) -> void:
+	var ente = c.get_ente_by_key(space_key)
+	if ente:
+		Layout.set_ente_area(c, ente.name, c.get_area())
+		ente.visible = first
