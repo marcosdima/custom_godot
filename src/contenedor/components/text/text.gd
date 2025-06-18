@@ -4,32 +4,27 @@ class_name Text
 
 const ENTER = '\n'
 
-@export_multiline var content: String = "Text":
-	set(value):
-		if value != content:
-			content = value
-			Breader.set_as_default(self)
+@export_multiline var content: String = "Text"
 @export_group("Font", "font_")
 @export var font: FontFile = load("res://static/fonts/CaviarDreams.ttf")
 @export var font_color: Color = Color.BLACK
 @export var font_size: int = 100
-
 var max_font_size: float = 0
-var max_line_size: int = 0
 
-
-func _ready() -> void:
+## [OVERWRITTEN] From: Component -> Contenedor -> Ente
+func handle_resize() -> void:
 	super()
-	self.connect_event(Event.Resize, func(): self.set_max_font_size())
+	self.set_max_font_size()
+	Layout.set_contenedor(self)
 
 
-## [OVERWRITED]
+## [OVERWRITTEN]
 func get_layout_type() -> Layout.LayoutType:
 	return Layout.LayoutType.Grid
 
 
-## [OVERWRITED]
-func get_contenedor_children() -> Array:
+## [OVERWRITTEN]
+func get_component_children() -> Array:
 	var aux_children = []
 	var text_config = self.parse_text_to_config() 
 	
@@ -39,7 +34,7 @@ func get_contenedor_children() -> Array:
 		var len_r = text_config[r]
 		for c in range(len_r):
 			var char_aux = Char.new()
-			char_aux.set_from(self, self.content[i], r, c)
+			char_aux.set_from(self, self.content[i], r, c, i)
 			aux_children.append(char_aux)
 			i += 1
 		i += 1
@@ -47,33 +42,48 @@ func get_contenedor_children() -> Array:
 	return aux_children
 
 
-## [OVERWRITED]
-func set_default_layout_config() -> void:
-	super()
+## [OVERWRITTEN]
+func modify_default_layout_config(_curr_config: Dictionary) -> void:
 	var text_config = self.parse_text_to_config() 
-	self.config[Grid.COLUMNS] = self.max_line_size
-	self.config[Grid.ROWS] = text_config.size()
-
-
-## [OVERWRITE] Modifies spaces before update.
-func set_space(space_key: String) -> void:
-	var c: Char = self.get_ente_by_key(space_key)
 	
-	if c:
-		var space = self.spaces[space_key] as GridSpace
-		
+	_curr_config[Grid.COLUMNS] = text_config.values().max()
+	_curr_config[Grid.ROWS] = text_config.size()
+
+
+## [OVERWRITTEN]
+func modificate_space(key: String, space: Space) -> Space:
+	var c: Char = self.get_ente_by_key(key)
+	
+	if !self.contenedor_config.is_empty():
 		var char_size = self._calculate_size(c.value, self.get_font_size())
 		var ente_size = Grid.get_cell_size(self)
 		
 		var unit_x = char_size.x / ente_size.x
 		var unit_y = char_size.y / ente_size.y
-		
+	
 		space.column_span = unit_y * 0.8
 		space.row_span = unit_x
 		
 		space.column = int(c.name.substr(0, 1))
 		space.row = int(c.name.substr(1, 1))
-		super(space_key)
+	
+	return space
+
+
+## DO NOT USE.
+func _set_content(_new_content: String) -> void:
+	#if self.content.begins_with(new_content):
+	self.handle_resize()
+
+
+## Updates content[index] char with a new value.
+func set_char(index: int, new_value: String) -> void:
+	var ch: Char
+	for child in self.get_children(): if child.pos == index: ch = child
+	
+	self.content[index] = new_value
+	ch.value = new_value
+	Layout.set_contenedor(self)
 
 
 func set_max_font_size() -> void:
@@ -102,7 +112,6 @@ func get_font_size() -> int:
 func parse_text_to_config() -> Dictionary:
 	var char_count = 0
 	var aux_line = 0
-	self.max_line_size = 0
 	
 	var response = {}
 	
@@ -113,14 +122,10 @@ func parse_text_to_config() -> Dictionary:
 			## Add a line to respose.
 			response[aux_line] = char_count
 			aux_line += 1
-			if self.max_line_size < char_count:
-				self.max_line_size = char_count
 			char_count = 0
 	
 	## Add a line to respose.
 	response[aux_line] = char_count
-	if self.max_line_size < char_count:
-		self.max_line_size = char_count
 	
 	return response
 

@@ -15,30 +15,29 @@ enum Default {
 
 @export_group("Config")
 @export var direction: Direction = Direction.Left
-@export var start_at: float = 1.0 # N body sizes to the opposite direction.
-@export var end_at: float = 1.0
+@export var start_at: float = 1.0 # N times half parent size to the opposite direction.
+@export var end_at: float = 1.0 # How much the end will be the original position. ## DOES NOT WORK! #
 @export var NOT_IMPLEMENTED_bounce: float = 1.0 # Not implemented.
 
 static var save_position: Dictionary
 
 func handle_start(e: Ente) -> void:
-	var id = e.get_fosil()
+	var glb_pos = e.global_position
 	e.modulate.a = self.start_value
-	Slide.save_position[id] = e.global_position
-	e.global_position = self.get_start_offset(e, e.global_position)
+	Slide.save_position[e.get_fosil()] = glb_pos
+	e.global_position = self.get_start_offset(e, glb_pos)
 
 
 func do(e: Ente, m: float) -> void:
 	var end = Slide.save_position[e.get_fosil()]
 	var start =  self.get_start_offset(e, end)
-	
 	var mod = start - (end)
 	e.global_position = start + (mod * m * -1)
 	e.modulate.a = self.end_value * m
 
 
 func get_start_offset(e: Ente, start: Vector2) -> Vector2:
-	var s = e.size if !self.custom_start else self.custom_start
+	var s = e.get_parent_area_size() / 2
 	var offset = start
 	
 	match self.direction:
@@ -51,8 +50,8 @@ func get_start_offset(e: Ente, start: Vector2) -> Vector2:
 
 
 func get_end_offset(e: Ente) -> Vector2:
-	var s = e.size if !self.custom_start else self.custom_start
-	var target = self.save_position
+	var s = e.get_parent_area_size() / 2
+	var target = Slide.save_position[e.get_fosil()]
 	
 	match self.direction:
 		Direction.Up: target.y -= s.y * self.end_at

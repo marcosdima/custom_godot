@@ -22,5 +22,7 @@ static func connect_animator(e: Ente) -> void:
 			e.connect_event(
 					Ente.Event[event.to_pascal_case()],
 					func():
-						wrapper.animate.execute(e)
+						var anim = wrapper.animate
+						anim.handle_start(e)
+						anim.execute(e)
 			)

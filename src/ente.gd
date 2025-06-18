@@ -13,12 +13,8 @@ enum Event {
 	MouseStill,
 }
 
-@export var refresh: bool:
-	set(value):
-		Breader.set_as_default(self)
-		refresh = false
 @export_group("Background")
-@export var color: Color = Color.TRANSPARENT
+@export var color: Color = Color.TRANSPARENT ## TODO: Rename background_color
 @export var border: Border = Border.new()
 
 @export_group("Test", "test_")
@@ -57,11 +53,21 @@ func _draw() -> void:
 	draw_style_box(bgr, Rect2(Vector2.ZERO, self.size))
 
 
-func _init() -> void:
-	super()
-	Breader.set_as_default(self)
-
 ''' ------------------------------------------------------------------------ '''
+
+
+## [OVERWRITE] What to do at resize.
+func handle_resize() -> void:
+	Animator.set_animations(self)
+	self.queue_redraw()
+
+
+## Set area and emits resize.
+func set_area(r: Rect2) -> void:
+	self.global_position = r.position
+	self.size = r.size
+	self.handle_resize()
+	self.emit(Event.Resize)
 
 
 ## Emits event-key signal.
@@ -79,14 +85,6 @@ func connect_event(e: Event, do_this: Callable) -> void:
 ## Gets event key..
 func get_event_key(e: Event) -> String:
 	return Event.find_key(e).to_snake_case()
-
-
-## Set area and emits resize.
-func set_area(r: Rect2) -> void:
-	self.global_position = r.position
-	if r.size != self.size:
-		self.size = r.size
-		self.emit(Event.Resize)
 
 
 ## Returns ente area.

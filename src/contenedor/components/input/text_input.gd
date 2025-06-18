@@ -2,83 +2,62 @@
 extends InputComponent
 class_name TextInput
 
-@export var line_color: Color = Color.BLACK
-@export var placeholder: String = "Text":
-	set(value):
-		if value != placeholder:
-			placeholder = value
-			var placeh = self.get_placeholder()
-			placeh.content = value
-			Breader.set_as_default(placeh)
-@export var max_length: int = 10
-@export_group("Animations")
-@export var text_duration: float = 0.2
-var text_delay: float:
-	get():
-		return text_delay / self.get_text_legnth()
-
 const PLACEHOLDER = "Placeholder"
 const CONTENT = "Content"
 
-func _init() -> void:
+@export var line_color: Color = Color.BLACK
+@export var placeholder: String = "Text"
+@export_group("Animations")
+@export var on_appear: Animate
+@export var on_disappear: Animate
+@export var text_duration: float = 0.2
+var text_delay: float:
+	get():
+		return text_delay / self.max_length
+
+var aux_index = 0:
+	set(value):
+		if value < 0:
+			aux_index = 0
+		else:
+			aux_index = value
+
+func _ready() -> void:
 	super()
-	self.set_animations()
+	self.connect_event(Event.OnFocus, self.change_page_view)
+	self.connect_event(Event.OnUnfocus, self.change_page_view)
 
 
-func _input(event: InputEvent) -> void:
+func handle_key_event(event: InputEventKey) -> void:
 	super(event)
 	var handler = self.input_handler
 	
-	if event is InputEventKey and event.is_pressed() and handler.focus:
-		var key = handler.data[InputHandler.KEY]
-		var text = self.get_placeholder()
-		text.content += key
-		Breader.set_as_default(text)
+	if handler.focus and event.pressed:
+		var data = handler.data
+		var text = self.get_text()
+		var aux_set = ""
+		var remove_flag = false
+		
+		if data.is_letter or data.is_numeric or data.is_sign: aux_set = data.values[InputData.KEY]
+		else:
+			var action = data.values[InputData.ACTION] as InputData.Action
+			match action:
+				InputData.Action.Remove: remove_flag = true
+				InputData.Action.Space: aux_set = " "
+				_: Printea.print_event(event)
+		
+		if remove_flag:
+			aux_index -= 1
+			text.set_char(self.aux_index, " ")
+		elif !aux_set.is_empty() and self.validate_value(self.value + aux_set):
+			text.set_char(self.aux_index, aux_set)
+			self.aux_index += 1
+		
+		self.value = text.content.strip_edges()
 
 
-func set_animations() -> void:
-	var pholder = self.get_placeholder()
-	
-	## Go up.
-	var go_up = AnimateContenedor.new()
-	var slide_up = Slide.new()
-	slide_up.duration = self.text_duration
-	slide_up.direction = Slide.Direction.Down
-	go_up.animate_wrapper.animate = slide_up
-	go_up.delay = self.text_delay
-	
-	## Dissapear.
-	var dis_wrapper = AnimateWrapper.new()
-	var dissapear = Prop.new()
-	dis_wrapper.animate = dissapear
-	dissapear.duration = ((self.text_delay + self.text_duration) * self.get_text_legnth()) * 0.2
-	
-	var focus_key = self.get_event_key(Event.OnFocus)
-	pholder.contenedor_animations[focus_key] = go_up
-	pholder.animations[focus_key] = dis_wrapper
-	
-	# Goes to normal with unfocus
-	var appear_wrapper = AnimateWrapper.new()
-	var appear = Prop.new()
-	appear.start_value = 0
-	appear.end_value = 1
-	appear.duration = self.text_delay
-	appear_wrapper.animate = appear
-	
-	var go_down = AnimateContenedor.new()
-	var slide_down = Slide.new()
-	go_down.delay = self.text_delay
-	slide_down.duration = self.text_duration
-	slide_up.direction = Slide.Direction.Down
-	go_down.animate_wrapper.animate = slide_down
-	
-	var unfocus_key = self.get_event_key(Ente.Event.OnUnfocus)
-	pholder.contenedor_animations[unfocus_key] = go_down
-	pholder.animations[unfocus_key] = appear_wrapper
-
-
-## [OVERWRITE] Get chlidren.
-func get_contenedor_children() -> Array:
+## [OVERWRITTEN]
+func get_component_children() -> Array:
 	var placeh = Text.new()
 	placeh.font_size = 100
 	placeh.name = PLACEHOLDER
@@ -93,15 +72,17 @@ func get_contenedor_children() -> Array:
 	content.placement_axis_y = Placement.Middle
 	
 	var aux = ""
-	for i in range(self.max_length): aux += " "
+	for i in range(self.max_lenght): aux += " "
 	content.content = aux
+	self.value = aux
 	
 	return [placeh, content]
 
 
-## [OVERWRITE] Modifies spaces before update.
-func set_space(space_key: String) -> void:
-	self.spaces[space_key].order = 1 if space_key == CONTENT else 2
+## [OVERWRITTEN]
+func modificate_space(key: String, space: Space) -> Space:
+	space.order = 1 if key == CONTENT else 0
+	return space
 
 
 func get_text() -> Text:
@@ -112,9 +93,11 @@ func get_placeholder() -> Text:
 	return self.get_ente_by_key(PLACEHOLDER)
 
 
-func get_text_legnth() -> int:
-	var t = self.get_text()
-	if t:
-		return self.get_text().content.length()
-	else:
-		return 0
+func change_page_view() -> void:
+	if self.aux_index == 0:
+		for space in self.contenedor_spaces.values():
+			var curr = space.order
+			space.order = 1 if curr == 0 else 0
+		
+		# This call update page order.
+		Layout.refresh_spaces(self)

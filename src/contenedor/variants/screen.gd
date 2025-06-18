@@ -2,6 +2,18 @@
 extends Contenedor
 class_name Screen
 
+@export var current_spaces: Dictionary:
+	get():
+		return SpaceManager.SPACES
+@export var refresh: bool:
+	set(value):
+		self.set_viewport_area()
+		refresh = false
+@export var kill_all: bool:
+	set(value):
+		SpaceManager.SPACES = {}
+		kill_all = false
+
 func _ready() -> void:
 	super()
 	self.set_viewport_area()
@@ -16,8 +28,3 @@ func _notification(what: int) -> void:
 
 func set_viewport_area() -> void:
 	self.set_area(Rect2(Vector2.ZERO, self.get_parent_area_size()))
-	Layout.set_contenedor(self)
-	
-	for c in self.get_children():
-		if c is Contenedor:
-			Breader.check(c)

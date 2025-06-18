@@ -50,7 +50,7 @@ static func print_contenedor(c: Contenedor, extra_fields: Dictionary = {}) -> vo
 	var children = ENTER
 	for child in c.get_children():
 		children += Printea.get_ente_data(child, 2)
-	aux['Spaces'] = c.spaces
+	aux['Spaces'] = Printea.get_spaces_data(c, 2)
 	aux['Layout'] = Layout.LayoutType.find_key(c.get_layout_type())
 	aux['Children'] = children
 	Printea.print_ente(c, aux)
@@ -71,6 +71,20 @@ static func get_ente_data(e: Ente, tabs_count: int = 0) -> String:
 	data += tabs + TAB + '- Pos: ' + str(e.global_position) + ENTER
 	data += tabs + TAB + '- Color: ' + str(e.color) + ENTER
 	data += tabs + TAB + '- Visible: ' + str(e.visible) + ENTER
+	return data
+
+
+static func get_spaces_data(c: Contenedor, tabs_count: int = 0) -> String:
+	var data = "\n"
+	var tabs = Printea.get_tabs(tabs_count)
+	var spaces = c.contenedor_spaces
+	data += tabs + 'Size: ' + str(spaces.size()) + ENTER
+	data += tabs + 'Spaces: ' + ENTER
+	for space_key in spaces:
+		var space = spaces[space_key]
+		data += tabs + TAB + ' - Key: ' + space_key + ENTER
+		data += tabs + TAB + TAB + '. Order: ' + str(space.order) + ENTER
+
 	return data
 
 

@@ -1,9 +1,9 @@
 class_name InputHandler
 
-const KEY = "key"
+
 
 var ente: Ente
-var data = {}
+var data: InputData
 
 var mouse_on = false
 var click_on = false
@@ -84,9 +84,19 @@ func _handle_mouse_release() -> void:
 
 '''╭─[ Key Handlers ]─────────────────────────────────────────────────────────────────────────╮'''
 func _handle_key_event(input: InputEventKey) -> void:
+	var new_data = InputData.new()
 	var unicode = input.unicode
-	if  input.unicode < 1000 and unicode > 0:
-		var new_data = {
-			KEY: char(unicode),
-		}
-		self.data = new_data
+	
+	var letter = (unicode >= 65 and unicode <= 90) or (unicode >= 97 and unicode <= 122)
+	var numeric = unicode >= 48 and unicode <= 57
+	var is_char = unicode >= 32 and unicode <= 0x10FFFF
+	
+	new_data.is_letter = letter
+	new_data.is_numeric = numeric
+	new_data.is_sign = !letter and !numeric and is_char
+	if letter or numeric or is_char:
+		new_data.set_key(char(unicode))
+	else:
+		new_data.set_action(input.as_text_keycode())
+	
+	self.data = new_data

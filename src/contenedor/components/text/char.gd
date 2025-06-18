@@ -2,6 +2,7 @@ extends Ente
 class_name Char
 
 var value: String
+var pos: int
 
 # Position.
 var row: int
@@ -33,10 +34,11 @@ func get_position_from_placement() -> Vector2:
 	return Vector2(0, text_size.y / 1.3)
 
 
-func set_from(t: Text, v: String, r: int, c: int) -> void:
+func set_from(t: Text, v: String, r: int, c: int, str_pos: int) -> void:
 	self.text = t
 	self.font = t.font
 	self.column = c
 	self.row = r
 	self.value = v
 	self.name = str(r) + str(c)
+	self.pos = str_pos

@@ -30,10 +30,6 @@ func _ready() -> void:
 	self.input_handler = InputHandler.new(self as Ente) ## TOFIX: Wierd...
 
 
-func _init() -> void:
-	pass
-
-
 func _input(event: InputEvent) -> void:
 	self.input_handler.handle_input(event)
 
@@ -42,6 +38,7 @@ func get_fosil() -> int:
 	return self.id
 
 
+''' PRINT METHODS'''
 ## Display object data.
 func p() -> void:
 	Printea.print(self)

@@ -17,7 +17,7 @@ func do(_e: Ente, _m: float) -> void:
 	printerr("This function, 'do', should be overwritten!")
 
 
-func execute(e: Ente) -> void:
+func execute(e: Ente, at_the_end: Callable = func(): return) -> void:
 	if active:
 		return
 	
@@ -31,7 +31,11 @@ func execute(e: Ente) -> void:
 		self.end_value,
 		self.duration,
 	)
-	tween.finished.connect(func(): self.unlock())
+	tween.finished.connect(
+		func():
+			at_the_end.call()
+			self.unlock()
+	)
 
 
 func lock() -> void:

@@ -40,6 +40,7 @@ static func _simple(c: Contenedor, animate_c: AnimateContenedor) -> void:
 	
 	if animate_base.active:
 		return
+	
 	animate_base.custom_start = c.get_area().position
 	animate_base.lock()
 	
@@ -52,7 +53,10 @@ static func _simple(c: Contenedor, animate_c: AnimateContenedor) -> void:
 	
 	await c.get_tree().create_timer(animate_c.delay).timeout
 	for k in spaces_keys:
-		animate_indv[k].execute(c.get_ente_by_key(k))
+		var animate = animate_indv[k]
+		animate.execute(c.get_ente_by_key(k))
 		await c.get_tree().create_timer(animate_c.delay).timeout
 	
+	## Without this delay slide can overwrite positions.
+	await c.get_tree().create_timer(animate_base.duration).timeout
 	animate_base.unlock()
