@@ -61,18 +61,23 @@ func modificate_space(key: String, space: Space) -> Space:
 		var unit_x = char_size.x / ente_size.x
 		var unit_y = char_size.y / ente_size.y
 	
-		space.column_span = unit_y * 0.8
-		space.row_span = unit_x
+		space.column_span = unit_x ## TODO: This messed up the view...
+		space.row_span = unit_y * 0.8
 		
-		space.column = int(c.name.substr(0, 1))
-		space.row = int(c.name.substr(1, 1))
+		space.column = int(c.name.substr(1, 1))
+		space.row = int(c.name.substr(0, 1))
 	
 	return space
 
 
-## DO NOT USE.
-func _set_content(_new_content: String) -> void:
-	#if self.content.begins_with(new_content):
+func set_content(new_content: String) -> void:
+	if !self.content.begins_with(new_content):
+		var i = 0
+		for c in self.get_children():
+			var charchito = c as Char
+			charchito.value = new_content[i]
+			i += 1
+	self.content = new_content
 	self.handle_resize()
 
 
@@ -80,7 +85,6 @@ func _set_content(_new_content: String) -> void:
 func set_char(index: int, new_value: String) -> void:
 	var ch: Char
 	for child in self.get_children(): if child.pos == index: ch = child
-	
 	self.content[index] = new_value
 	ch.value = new_value
 	Layout.set_contenedor(self)

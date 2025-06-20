@@ -5,12 +5,11 @@ class_name TextInput
 const PLACEHOLDER = "Placeholder"
 const CONTENT = "Content"
 
-@export var line_color: Color = Color.BLACK
-@export var placeholder: String = "Text"
-@export_group("Animations")
-@export var on_appear: Animate
-@export var on_disappear: Animate
-@export var text_duration: float = 0.2
+var placeholder_color: Color = Color.BLACK
+var content_color: Color = Color.BLACK
+
+var placeholder: String = "Text"
+var text_duration: float = 0.2
 var text_delay: float:
 	get():
 		return text_delay / self.max_length
@@ -21,6 +20,15 @@ var aux_index = 0:
 			aux_index = 0
 		else:
 			aux_index = value
+
+func _init(
+	color: Color = Color.BLACK,
+	plh: String = "Text",
+) -> void:
+	self.content_color = color
+	self.placeholder_color = color
+	self.placeholder = plh
+
 
 func _ready() -> void:
 	super()
@@ -53,13 +61,14 @@ func handle_key_event(event: InputEventKey) -> void:
 			text.set_char(self.aux_index, aux_set)
 			self.aux_index += 1
 		
-		self.value = text.content.strip_edges()
+		self.set_value(text.content.strip_edges())
 
 
 ## [OVERWRITTEN]
 func get_component_children() -> Array:
 	var placeh = Text.new()
 	placeh.font_size = 100
+	placeh.font_color = self.placeholder_color
 	placeh.name = PLACEHOLDER
 	placeh.placement_axis_x = Placement.Middle
 	placeh.placement_axis_y = Placement.Middle
@@ -67,12 +76,13 @@ func get_component_children() -> Array:
 	
 	var content = Text.new()
 	content.font_size = 100
+	content.font_color = self.content_color
 	content.name = CONTENT
 	content.placement_axis_x = Placement.Middle
 	content.placement_axis_y = Placement.Middle
 	
 	var aux = ""
-	for i in range(self.max_lenght): aux += " "
+	for i in range(self.max_length): aux += " "
 	content.content = aux
 	self.value = aux
 	
@@ -83,6 +93,16 @@ func get_component_children() -> Array:
 func modificate_space(key: String, space: Space) -> Space:
 	space.order = 1 if key == CONTENT else 0
 	return space
+
+
+## [OVERWRITTEN] from InputComponent
+func clear_input() -> void:
+	super()
+	var content = self.get_text()
+	var aux = ""
+	for i in range(self.max_length): aux += " "
+	content.set_content(aux)
+	self.aux_index = 0
 
 
 func get_text() -> Text:

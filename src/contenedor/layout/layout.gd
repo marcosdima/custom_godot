@@ -20,6 +20,7 @@ static func get_layout(ly: LayoutType) -> Layout:
 
 static func set_contenedor(c: Contenedor) -> void:
 	var contenedor_k = c.name
+	
 	# 1. Get layout from layout_type.
 	var ly = Layout.get_layout(c.get_layout_type())
 	

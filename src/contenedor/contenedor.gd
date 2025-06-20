@@ -75,3 +75,10 @@ func get_ente_by_key(k: String):
 	for child in self.get_contenedor_children():
 		if child.name == k:
 			return child
+
+
+func add_child_def(e: Ente) -> void:
+	if Engine.is_editor_hint():
+		self.add_child.call_deferred(e)
+	else:
+		self.add_child(e)

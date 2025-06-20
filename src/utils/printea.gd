@@ -69,7 +69,7 @@ static func get_ente_data(e: Ente, tabs_count: int = 0) -> String:
 	data += tabs + e.name + ': ' + ENTER
 	data += tabs + TAB + '- Size: ' + str(e.size) + ENTER
 	data += tabs + TAB + '- Pos: ' + str(e.global_position) + ENTER
-	data += tabs + TAB + '- Color: ' + str(e.color) + ENTER
+	data += tabs + TAB + '- Color: ' + str(e.background_color) + ENTER
 	data += tabs + TAB + '- Visible: ' + str(e.visible) + ENTER
 	return data
 

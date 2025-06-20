@@ -13,14 +13,13 @@ enum Event {
 	MouseStill,
 }
 
-@export_group("Background")
-@export var color: Color = Color.TRANSPARENT ## TODO: Rename background_color
-@export var border: Border = Border.new()
-
-@export_group("Test", "test_")
-@export var test_border: bool = false
+@export_group("Background", "background")
+@export var background_color: Color = Color.TRANSPARENT ## TODO: Rename background_color
+@export var background_border: Border = Border.new()
 @export_group("")
 @export var animations: Dictionary = {}
+
+static var test_border: bool = false
 
 func _ready() -> void:
 	super()
@@ -32,23 +31,26 @@ func _ready() -> void:
 
 func _draw() -> void:
 	var bgr = StyleBoxFlat.new()
-	bgr.bg_color = self.color
+	bgr.bg_color = self.background_color
 	
-	if self.test_border:
-		self.border.width = 2
-		self.border.color = Color.BLACK
+	if Ente.test_border:
+		self.background_border.width = 2
+		self.background_border.color = Color.BLACK
+	else:
+		self.background_border.width = 0
+		self.background_border.color = Color.TRANSPARENT
 	
 	# Sets border width.
-	bgr.border_color = self.border.color
-	bgr.border_blend = self.border.blend
+	bgr.border_color = self.background_border.color
+	bgr.border_blend = self.background_border.blend
 	for key in ["top", "bottom", "left", "right"]:
-		var magnitude = self.border["width_" + key] if self.border.width <= 0 else self.border.width
+		var magnitude = self.background_border["width_" + key] if self.background_border.width <= 0 else self.background_border.width
 		bgr["border_width_" + key.to_snake_case()] = magnitude
 	
 	# Sets border radius.
 	for key in ["top_left", "top_right", "bottom_right", "bottom_left"]:
 		var full_key = "corner_radius_" + key.to_snake_case()
-		bgr[full_key] = self.border[full_key] if self.border.radius <= 0 else self.border.radius
+		bgr[full_key] = self.background_border[full_key] if self.background_border.radius <= 0 else self.background_border.radius
 	
 	draw_style_box(bgr, Rect2(Vector2.ZERO, self.size))
 

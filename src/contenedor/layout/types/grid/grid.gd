@@ -25,6 +25,7 @@ func get_new_space() -> Space:
 
 func calculate_spaces(c: Contenedor) -> void:
 	var spaces = SpaceManager.execute(c, SpaceManager.Action.Get)
+	var spaces_values = spaces.values() as Array
 	var cell_size = self.get_cell_size(c)
 
 	var areas = {}
@@ -35,15 +36,21 @@ func calculate_spaces(c: Contenedor) -> void:
 	var rows_count = c.contenedor_config[Grid.ROWS]
 	var columns_count = c.contenedor_config[Grid.COLUMNS]
 	
+	var f = func(r, col):
+		for s in spaces_values:
+			if s.row == r and s.column == col:
+				return s
+		return null
+	
 	for r in range(rows_count):
 		var blank = Vector2.ZERO
 		var aux_pos = Vector2(0, r * cell_size.y)
 		
 		for col in range(columns_count):
-			var k = str(r) + str(col)
+			var space_finded = f.call(r, col)
 			
-			if spaces.has(k):
-				var space = spaces[k]
+			if space_finded:
+				var space = space_finded
 				var span = self.get_span(space)
 				
 				var real_cell_size = cell_size * span
@@ -57,7 +64,7 @@ func calculate_spaces(c: Contenedor) -> void:
 				area.size = real_cell_size
 				aux_pos.x += real_cell_size.x + blank.x
 				blank = Vector2.ZERO
-				areas[k] = area
+				areas[spaces.find_key(space)] = area
 			else:
 				blank += cell_size
 		rows[r] = curr_row
@@ -77,4 +84,4 @@ func get_span(space: GridSpace) -> Vector2:
 		space.column_span = 1
 		return Vector2(1, 1)
 	
-	return Vector2(space.row_span, space.column_span)
+	return Vector2(space.column_span, space.row_span)
