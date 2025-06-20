@@ -1,3 +1,4 @@
+@tool
 extends Contenedor
 class_name Wrapper
 
