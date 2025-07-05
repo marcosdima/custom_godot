@@ -1,11 +1,11 @@
 extends Contenedor
 class_name Component
 
+@export var color: Color = Color.TRANSPARENT
 @export var kill: bool:
 	set(value):
-		for child in self.get_children():
-			self.remove_child_def(child)
 		kill = false
+		self.remove_all()
 
 ## [OVERWRITTEN] From: Contenedor -> Ente
 func handle_resize() -> void:
@@ -18,10 +18,10 @@ func handle_resize() -> void:
 			self.add_child_def(new_child)
 	else:
 		var children_names = []
-		for child in curr_children: children_names.append(child.name)
+		for child in curr_children: children_names.append(child.get_name())
 		
 		for child in should_be:
-			var child_name = child.name
+			var child_name = child.get_name()
 			if !self.get_ente_by_key(child_name):
 				self.add_child_def(child)
 			children_names.erase(child_name)
@@ -30,6 +30,8 @@ func handle_resize() -> void:
 			self.remove_child_def(self.get_ente_by_key(child_name))
 	
 	super()
+	
+	self.layout.calculate_spaces() ## TODO: Fix this.
 
 
 ## [OVERWRITE] Gets components to add.
@@ -42,3 +44,9 @@ func remove_child_def(e: Ente) -> void:
 		self.remove_child.call_deferred(e)
 	else:
 		self.remove_child(e)
+
+
+func remove_all() -> void:
+	for child in self.get_children():
+		self.remove_child_def(child)
+	self.spaces_manager.execute(SpaceManager.Action.Clean)

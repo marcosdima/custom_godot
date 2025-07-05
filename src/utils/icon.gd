@@ -3,6 +3,7 @@ class_name Icon
 extends Ente
 
 enum DefaultIcons {
+	Play,
 	AirPods,
 	Bottle,
 	Clear,
@@ -15,7 +16,6 @@ enum DefaultIcons {
 	Mate,
 	Money,
 	Notebook,
-	Play,
 	Plus,
 	TurnOff,
 	Umbrella,

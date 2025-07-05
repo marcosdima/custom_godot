@@ -16,20 +16,72 @@ enum Placement {
 @export_group("")
 @export var contenedor_animations: Dictionary
 
+var layout: Layout:
+	get():
+		if !layout:
+			Layout.set_layout(self)
+			self.modify_default_layout_config()
+		return layout
+var spaces_manager: SpaceManager:
+	get():
+		if !spaces_manager:
+			spaces_manager = SpaceManager.new(self)
+		return spaces_manager
 var contenedor_spaces: Dictionary:
 	get():
-		return SpaceManager.execute(self, SpaceManager.Action.Get)
+		return self.spaces_manager.spaces
 	set(value):
-		SpaceManager.execute(self, SpaceManager.Action.Save, { SpaceManager.SAVE: value })
+		self.spaces_manager.execute(SpaceManager.Action.Save, { SpaceManager.SAVE: value })
 var contenedor_config: Dictionary:
 	get():
-		return Layout.get_contenedor_config(self.name)
+		return self.layout.config
 
 ## [OVERWRITTEN] From: Ente
 func handle_resize() -> void:
-	Layout.set_contenedor(self)
 	ContenedorAnimator.set_contenedor_animations(self)
+	
 	super()
+	
+	var aux_names = []
+	var save_this = {}
+	
+	for child in self.get_contenedor_children():
+		var ente = child as Ente
+		var ente_name = ente.get_name()
+		
+		var space_exists = self.contenedor_spaces.has(ente_name)
+		var space
+		if !space_exists:
+			space = self.layout.get_new_space()
+		else:
+			space = self.modificate_space(
+				ente_name,
+				self.contenedor_spaces[ente_name],
+			)
+		save_this[ente_name] = space
+		aux_names.append(ente_name)
+	
+	## Save new spaces.
+	self.spaces_manager.execute(
+		SpaceManager.Action.Save,
+		{
+			SpaceManager.SAVE: save_this,
+		}
+	)
+	
+	## Delete no registered spaces.
+	self.spaces_manager.execute(
+		SpaceManager.Action.Delete,
+		{
+			SpaceManager.DELETE: {
+				SpaceManager.KEYS: aux_names,
+				SpaceManager.IN: false,
+			},
+		},
+	)
+	
+	self.modify_default_layout_config()
+	self.layout.calculate_spaces()
 
 
 ## [OVERWRITE] Get Layout type.
@@ -48,7 +100,7 @@ func get_contenedor_children() -> Array:
 
 
 ## [OVERWRITE] Do it to pre-set some configurations.
-func modify_default_layout_config(_curr_config: Dictionary) -> void:
+func modify_default_layout_config() -> void:
 	pass
 
 
@@ -73,12 +125,17 @@ func get_start_offset(size_: Vector2) -> Vector2:
 ## Return, if exists, the children with the name provided.
 func get_ente_by_key(k: String):
 	for child in self.get_contenedor_children():
-		if child.name == k:
+		if child.get_name() == k:
 			return child
 
 
+## Add children defferred (if needed)
 func add_child_def(e: Ente) -> void:
 	if Engine.is_editor_hint():
 		self.add_child.call_deferred(e)
 	else:
 		self.add_child(e)
+
+
+func get_spaces_ordered() -> Array:
+	return self.spaces_manager.execute(SpaceManager.Action.Get)

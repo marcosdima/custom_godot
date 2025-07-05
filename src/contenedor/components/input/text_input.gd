@@ -2,38 +2,49 @@
 extends InputComponent
 class_name TextInput
 
-const PLACEHOLDER = "Placeholder"
-const CONTENT = "Content"
+var min_chars: int = !0
 
-var placeholder_color: Color = Color.BLACK
-var content_color: Color = Color.BLACK
+const PLACEHOLDER: String = "PLACEHOLDER"
+const CONTENT: String = "CONTENT"
 
-var placeholder: String = "Text"
+@export var placeholder: String = "Text"
+var placeholder_flag: bool
 var text_duration: float = 0.2
 var text_delay: float:
 	get():
 		return text_delay / self.max_length
 
-var aux_index = 0:
-	set(value):
-		if value < 0:
-			aux_index = 0
-		else:
-			aux_index = value
-
-func _init(
-	color: Color = Color.BLACK,
-	plh: String = "Text",
-) -> void:
-	self.content_color = color
-	self.placeholder_color = color
-	self.placeholder = plh
-
-
 func _ready() -> void:
 	super()
-	self.connect_event(Event.OnFocus, self.change_page_view)
-	self.connect_event(Event.OnUnfocus, self.change_page_view)
+	change_to_placeholder(true)
+	self.connect_event(Event.OnFocus, func(): change_to_placeholder())
+	self.connect_event(Event.OnUnfocus, func(): change_to_placeholder(self.value.is_empty()))
+
+
+## [OVERWRITTEN] From: Contenedor -> Ente
+func handle_resize() -> void:
+	super()
+	if placeholder_flag == null:
+		change_to_placeholder(true)
+
+
+## [OVERWRITTEN] From: Component.
+func get_component_children() -> Array:
+	var content = Text.new()
+	content.font_size = 100
+	content.color = self.color
+	content.min_chars = self.min_chars
+	content.name = CONTENT
+	content.content = self.value if !self.placeholder_flag else self.placeholder
+	content.placement_axis_x = Placement.Middle
+	content.placement_axis_y = Placement.Middle
+	return [content]
+
+
+## [OVERWRITTEN] From: InputComponent
+func clear_input() -> void:
+	placeholder_flag = true
+	super()
 
 
 func handle_key_event(event: InputEventKey) -> void:
@@ -42,7 +53,6 @@ func handle_key_event(event: InputEventKey) -> void:
 	
 	if handler.focus and event.pressed:
 		var data = handler.data
-		var text = self.get_text()
 		var aux_set = ""
 		var remove_flag = false
 		
@@ -54,70 +64,21 @@ func handle_key_event(event: InputEventKey) -> void:
 				InputData.Action.Space: aux_set = " "
 				_: Printea.print_event(event)
 		
+		var curr_content = self.value
 		if remove_flag:
-			aux_index -= 1
-			text.set_char(self.aux_index, " ")
-		elif !aux_set.is_empty() and self.validate_value(self.value + aux_set):
-			text.set_char(self.aux_index, aux_set)
-			self.aux_index += 1
+			if curr_content.length() > 2:
+				curr_content = curr_content.erase(curr_content.length() - 2)
+			else:
+				curr_content = ""
+		elif !aux_set.is_empty() and self.validate_value(aux_set):
+			curr_content += aux_set
 		
-		self.set_value(text.content.strip_edges())
+		if self.value != curr_content:
+			self.set_value(curr_content)
+			self.change_to_placeholder()
 
 
-## [OVERWRITTEN]
-func get_component_children() -> Array:
-	var placeh = Text.new()
-	placeh.font_size = 100
-	placeh.font_color = self.placeholder_color
-	placeh.name = PLACEHOLDER
-	placeh.placement_axis_x = Placement.Middle
-	placeh.placement_axis_y = Placement.Middle
-	placeh.content = self.placeholder
-	
-	var content = Text.new()
-	content.font_size = 100
-	content.font_color = self.content_color
-	content.name = CONTENT
-	content.placement_axis_x = Placement.Middle
-	content.placement_axis_y = Placement.Middle
-	
-	var aux = ""
-	for i in range(self.max_length): aux += " "
-	content.content = aux
-	self.value = aux
-	
-	return [placeh, content]
-
-
-## [OVERWRITTEN]
-func modificate_space(key: String, space: Space) -> Space:
-	space.order = 1 if key == CONTENT else 0
-	return space
-
-
-## [OVERWRITTEN] from InputComponent
-func clear_input() -> void:
-	super()
-	var content = self.get_text()
-	var aux = ""
-	for i in range(self.max_length): aux += " "
-	content.set_content(aux)
-	self.aux_index = 0
-
-
-func get_text() -> Text:
-	return self.get_ente_by_key(CONTENT)
-
-
-func get_placeholder() -> Text:
-	return self.get_ente_by_key(PLACEHOLDER)
-
-
-func change_page_view() -> void:
-	if self.aux_index == 0:
-		for space in self.contenedor_spaces.values():
-			var curr = space.order
-			space.order = 1 if curr == 0 else 0
-		
-		# This call update page order.
-		Layout.refresh_spaces(self)
+func change_to_placeholder(flag: bool = false) -> void:
+	placeholder_flag = flag
+	self.remove_all()
+	self.handle_resize()

@@ -35,7 +35,7 @@ static func do(c: Contenedor, this: AnimateContenedor) -> void:
 
 
 static func _simple(c: Contenedor, animate_c: AnimateContenedor) -> void:
-	var spaces_keys = Layout.get_sorted_spaces(c)
+	var spaces_values = c.get_spaces_ordered()
 	var animate_base = animate_c.animate_wrapper.animate
 	
 	if animate_base.active:
@@ -45,14 +45,16 @@ static func _simple(c: Contenedor, animate_c: AnimateContenedor) -> void:
 	animate_base.lock()
 	
 	var animate_indv = {}
-	for k in spaces_keys:
+	for s in spaces_values:
+		var k = c.contenedor_spaces.find_key(s)
 		var animate = animate_base.duplicate()
 		var ente = c.get_ente_by_key(k)
 		animate.handle_start(ente)
 		animate_indv[k] = animate
 	
 	await c.get_tree().create_timer(animate_c.delay).timeout
-	for k in spaces_keys:
+	for s in spaces_values:
+		var k = c.contenedor_spaces.find_key(s)
 		var animate = animate_indv[k]
 		animate.execute(c.get_ente_by_key(k))
 		await c.get_tree().create_timer(animate_c.delay).timeout

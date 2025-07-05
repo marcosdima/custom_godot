@@ -4,8 +4,8 @@ class_name Grid
 const ROWS = "rows"
 const COLUMNS = "columns"
 
-static func get_cell_size(c: Contenedor) -> Vector2:
-	var config = Layout.get_contenedor_config(c.name)
+func get_cell_size() -> Vector2:
+	var c = self.contenedor
 	var area = c.get_area()
 	var s = area.size / Vector2(config[COLUMNS], config[ROWS])
 	return s
@@ -23,16 +23,17 @@ func get_new_space() -> Space:
 	return GridSpace.new()
 
 
-func calculate_spaces(c: Contenedor) -> void:
-	var spaces = SpaceManager.execute(c, SpaceManager.Action.Get)
+func calculate_spaces() -> void:
+	var c = self.contenedor
+	var spaces = c.contenedor_spaces
 	var spaces_values = spaces.values() as Array
-	var cell_size = self.get_cell_size(c)
+	var cell_size = self.get_cell_size()
 
 	var areas = {}
 	var rows = {}
 	var curr_row = Vector2.ZERO
 	var spaces_size = Vector2.ZERO
-	
+	#print(c.contenedor_config, c.name)
 	var rows_count = c.contenedor_config[Grid.ROWS]
 	var columns_count = c.contenedor_config[Grid.COLUMNS]
 	
@@ -75,7 +76,7 @@ func calculate_spaces(c: Contenedor) -> void:
 	for ente_key in areas:
 		var area = areas[ente_key]
 		area.position += off_set
-		self.set_ente_area(c, ente_key, area)
+		self.set_ente_area(ente_key, area)
 
 
 func get_span(space: GridSpace) -> Vector2:

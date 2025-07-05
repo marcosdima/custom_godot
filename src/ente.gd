@@ -14,12 +14,28 @@ enum Event {
 }
 
 @export_group("Background", "background")
-@export var background_color: Color = Color.TRANSPARENT ## TODO: Rename background_color
-@export var background_border: Border = Border.new()
+@export var background_color: Color = Color.TRANSPARENT: ## TODO: Rename background_color
+	set(value):
+		background_color = value
+		self.queue_redraw()
+@export var background_border: Border:
+	get():
+		if !background_border:
+			background_border = Border.new()
+		return background_border
 @export_group("")
 @export var animations: Dictionary = {}
+@export var ente_id: String = ""
 
-static var test_border: bool = false
+var test_border: bool = false:
+	set(value):
+		test_border = value
+		
+		if value:
+			background_border.width = 2
+			background_border.color = Color.BLACK
+		else:
+			background_border.width = 0
 
 func _ready() -> void:
 	super()
@@ -27,18 +43,12 @@ func _ready() -> void:
 	if self is Contenedor:
 		ContenedorAnimator.connect_contenedor_animator(self)
 	self.emit(Event.OnReady)
+	self.handle_resize()
 
 
 func _draw() -> void:
 	var bgr = StyleBoxFlat.new()
 	bgr.bg_color = self.background_color
-	
-	if Ente.test_border:
-		self.background_border.width = 2
-		self.background_border.color = Color.BLACK
-	else:
-		self.background_border.width = 0
-		self.background_border.color = Color.TRANSPARENT
 	
 	# Sets border width.
 	bgr.border_color = self.background_border.color
@@ -92,3 +102,8 @@ func get_event_key(e: Event) -> String:
 ## Returns ente area.
 func get_area() -> Rect2:
 	return Rect2(self.global_position, self.size)
+
+
+## Returns ente name.
+func get_name() -> StringName:
+	return self.name

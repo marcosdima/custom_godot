@@ -13,11 +13,10 @@ var font = Font
 
 func _draw():
 	super()
-	
-	var parent = self.text
+	var parent = self.get_parent()
 	
 	if self.font:
-		var font_color = parent.font_color
+		var font_color = text.color
 		
 		draw_char(
 			self.font,

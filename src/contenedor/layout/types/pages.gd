@@ -1,29 +1,34 @@
 extends Layout
 class_name Pages
 
+var on_page: int = 0:
+	set(value):
+		var pages_count = self.contenedor.contenedor_spaces.size()
+		
+		if value < 0:
+			on_page = pages_count - 1
+		elif value >= pages_count:
+			on_page = 0
+		else:
+			on_page = value
 
-static var disappear: Animate
-static var appear: Animate
-
-func calculate_spaces(c: Contenedor) -> void:
-	var sorted = Layout.get_sorted_spaces(c)
+func calculate_spaces() -> void:
+	var sorted = self.contenedor.get_spaces_ordered()
 	for i in range(sorted.size()):
-		Pages.handle_space(c, sorted[i], i == 0)
+		self.handle_space(sorted[i], i == self.on_page)
 
 
-static func handle_space(c: Contenedor, space_key: String, first: bool) -> void:
-	if !disappear or !appear:
-		Pages.set_animations()
-	
-	var ente = c.get_ente_by_key(space_key)
+func handle_space(space: Space, first: bool) -> void:
+	var c = self.contenedor
+	var ente = c.get_ente_by_key(c.contenedor_spaces.find_key(space))
 	
 	if first:
-		Layout.set_ente_area(c, ente.name, c.get_area())
-		Pages.appear.execute(ente)
+		self.set_ente_area(ente.get_name(), c.get_area())
+		ente.visible = true
 	else:
-		Pages.disappear.execute(ente)
+		ente.visible = false
 
-
+'''
 static func set_animations() -> void:
 	var appear_aux = Prop.new()
 	appear_aux.duration = 0.2
@@ -34,4 +39,4 @@ static func set_animations() -> void:
 	appear_aux.duration = 0.2
 	dis.end_value = 0.0
 	dis.start_value = 1.0
-	Pages.disappear = dis
+	Pages.disappear = dis'''

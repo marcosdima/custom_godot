@@ -31,7 +31,7 @@ func validate_value(new_value: String) -> bool:
 	signs_regex.compile(r"[^\w\s]")
 	var contains_signs = signs_regex.search(new_value)
 	
-	var valid_lenght = max_length >= new_value.length()
+	var valid_lenght = max_length >= self.value.length() + new_value.length()
 	var invalid_content = (no_alpha and contains_alpha) or (no_numeric and contains_numeric) or (no_signs and contains_signs) 
 	
 	return valid_lenght and !invalid_content
@@ -42,8 +42,8 @@ func handle_key_event(_event: InputEventKey) -> void:
 
 
 func set_value(v) -> void:
-	if self.validate_value(v):
-		self.value = v
+	self.value = v
+	self.handle_resize()
 
 
 ## [OVERWRITE] What to do if value was cleaned.

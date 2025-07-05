@@ -2,24 +2,9 @@
 extends Contenedor
 class_name Screen
 
-@export var current_spaces: Dictionary:
-	get():
-		return SpaceManager.SPACES
-	set(value):
-		SpaceManager.SPACES = {}
-@export var layout_configs: Dictionary:
-	get():
-		return Layout.CONFIGS
-	set(value):
-		Layout.CONFIGS = {}
-@export var refresh: bool:
-	set(value):
-		self.set_viewport_area()
-		refresh = false
-
 func _ready() -> void:
 	super()
-	#self.set_viewport_area()
+	self.set_viewport_area()
 	self.get_viewport().connect("size_changed", self.set_viewport_area)
 
 

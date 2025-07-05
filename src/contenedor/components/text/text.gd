@@ -4,18 +4,20 @@ class_name Text
 
 const ENTER = '\n'
 
-@export_multiline var content: String = "Text"
+@export_multiline var content: String = "Text":
+	set(value):
+		content = value
 @export_group("Font", "font_")
 @export var font: FontFile = load("res://static/fonts/CaviarDreams.ttf")
-@export var font_color: Color = Color.BLACK
 @export var font_size: int = 100
+@export var min_chars: int = 0
+
 var max_font_size: float = 0
 
 ## [OVERWRITTEN] From: Component -> Contenedor -> Ente
 func handle_resize() -> void:
 	super()
 	self.set_max_font_size()
-	Layout.set_contenedor(self)
 
 
 ## [OVERWRITTEN]
@@ -43,20 +45,22 @@ func get_component_children() -> Array:
 
 
 ## [OVERWRITTEN]
-func modify_default_layout_config(_curr_config: Dictionary) -> void:
-	var text_config = self.parse_text_to_config() 
-	
-	_curr_config[Grid.COLUMNS] = text_config.values().max()
-	_curr_config[Grid.ROWS] = text_config.size()
+func modify_default_layout_config() -> void:
+	var text_config = self.parse_text_to_config()
+	var max = text_config.values().max()
+	self.layout.config = {
+		Grid.COLUMNS: max if self.min_chars < max else self.min_chars,
+		Grid.ROWS: text_config.size()
+	}
 
 
 ## [OVERWRITTEN]
 func modificate_space(key: String, space: Space) -> Space:
 	var c: Char = self.get_ente_by_key(key)
 	
-	if !self.contenedor_config.is_empty():
+	if !self.contenedor_config.is_empty() and c:
 		var char_size = self._calculate_size(c.value, self.get_font_size())
-		var ente_size = Grid.get_cell_size(self)
+		var ente_size = self.layout.get_cell_size()
 		
 		var unit_x = char_size.x / ente_size.x
 		var unit_y = char_size.y / ente_size.y
@@ -71,23 +75,9 @@ func modificate_space(key: String, space: Space) -> Space:
 
 
 func set_content(new_content: String) -> void:
-	if !self.content.begins_with(new_content):
-		var i = 0
-		for c in self.get_children():
-			var charchito = c as Char
-			charchito.value = new_content[i]
-			i += 1
 	self.content = new_content
+	self.kill = true
 	self.handle_resize()
-
-
-## Updates content[index] char with a new value.
-func set_char(index: int, new_value: String) -> void:
-	var ch: Char
-	for child in self.get_children(): if child.pos == index: ch = child
-	self.content[index] = new_value
-	ch.value = new_value
-	Layout.set_contenedor(self)
 
 
 func set_max_font_size() -> void:
@@ -96,7 +86,7 @@ func set_max_font_size() -> void:
 	var aux_font_size = self.get_metrics(aux_size)
 	var char_size = self._calculate_size(target, aux_font_size)
 	
-	var av_size = Grid.get_cell_size(self)
+	var av_size = self.layout.get_cell_size()
 	
 	var top = 200
 	while char_size < av_size and top > 0:
