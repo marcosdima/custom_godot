@@ -20,7 +20,6 @@ var layout: Layout:
 	get():
 		if !layout:
 			Layout.set_layout(self)
-			self.modify_default_layout_config()
 		return layout
 var spaces_manager: SpaceManager:
 	get():
@@ -42,23 +41,19 @@ func handle_resize() -> void:
 	
 	super()
 	
+	## Auxiliar variables.
 	var aux_names = []
 	var save_this = {}
 	
+	## Check if there are new children to add or old ones to remove.
 	for child in self.get_contenedor_children():
 		var ente = child as Ente
 		var ente_name = ente.get_name()
 		
 		var space_exists = self.contenedor_spaces.has(ente_name)
-		var space
 		if !space_exists:
-			space = self.layout.get_new_space()
-		else:
-			space = self.modificate_space(
-				ente_name,
-				self.contenedor_spaces[ente_name],
-			)
-		save_this[ente_name] = space
+			save_this[ente_name] =  self.layout.get_new_space()
+		
 		aux_names.append(ente_name)
 	
 	## Save new spaces.
@@ -80,6 +75,7 @@ func handle_resize() -> void:
 		},
 	)
 	
+	## Layout manage spaces.
 	self.modify_default_layout_config()
 	self.layout.calculate_spaces()
 
@@ -87,11 +83,6 @@ func handle_resize() -> void:
 ## [OVERWRITE] Get Layout type.
 func get_layout_type() -> Layout.LayoutType:
 	return Layout.LayoutType.Pages
-
-
-## [OVERWRITE] Modify space configuration after its creation.
-func modificate_space(_key: String, space: Space) -> Space:
-	return space
 
 
 ## [OVERWRITE] Get contenedor children.
@@ -137,5 +128,6 @@ func add_child_def(e: Ente) -> void:
 		self.add_child(e)
 
 
+## Rerturns spaces ordered by their order value.
 func get_spaces_ordered() -> Array:
 	return self.spaces_manager.execute(SpaceManager.Action.Get)

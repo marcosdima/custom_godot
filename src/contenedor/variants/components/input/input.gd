@@ -48,4 +48,4 @@ func set_value(v) -> void:
 
 ## [OVERWRITE] What to do if value was cleaned.
 func clear_input() -> void:
-	self.value = ""
+	self.set_value("")

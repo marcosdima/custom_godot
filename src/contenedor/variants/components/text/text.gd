@@ -55,23 +55,21 @@ func modify_default_layout_config() -> void:
 
 
 ## [OVERWRITTEN]
-func modificate_space(key: String, space: Space) -> Space:
+func modificate_space(key: String) -> void:
 	var c: Char = self.get_ente_by_key(key)
+	var space = self.contenedor_spaces.get(key) as GridSpace
+	#if !self.contenedor_config.is_empty() and c:
+	var char_size = self._calculate_size(c.value, self.get_font_size())
+	var ente_size = self.layout.get_cell_size()
 	
-	if !self.contenedor_config.is_empty() and c:
-		var char_size = self._calculate_size(c.value, self.get_font_size())
-		var ente_size = self.layout.get_cell_size()
-		
-		var unit_x = char_size.x / ente_size.x
-		var unit_y = char_size.y / ente_size.y
+	var unit_x = char_size.x / ente_size.x
+	var unit_y = char_size.y / ente_size.y
+
+	space.column_span = unit_x ## TODO: This messed up the view...
+	space.row_span = unit_y * 0.8
 	
-		space.column_span = unit_x ## TODO: This messed up the view...
-		space.row_span = unit_y * 0.8
-		
-		space.column = int(c.name.substr(1, 1))
-		space.row = int(c.name.substr(0, 1))
-	
-	return space
+	space.column = int(c.name.substr(1, 1))
+	space.row = int(c.name.substr(0, 1))
 
 
 func set_content(new_content: String) -> void:

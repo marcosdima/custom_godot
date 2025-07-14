@@ -85,8 +85,8 @@ func modify_default_layout_config() -> void:
 
 
 ## [OVERWRITTEN]
-func modificate_space(key: String, space: Space) -> Space:
-	var target = space as SausageSpace
+func modificate_space(key: String) -> void:
+	var target = self.contenedor_spaces.get(key) as SausageSpace
 	
 	match key:
 		LINE:
@@ -95,5 +95,3 @@ func modificate_space(key: String, space: Space) -> Space:
 		INPUT + CLEAR:
 			target.order = 0
 			target.fill = 90
-	
-	return super(key, target)

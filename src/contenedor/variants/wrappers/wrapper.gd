@@ -27,6 +27,13 @@ class_name Wrapper
 		self.handle_resize()
 		refresh = false
 
+## [OVERWRITTEN] From: Contenedor -> Ente
+func handle_resize() -> void:
+	self.contenedor_spaces = self.view_spaces
+	self.layout.config = self.view_config
+	super()
+
+
 func _init(
 	set_children: Array = [],
 	new_config: Dictionary = {},
@@ -43,10 +50,3 @@ func _init(
 ## [OVERWRITTEN]
 func get_layout_type() -> Layout.LayoutType:
 	return self.layout_type
-
-
-## [OVERWRITTEN]
-func modificate_space(key: String, space: Space) -> Space:
-	if self.view_spaces.has(key):
-		return self.view_spaces[key]
-	return space

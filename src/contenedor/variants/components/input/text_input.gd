@@ -43,7 +43,7 @@ func get_component_children() -> Array:
 
 ## [OVERWRITTEN] From: InputComponent
 func clear_input() -> void:
-	placeholder_flag = true
+	self.change_to_placeholder(true)
 	super()
 
 
