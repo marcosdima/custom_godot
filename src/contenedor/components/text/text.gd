@@ -6,16 +6,47 @@ const ENTER = '\n'
 
 @export_multiline var content: String = "Text":
 	set(value):
-		contenedor.clean_spaces()
 		content = value
-		self.handle_resize()
+		if Engine.is_editor_hint():
+			self.set_contenedor()
 @export_group("Font", "font_")
 @export var font: FontFile = load("res://static/fonts/CaviarDreams.ttf")
 @export var font_size: int = 16
 @export var font_min_chars: int = 0
 
-## [OVERWRITTEN]
-func get_children_to_add() -> Array:
+## [OVERWRITTEN] From: Component
+func get_layout_type() -> Layout.LayoutType:
+	return Layout.LayoutType.Grid
+
+
+## [OVERWRITTEN] From: Component
+func get_layout_spaces() -> Dictionary:
+	var spaces = contenedor.layout.spaces.duplicate()
+	contenedor.placement_axis_x = Contenedor.Placement.End
+	for key in spaces:
+		var c: Char = contenedor.get_ente_by_key(key)
+		var space = spaces.get(key) as GridSpace
+		
+		var char_size = self.get_char_size(c)
+		var ente_size = contenedor.layout.get_cell_size()
+		
+		space.column = c.column
+		space.row = c.row
+		
+		var valid_size = ente_size != Vector2.ZERO
+		var unit_x = char_size.x / ente_size.x
+		var unit_y = char_size.y / ente_size.y
+		
+		space.column_span = unit_x if valid_size else 1
+		space.row_span = unit_y if valid_size else 1
+		
+		if !valid_size: printerr("ente_size is ZERO!")
+	
+	return spaces
+
+
+## [OVERWRITTEN] From: Component
+func get_children_to_set() -> Array:
 	var aux_children = []
 	var text_config = self.parse_text_to_config() 
 	
@@ -31,24 +62,6 @@ func get_children_to_add() -> Array:
 		i += 1
 	
 	return aux_children
-
-
-func modificate_spaces() -> void:
-	for key in contenedor.layout.spaces:
-		var c: Char = contenedor.get_ente_by_key(key)
-		var space = self.contenedor_spaces.get(key) as GridSpace
-		
-		var char_size = self.get_char_size(c)
-		var ente_size = self.layout.get_cell_size()
-		
-		var unit_x = char_size.x / ente_size.x
-		var unit_y = char_size.y / ente_size.y
-
-		space.column_span = unit_x ## TODO: This messed up the view...
-		space.row_span = unit_y
-		
-		space.column = c.column
-		space.row = c.row
 
 
 func parse_text_to_config() -> Dictionary:

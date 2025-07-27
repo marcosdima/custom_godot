@@ -17,7 +17,6 @@ func calculate_dimensions() -> void:
 	var spaces_values = spaces.values() as Array
 	var areas = {}
 	var rows = {}
-	var spaces_size = Vector2.ZERO
 	
 	## Takes rows count
 	var rows_count = contenedor.layout.config[Grid.ROWS]
@@ -64,7 +63,12 @@ func calculate_dimensions() -> void:
 		rows[r] = curr_row
 		curr_row.x = 0 
 	
-	var off_set = contenedor.get_start_offset(spaces_size)
+	var total_size = Vector2.ZERO
+	for size in rows.values():
+		total_size.x = max(total_size.x, size.x)
+		total_size.y = max(total_size.y, size.y)
+	
+	var off_set = contenedor.get_start_offset(total_size)
 	for ente_key in areas:
 		var area = areas[ente_key]
 		area.position += off_set

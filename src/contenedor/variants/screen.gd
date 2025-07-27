@@ -25,7 +25,7 @@ func _notification(what: int) -> void:
 
 func set_viewport_area() -> void:
 	global_position = Vector2.ZERO
+	var _size_ = get_tree().get_root().size
 	var child = self.get_children()[0]
-	child.size = get_tree().get_root().size
-	child.global_position = global_position
-	child.handle_resize()
+	custom_minimum_size = _size_
+	child.set_area(Rect2(global_position, _size_))

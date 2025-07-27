@@ -1,81 +1,79 @@
-@tool
 extends Ente
 class_name Component
 
 const SCROLL = "SCROLL"
 const CONTENEDOR = "CONTENEDOR"
 
-@export_group("Contenedor", "contenedor")
-@export var spaces: Dictionary:
-	get():
-		if contenedor and (!spaces or spaces.is_empty()):
-			spaces = contenedor.layout.spaces
-		return spaces
-@export var config: Dictionary:
-	get():
-		if contenedor and (!config or config.is_empty()):
-			config = contenedor.layout.config
-		return config
-@export var layout_type: Layout.LayoutType:
-	set(value):
-		layout_type = value
-		if contenedor:
-			contenedor.layout_type = layout_type
-			spaces = contenedor.layout.spaces
-			config = contenedor.layout.config
+@export var color: Color = Color.BLACK
 
 var scroll: ScrollContainer
 var contenedor: Contenedor
 
 func _ready() -> void:
+	super()
+	
 	scroll = ScrollContainer.new()
 	scroll.name = SCROLL
 	self.add_child(scroll)
+	
 	self.set_contenedor()
-	child_entered_tree.connect(set_contenedor)
+	child_entered_tree.connect(func(child): if child is Ente: contenedor.add_ente(child))
 
 
 ## [OVERWRITTEN] From: Ente
 func handle_resize() -> void:
 	super()
-	contenedor.layout.spaces = spaces
-	contenedor.layout.config = config
-	self.recalcular_scroll()
+	
+	var area = self.get_area()
+	
+	await get_tree().process_frame
+	
+	scroll.position = area.position
+	scroll.custom_minimum_size = area.size
+	scroll.queue_sort()
+	
+	contenedor.set_area(area)
+	contenedor.layout.spaces = self.get_layout_spaces()
 
 
-## [OVERWRITE] Get children to add to contenedor.
-func get_children_to_add() -> Array:
-	var entes = self.get_children()
-	for e in self.get_children():
-		if e is Ente and !Engine.is_editor_hint():
-			self.remove_child(e)
-	return entes
+## [OVERWRITTEN] From: Ente
+func set_children(children: Array) -> void:
+	super(children)
+	self.set_contenedor()
 
 
+## [OVERWRITE] Get layout type to set contenedor.
+func get_layout_type() -> Layout.LayoutType:
+	return Layout.LayoutType.Pages
+
+
+## [OVERWRITE] Set contenedor layout spaces.
+func get_layout_spaces() -> Dictionary:
+	return contenedor.layout.spaces
+
+
+## [OVERWRITE] Get layout type to set contenedor.
+func get_layout_config() -> Dictionary:
+	return {} if !contenedor else contenedor.layout.config
+
+
+## Get children to add to contenedor.
+func get_children_to_set() -> Array:
+	return self.get_children()
+
+
+## Routine to set contenedor.
 func set_contenedor() -> void:
 	if contenedor:
 		scroll.remove_child.call_deferred(contenedor)
 	
-	var entes = self.get_children_to_add()
-	
 	contenedor = Contenedor.new()
 	contenedor.name = CONTENEDOR
-	contenedor.layout_type = layout_type
-	contenedor.layout.spaces = spaces
-	contenedor.layout.config = config
-	contenedor.add_components(entes)
+	contenedor.layout_type = self.get_layout_type()
+	contenedor.add_entes(self.get_children_to_set())
+	contenedor.layout.config = self.get_layout_config()
 	
 	if Engine.is_editor_hint():
 		scroll.add_child.call_deferred(contenedor)
 	else:
 		scroll.add_child(contenedor)
-	
-
-
-func recalcular_scroll():
-	await get_tree().process_frame
-	var area = self.get_area()
-	scroll.position = area.position
-	scroll.custom_minimum_size = area.size
-	scroll.queue_sort()
-	contenedor.set_area(area)

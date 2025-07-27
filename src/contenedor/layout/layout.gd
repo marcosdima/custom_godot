@@ -10,6 +10,7 @@ var spaces: Dictionary = {}:
 	set(value):
 		for k in value:
 			spaces[k] = value[k]
+		self.calculate_dimensions()
 var config: Dictionary = {}
 var contenedor: Contenedor
 
@@ -23,7 +24,7 @@ static func set_layout(c: Contenedor) -> void:
 	c.layout = ly
 	ly.contenedor = c
 	ly.config = ly.get_default_config()
-	ly.spaces = {}
+	ly.set_spaces_from_entes()
 
 
 static func get_layout(ly: LayoutType) -> Layout:
@@ -40,8 +41,8 @@ func get_space() -> Space:
 		_: return Space.new()
 
 
-func set_spaces() -> void:
-	for ente: Ente in contenedor.get_contenedor_components():
+func set_spaces_from_entes() -> void:
+	for ente: Ente in contenedor.get_contenedor_entes():
 		if !spaces.get(ente.name):
 			self.create_space(ente)
 	self.calculate_dimensions()

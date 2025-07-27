@@ -112,3 +112,28 @@ func get_event_key(e: Event) -> String:
 ## Returns ente area.
 func get_area() -> Rect2:
 	return Rect2(self.position, self.size)
+
+
+## Remove child.
+func remove_child_def(c: Node):
+	if Engine.is_editor_hint():
+		c.remove_child.call_deferred(c)
+	else:
+		c.remove_child(c)
+
+
+## Add child.
+func add_child_def(c: Node):
+	if Engine.is_editor_hint():
+		self.add_child.call_deferred(c)
+	else:
+		self.add_child(c)
+
+
+## Clean old children and set the new ones.
+func set_children(children: Array) -> void:
+	for c in self.get_children():
+		if c is Ente:
+			c.queue_free()
+	for c in children:
+		self.add_child_def(c)
