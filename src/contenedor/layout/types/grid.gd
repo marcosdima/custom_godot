@@ -4,6 +4,8 @@ class_name Grid
 const ROWS = "rows"
 const COLUMNS = "columns"
 
+var rows = {}
+
 ## [OVERWRITTED]
 func get_default_config() -> Dictionary:
 	var s = super()
@@ -16,7 +18,7 @@ func get_default_config() -> Dictionary:
 func calculate_dimensions() -> void:
 	var spaces_values = spaces.values() as Array
 	var areas = {}
-	var rows = {}
+	rows = {}
 	
 	## Takes rows count
 	var rows_count = contenedor.layout.config[Grid.ROWS]
@@ -72,10 +74,10 @@ func calculate_dimensions() -> void:
 	for ente_key in areas:
 		var area = areas[ente_key]
 		area.position += off_set
-		var ente = contenedor.get_ente_by_key(ente_key)
+		var ente: Ente = contenedor.get_ente_by_key(ente_key)
 		ente.set_area(area)
 	
-	contenedor.custom_minimum_size = rows.values().max()
+	contenedor.custom_minimum_size = total_size
 
 
 func get_span(space: GridSpace) -> Vector2:

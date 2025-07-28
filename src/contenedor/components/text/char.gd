@@ -20,7 +20,7 @@ func _draw():
 		
 		draw_char(
 			font,
-			Vector2(0, text_size.y),
+			Vector2(0, text_size.y * 0.75),
 			value,
 			text.font_size,
 			font_color

@@ -44,6 +44,7 @@ enum Event {
 		return background_border
 @export_group("", "")
 
+var input_handler: InputHandler
 var test_border: bool = false:
 	set(value):
 		test_border = value
@@ -55,6 +56,7 @@ var test_border: bool = false:
 
 func _ready() -> void:
 	self.emit(Event.OnReady)
+	self.input_handler = InputHandler.new(self)
 
 
 func _draw() -> void:
@@ -76,6 +78,10 @@ func _draw() -> void:
 	draw_style_box(bgr, Rect2(Vector2.ZERO, self.size))
 
 
+func _input(event: InputEvent) -> void:
+	self.input_handler.handle_input(event)
+
+
 ''' ------------------------------------------------------------------------ '''
 
 
@@ -86,7 +92,7 @@ func handle_resize() -> void:
 
 ## Set area and emits resize.
 func set_area(r: Rect2) -> void:
-	position = r.position
+	self.set_position(r.position)
 	size = r.size
 	self.handle_resize()
 	self.emit(Event.Resize)

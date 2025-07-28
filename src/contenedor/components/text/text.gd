@@ -2,6 +2,8 @@
 extends Component
 class_name Text
 
+## TODO: Upper case letters with accent can interfere with below-baseline letters.
+
 const ENTER = '\n'
 
 @export_multiline var content: String = "Text":
@@ -11,8 +13,27 @@ const ENTER = '\n'
 			self.set_contenedor()
 @export_group("Font", "font_")
 @export var font: FontFile = load("res://static/fonts/CaviarDreams.ttf")
-@export var font_size: int = 16
+@export var font_size: int = 16:
+	set(value):
+		font_size = value
+		if Engine.is_editor_hint():
+			self.handle_resize()
 @export var font_min_chars: int = 0
+
+## TODO: Implement it in Component.
+@export_group("Placement", "placement_")
+@export var placement_axis_x: Contenedor.Placement = Contenedor.Placement.Start
+@export var placement_axis_y: Contenedor.Placement = Contenedor.Placement.Start
+@export_subgroup("Spaces", "spaces_placement_") ## TODO: Implement.
+@export var spaces_placement_x: Contenedor.Placement = Contenedor.Placement.Start
+@export var spaces_placement_y: Contenedor.Placement = Contenedor.Placement.Start
+@export_group("")
+
+func handle_resize() -> void:
+	super()
+	contenedor.placement_axis_x = placement_axis_x
+	contenedor.placement_axis_y = placement_axis_y
+
 
 ## [OVERWRITTEN] From: Component
 func get_layout_type() -> Layout.LayoutType:
@@ -33,14 +54,10 @@ func get_layout_spaces() -> Dictionary:
 		space.column = c.column
 		space.row = c.row
 		
-		var valid_size = ente_size != Vector2.ZERO
 		var unit_x = char_size.x / ente_size.x
-		var unit_y = char_size.y / ente_size.y
-		
-		space.column_span = unit_x if valid_size else 1
-		space.row_span = unit_y if valid_size else 1
-		
-		if !valid_size: printerr("ente_size is ZERO!")
+		space.column_span = unit_x
+		var unit_y = char_size.y / ente_size.y 
+		space.row_span = unit_y
 	
 	return spaces
 
@@ -51,7 +68,6 @@ func get_children_to_set() -> Array:
 	var text_config = self.parse_text_to_config() 
 	
 	var i = 0
-	
 	for r in range(text_config.size()):
 		var len_r = text_config[r]
 		for c in range(len_r):
@@ -103,6 +119,6 @@ func get_char_size(c: Char) -> Vector2:
 	)
 
 
-func get_metrics(s: float) -> int:
-	@warning_ignore("narrowing_conversion")
-	return self.font.get_ascent(s) - self.font.get_descent(s)
+func set_char(i: int, char_: String) -> void:
+	if i >= 0 and i < content.length():
+		content = content.substr(0, i) + char_ + content.substr(i + 1)

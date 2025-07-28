@@ -6,16 +6,18 @@ const CONTENEDOR = "CONTENEDOR"
 
 @export var color: Color = Color.BLACK
 
-var scroll: ScrollContainer
+var scroll: ScrollContainer:
+	get():
+		if !scroll:
+			scroll = ScrollContainer.new()
+			scroll.name = SCROLL
+			self.add_child(scroll)
+			scroll.position = Vector2.ZERO
+		return scroll
 var contenedor: Contenedor
 
 func _ready() -> void:
 	super()
-	
-	scroll = ScrollContainer.new()
-	scroll.name = SCROLL
-	self.add_child(scroll)
-	
 	self.set_contenedor()
 	child_entered_tree.connect(func(child): if child is Ente: contenedor.add_ente(child))
 
@@ -25,15 +27,12 @@ func handle_resize() -> void:
 	super()
 	
 	var area = self.get_area()
-	
-	await get_tree().process_frame
-	
-	scroll.position = area.position
-	scroll.custom_minimum_size = area.size
+	scroll.size = area.size
 	scroll.queue_sort()
 	
-	contenedor.set_area(area)
+	contenedor.set_area(Rect2(Vector2.ZERO, area.size))
 	contenedor.layout.spaces = self.get_layout_spaces()
+	contenedor.layout.config = self.get_layout_config()
 
 
 ## [OVERWRITTEN] From: Ente
@@ -70,8 +69,8 @@ func set_contenedor() -> void:
 	contenedor = Contenedor.new()
 	contenedor.name = CONTENEDOR
 	contenedor.layout_type = self.get_layout_type()
+	
 	contenedor.add_entes(self.get_children_to_set())
-	contenedor.layout.config = self.get_layout_config()
 	
 	if Engine.is_editor_hint():
 		scroll.add_child.call_deferred(contenedor)

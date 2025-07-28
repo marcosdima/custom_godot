@@ -6,15 +6,10 @@ enum Placement {
 	Middle,
 	End,
 }
-
-## TODO: IMPLEMENT.
-@export_group("Placement", "placement_")
-@export var placement_axis_x: Placement = Placement.Start
-@export var placement_axis_y: Placement = Placement.Start
-@export_subgroup("Spaces", "spaces_placement_")
-@export var spaces_placement_x: Placement = Placement.Start
-@export var spaces_placement_y: Placement = Placement.Start
-@export_group("")
+var placement_axis_x: Placement = Placement.Start
+var placement_axis_y: Placement = Placement.Start
+var spaces_placement_x: Placement = Placement.Start
+var spaces_placement_y: Placement = Placement.Start
 
 var contenedor_entes: Dictionary = {}
 var layout_type: Layout.LayoutType = Layout.LayoutType.Pages
@@ -50,13 +45,13 @@ func get_contenedor_entes() -> Array:
 ## Calculate an offset accord to placement variables.
 func get_start_offset(size_: Vector2) -> Vector2:
 	var area = self.get_area()
-	var start = area.position
 	
+	var start = Vector2.ZERO
 	var size_x_minus_body = area.size.x - size_.x
 	
 	match self.placement_axis_x:
 		Placement.Start: pass
-		Placement.Middle: start.x += size_x_minus_body / 2.5
+		Placement.Middle: start.x += size_x_minus_body / 2
 		Placement.End: start.x = size_x_minus_body
 	
 	match self.placement_axis_y:
@@ -78,6 +73,7 @@ func get_ente_by_key(k: String):
 ## Adds a component.
 func add_entes(entes: Array) -> void:
 	var names = []
+	
 	for ente in entes:
 		var _name_ = ente.name
 		names.append(_name_)
@@ -94,7 +90,7 @@ func add_entes(entes: Array) -> void:
 ## Adds a component.
 func add_ente(ente: Ente) -> void:
 	contenedor_entes[ente.name] = ente
-	layout.set_spaces()
+	layout.set_spaces_from_entes()
 
 
 ## Removes a component.

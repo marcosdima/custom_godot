@@ -1,7 +1,5 @@
 class_name InputHandler
 
-
-
 var ente: Ente
 var data: InputData
 
