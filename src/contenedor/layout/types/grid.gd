@@ -75,7 +75,7 @@ func calculate_dimensions() -> void:
 		var ente = contenedor.get_ente_by_key(ente_key)
 		ente.set_area(area)
 	
-	contenedor.custom_minimum_size = rows[rows_count - 1]
+	contenedor.custom_minimum_size = rows.values().max()
 
 
 func get_span(space: GridSpace) -> Vector2:

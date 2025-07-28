@@ -22,7 +22,7 @@ func get_layout_type() -> Layout.LayoutType:
 ## [OVERWRITTEN] From: Component
 func get_layout_spaces() -> Dictionary:
 	var spaces = contenedor.layout.spaces.duplicate()
-	contenedor.placement_axis_x = Contenedor.Placement.End
+	
 	for key in spaces:
 		var c: Char = contenedor.get_ente_by_key(key)
 		var space = spaces.get(key) as GridSpace
@@ -62,6 +62,15 @@ func get_children_to_set() -> Array:
 		i += 1
 	
 	return aux_children
+
+
+## [OVERWRITTEN] From: Component
+func get_layout_config() -> Dictionary:
+	var config = self.parse_text_to_config()
+	return {
+		Grid.COLUMNS: config.values().max(),
+		Grid.ROWS: config.size()
+	}
 
 
 func parse_text_to_config() -> Dictionary:
