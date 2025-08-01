@@ -74,8 +74,7 @@ func calculate_dimensions() -> void:
 	for ente_key in areas:
 		var area = areas[ente_key]
 		area.position += off_set
-		var ente: Ente = contenedor.get_ente_by_key(ente_key)
-		ente.set_area(area)
+		self.set_ente_area(ente_key, area)
 	
 	contenedor.custom_minimum_size = total_size
 
