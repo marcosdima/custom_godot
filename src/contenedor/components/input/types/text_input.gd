@@ -2,23 +2,27 @@
 extends InputComponent
 class_name TextInput
 
+const PLACEHOLDER_ORDER = 0
+const CONTENT_ORDER = 1
+
 const PLACEHOLDER = "Placeholder"
 const CONTENT = "Content"
 
-var placeholder_color: Color = Color.BLACK
-var content_color: Color = Color.BLACK
-
 @export_group("Text", "")
-@export var placeholder: String = "Text"
-@export var font_size: int = 100:
-	set(value):
-		if Engine.is_editor_hint():
-			get_text().font_size = value
-			get_placeholder().font_size = value
-		font_size = value
+@export var placeholder_content: String = "Text"
+@export var font_size: int = 100
+@export_subgroup("Placement", "")
+@export var horizontal: Contenedor.Placement = Contenedor.Placement.Middle
+@export var vertical: Contenedor.Placement = Contenedor.Placement.Middle
 @export_group("", "")
 
-var view_flag = false
+
+var placeholder: Text:
+	get():
+		return contenedor.get_ente_by_key(PLACEHOLDER)
+var content: Text:
+	get():
+		return contenedor.get_ente_by_key(CONTENT)
 
 func handle_resize() -> void:
 	super()
@@ -31,21 +35,19 @@ func _ready() -> void:
 
 ## [OVERWRITTEN] From: Component
 func get_children_to_set() -> Array:
-	var placeh = Text.new()
-	placeh.font_size = 100
-	placeh.color = self.color
-	placeh.name = PLACEHOLDER
-	placeh.content = self.placeholder
+	var set_text = func(name: String, content: String):
+		var t = Text.new()
+		t.content = content
+		t.name = name
+		t.font_size = font_size
+		t.color = color
+		t.placement_axis_x = horizontal
+		t.placement_axis_y = vertical
 	
-	var content = Text.new()
-	content.font_size = 100
-	content.color = self.color
-	content.name = CONTENT
-	content.content = ""
+	var placeholder_aux = set_text.call(PLACEHOLDER, placeholder_content)
+	var content_aux = set_text.call(CONTENT, "")
 	
-	value = ""
-	
-	return [placeh, content]
+	return [placeholder_aux, content_aux]
 
 
 ## [OVERWRITTEN] From: Component
@@ -53,8 +55,8 @@ func get_layout_spaces() -> Dictionary:
 	var cont = contenedor.layout.spaces.get(CONTENT)
 	var phold = contenedor.layout.spaces.get(PLACEHOLDER)
 	
-	phold.order = 0 if !view_flag else 1
-	cont.order = 1 if !view_flag else 0
+	phold.order = PLACEHOLDER_ORDER
+	cont.order = CONTENT_ORDER
 	
 	return {
 		CONTENT: cont,
@@ -65,48 +67,11 @@ func get_layout_spaces() -> Dictionary:
 ## [OVERWRITTEN] from InputComponent
 func clear_input() -> void:
 	super()
-	var content = self.get_text()
 	content.content = ""
 
 
-func get_text() -> Text:
-	return contenedor.get_ente_by_key(CONTENT)
-
-
-func get_placeholder() -> Text:
-	return contenedor.get_ente_by_key(PLACEHOLDER)
-
-
 func change_page_view() -> void:
-	view_flag = !view_flag
-	self.handle_resize()
+	var ly = contenedor.layout as Pages
+	ly.on_page 
 
-
-'''
-func handle_key_event(event: InputEventKey) -> void:
-	super(event)
-	var handler = self.input_handler
-	
-	if handler.focus and event.pressed:
-		var data = handler.data
-		var text = self.get_text()
-		var aux_set = ""
-		var remove_flag = false
-		
-		if data.is_letter or data.is_numeric or data.is_sign: aux_set = data.values[InputData.KEY]
-		else:
-			var action = data.values[InputData.ACTION] as InputData.Action
-			match action:
-				InputData.Action.Remove: remove_flag = true
-				InputData.Action.Space: aux_set = " "
-				_: print(event)
-		
-		if remove_flag:
-			aux_index -= 1
-			text.set_char(aux_index, "")
-		elif !aux_set.is_empty() and self.validate_value(value + aux_set):
-			text.set_char(aux_index, aux_set)
-			self.aux_index += 1
-		
-		self.set_value(text.content.strip_edges())
-'''
+ 
