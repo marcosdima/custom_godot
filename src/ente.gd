@@ -32,6 +32,16 @@ enum Event {
 	MouseStill,
 }
 
+@export var immune_system: ImmuneSystem:
+	get():
+		if !immune_system:
+			immune_system = ImmuneSystem.new()
+		return immune_system
+@export var margin: Margin:
+	get():
+		if !margin:
+			margin = Margin.new()
+		return margin
 @export_group("Background", "background")
 @export var background_color: Color = Color.TRANSPARENT:
 	set(value):
@@ -55,8 +65,10 @@ var test_border: bool = false:
 			background_border.width = 0
 
 func _ready() -> void:
+	input_handler = InputHandler.new(self)
+	if !Engine.is_editor_hint():
+		immune_system.init(self)
 	self.emit(Event.OnReady)
-	self.input_handler = InputHandler.new(self)
 
 
 func _draw() -> void:
@@ -100,7 +112,7 @@ func set_area(r: Rect2) -> void:
 
 ## Emits event-key signal.
 func emit(e: Event) -> void:
-	var event_key = self.get_event_key(e)
+	var event_key: String = self.get_event_key(e)
 	self.emit_signal(event_key)
 
 
@@ -143,3 +155,18 @@ func set_children(children: Array) -> void:
 			c.queue_free()
 	for c in children:
 		self.add_child_def(c)
+
+
+func change_visible(value: bool) -> void:
+	if !Engine.is_editor_hint():
+		var parasite: PropVariant
+		if value:
+			visible = value
+			parasite = Appear.new(0.5)
+		else:
+			parasite = Disappear.new(0.5)
+		
+		parasite.released.connect(func(): visible = value)
+		immune_system.let_parasite(parasite)
+	else:
+		visible = value
