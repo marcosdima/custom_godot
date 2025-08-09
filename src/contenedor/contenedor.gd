@@ -6,24 +6,27 @@ enum Placement {
 	Middle,
 	End,
 }
-var placement_axis_x: Placement = Placement.Start
-var placement_axis_y: Placement = Placement.Start
-var spaces_placement_x: Placement = Placement.Start
-var spaces_placement_y: Placement = Placement.Start
+var placement_axis_x: Placement = Placement.Start ## var spaces_placement_x: Placement = Placement.Start
+var placement_axis_y: Placement = Placement.Start ## var spaces_placement_y: Placement = Placement.Start
 
-var contenedor_entes: Dictionary = {}
-var layout_type: Layout.LayoutType = Layout.LayoutType.Pages
-var layout: Layout:
-	get():
-		if !layout:
-			Layout.set_layout(self)
-		return layout
+var entes: Array = []:
+	set(value):
+		entes = value
+		if !Engine.is_editor_hint():
+			for ente in entes:
+				self.add_child_def(ente)
+		layout.spaces_handler.set_spaces()
+var layout_type: Layout.LayoutType = Layout.LayoutType.Pages:
+	set(value):
+		layout_type = value
+		Layout.set_layout(self)
+var layout: Layout
 var real_area: Rect2 = Rect2()
 
 ## [OVERWRITTEN] From: Ente
 func handle_resize() -> void:
 	super()
-	layout.set_spaces_from_entes()
+	layout.calculate_dimensions()
 
 
 ## [OVERWRITTEN] From: Ente
@@ -35,11 +38,6 @@ func set_area(r: Rect2) -> void:
 ## [OVERWRITTEN] From: Ente
 func get_area() -> Rect2:
 	return real_area
-
-
-## Get contenedor children.
-func get_contenedor_entes() -> Array:
-	return contenedor_entes.values()
 
 
 ## Calculate an offset accord to placement variables.
@@ -64,45 +62,8 @@ func get_start_offset(size_: Vector2) -> Vector2:
 
 ## Return, if exists, the children with the name provided.
 func get_ente_by_key(k: String):
-	if contenedor_entes.has(k):
-		return contenedor_entes[k]
+	var ente_index = entes.find_custom(func(e): return e.name == k)
+	if ente_index >= 0:
+		return entes[ente_index]
 	else:
 		printerr("Missing ente: ", k)
-
-
-## Adds a component.
-func add_entes(entes: Array) -> void:
-	var names = []
-	
-	for ente in entes:
-		var _name_ = ente.name
-		names.append(_name_)
-		if ente is Ente:
-			contenedor_entes[_name_] = ente
-			if !Engine.is_editor_hint() or !ente.get_parent():
-				self.add_child(ente)
-	
-	for ente in contenedor_entes.keys():
-		if names.find(ente) < 0:
-			self.remove_ente(ente)
-
-
-## Adds a component.
-func add_ente(ente: Ente) -> void:
-	contenedor_entes[ente.name] = ente
-	layout.set_spaces_from_entes()
-
-
-## Removes a component.
-func remove_ente(name_target: String) -> void:
-	contenedor_entes.erase(name_target)
-	layout.spaces.erase(name_target)
-	
-	var ente = self.get_ente_by_key(name_target)
-	if ente:
-		self.remove_child(ente)
-
-
-## Remove spaces data.
-func update_spaces() -> void:
-	Layout.set_layout(self)

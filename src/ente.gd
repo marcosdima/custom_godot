@@ -54,7 +54,11 @@ enum Event {
 		return background_border
 @export_group("", "")
 
-var input_handler: InputHandler
+var input_handler: InputHandler:
+	get():
+		if !input_handler:
+			input_handler = InputHandler.new(self)
+		return input_handler
 var test_border: bool = false:
 	set(value):
 		test_border = value
@@ -65,7 +69,6 @@ var test_border: bool = false:
 			background_border.width = 0
 
 func _ready() -> void:
-	input_handler = InputHandler.new(self)
 	if !Engine.is_editor_hint():
 		immune_system.init(self)
 	self.emit(Event.OnReady)
@@ -102,50 +105,9 @@ func handle_resize() -> void:
 	self.queue_redraw()
 
 
-## Set area and emits resize.
-func set_area(r: Rect2) -> void:
-	self.set_position(r.position)
-	size = r.size
-	self.handle_resize()
-	self.emit(Event.Resize)
-
-
-## Emits event-key signal.
-func emit(e: Event) -> void:
-	var event_key: String = self.get_event_key(e)
-	self.emit_signal(event_key)
-
-
-## Connects event.
-func connect_event(e: Event, do_this: Callable) -> void:
-	var event_key = self.get_event_key(e)
-	self.connect(event_key, do_this)
-
-
-## Gets event key..
-func get_event_key(e: Event) -> String:
-	return Event.find_key(e).to_snake_case()
-
-
 ## Returns ente area.
 func get_area() -> Rect2:
 	return Rect2(self.position, self.size)
-
-
-## Remove child.
-func remove_child_def(c: Node):
-	if Engine.is_editor_hint():
-		c.remove_child.call_deferred(c)
-	else:
-		c.remove_child(c)
-
-
-## Add child.
-func add_child_def(c: Node):
-	if Engine.is_editor_hint():
-		self.add_child.call_deferred(c)
-	else:
-		self.add_child(c)
 
 
 ## Clean old children and set the new ones.
@@ -157,6 +119,15 @@ func set_children(children: Array) -> void:
 		self.add_child_def(c)
 
 
+## Set area and emits resize.
+func set_area(r: Rect2) -> void:
+	self.set_position(r.position)
+	size = r.size
+	self.handle_resize()
+	self.emit(Event.Resize)
+
+
+## Set 'visible' as value.
 func change_visible(value: bool) -> void:
 	if !Engine.is_editor_hint():
 		var parasite: PropVariant
@@ -170,3 +141,31 @@ func change_visible(value: bool) -> void:
 		immune_system.let_parasite(parasite)
 	else:
 		visible = value
+
+
+## Emits event-key signal.
+func emit(e: Event) -> void:
+	var event_key: String = Event.find_key(e).to_snake_case()
+	self.emit_signal(event_key)
+
+
+## Connects event.
+func connect_event(e: Event, do_this: Callable) -> void:
+	var event_key = Event.find_key(e).to_snake_case()
+	self.connect(event_key, do_this)
+
+
+## Add child.
+func add_child_def(c: Node):
+	if Engine.is_editor_hint():
+		self.add_child.call_deferred(c)
+	else:
+		self.add_child(c)
+
+
+## Remove child.
+func remove_child_def(c: Node):
+	if Engine.is_editor_hint():
+		c.remove_child.call_deferred(c)
+	else:
+		c.remove_child(c)

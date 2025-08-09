@@ -7,9 +7,9 @@ var rows = {}
 
 ## [OVERWRITTED]
 func get_default_config() -> Dictionary:
-	var s = super()
-	s[VERTICAL] = false
-	return s
+	var c = {}
+	c[VERTICAL] = false
+	return c
 
 
 ## [OVERWRITTED]
@@ -23,6 +23,6 @@ func calculate_dimensions() -> void:
 		var available_area = c.get_area()
 		var m = (space.fill / 100.0) * available_area.size[key]
 		available_area.position[key] += aux
-		available_area.size[key] = m 
+		available_area.size[key] = m
 		self.set_ente_area(space.name, available_area)
 		aux += m

@@ -14,7 +14,7 @@ func activate() -> void:
 	var component = host as Component
 	await set_timeout(delay_start)
 	
-	for c: Ente in component.contenedor.contenedor_entes.values():
+	for c: Ente in component.contenedor.entes:
 		c.parasites.let_parasite(kind.duplicate())
 		await set_timeout(delay)
 	

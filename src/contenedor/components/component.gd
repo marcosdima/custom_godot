@@ -9,17 +9,26 @@ const CONTENEDOR = "CONTENEDOR"
 var scroll: ScrollContainer:
 	get():
 		if !scroll:
+			## Set scroll.
 			scroll = ScrollContainer.new()
 			scroll.name = SCROLL
-			self.add_child(scroll)
+			self.add_child_def(scroll)
 			scroll.position = Vector2.ZERO
 		return scroll
 var contenedor: Contenedor
 
 func _ready() -> void:
-	super()
-	self.set_contenedor()
-	child_entered_tree.connect(func(child): if child is Ente: contenedor.add_ente(child))
+	## Set contenedor.
+	contenedor = Contenedor.new()
+	contenedor.name = CONTENEDOR
+	contenedor.layout_type = self.get_layout_type()
+	contenedor.entes = self.get_children_to_set() ## TODO: Fix set children routine.
+	self.update_contenedor()
+	
+	if Engine.is_editor_hint():
+		scroll.add_child.call_deferred(contenedor)
+	else:
+		scroll.add_child(contenedor)
 
 
 ## [OVERWRITTEN] From: Ente
@@ -30,15 +39,9 @@ func handle_resize() -> void:
 	scroll.size = area.size
 	scroll.queue_sort()
 	
+	self.update_contenedor()
 	contenedor.set_area(Rect2(Vector2.ZERO, area.size))
-	contenedor.layout.spaces = self.get_layout_spaces()
-	contenedor.layout.config = self.get_layout_config()
-
-
-## [OVERWRITTEN] From: Ente
-func set_children(children: Array) -> void:
-	super(children)
-	self.set_contenedor()
+	#self.update_contenedor()
 
 
 ## [OVERWRITE] Get layout type to set contenedor.
@@ -58,21 +61,12 @@ func get_layout_config() -> Dictionary:
 
 ## Get children to add to contenedor.
 func get_children_to_set() -> Array:
-	return self.get_children()
+	return self.get_children().filter(func(c): return c is Ente)
 
 
-## Routine to set contenedor.
-func set_contenedor() -> void:
-	if contenedor:
-		scroll.remove_child.call_deferred(contenedor)
-	
-	contenedor = Contenedor.new()
-	contenedor.name = CONTENEDOR
-	contenedor.layout_type = self.get_layout_type()
-	
-	contenedor.add_entes(self.get_children_to_set())
-	
+## Routine to update contenedor.
+func update_contenedor() -> void:
 	if Engine.is_editor_hint():
-		scroll.add_child.call_deferred(contenedor)
-	else:
-		scroll.add_child(contenedor)
+		contenedor.entes = self.get_children_to_set()
+	contenedor.layout.spaces = self.get_layout_spaces()
+	contenedor.layout.config = self.get_layout_config()

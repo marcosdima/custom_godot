@@ -6,11 +6,7 @@ class_name Text
 
 const ENTER = '\n'
 
-@export_multiline var content: String = "Text":
-	set(value):
-		content = value
-		if Engine.is_editor_hint():
-			self.set_contenedor()
+@export_multiline var content: String = "Text"
 @export_group("Font", "font_")
 @export var font: FontFile = load("res://static/fonts/CaviarDreams.ttf")
 @export var font_size: int = 16:

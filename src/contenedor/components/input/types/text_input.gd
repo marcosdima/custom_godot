@@ -11,43 +11,31 @@ const CONTENT = "Content"
 @export_group("Text", "")
 @export var placeholder_content: String = "Text"
 @export var font_size: int = 100
-@export_subgroup("Placement", "")
+@export_subgroup("Placement", "") ## TODO: Implement at component.
 @export var horizontal: Contenedor.Placement = Contenedor.Placement.Middle
 @export var vertical: Contenedor.Placement = Contenedor.Placement.Middle
 @export_group("", "")
 
-
 var placeholder: Text:
 	get():
-		return contenedor.get_ente_by_key(PLACEHOLDER)
+		if !placeholder:
+			placeholder = get_text(PLACEHOLDER, placeholder_content)
+		return placeholder
 var content: Text:
 	get():
-		return contenedor.get_ente_by_key(CONTENT)
-
-func handle_resize() -> void:
-	super()
-
+		if !content:
+			content = get_text(CONTENT, "")
+		return content
 
 func _ready() -> void:
 	super()
-	self.connect_event(Event.OnFocus, self.change_page_view)
-	self.connect_event(Event.OnUnfocus, self.change_page_view)
+	self.connect_event(Event.OnFocus, self.change_page_view.call(true))
+	self.connect_event(Event.OnUnfocus, self.change_page_view.call(false))
+
 
 ## [OVERWRITTEN] From: Component
 func get_children_to_set() -> Array:
-	var set_text = func(name: String, content: String):
-		var t = Text.new()
-		t.content = content
-		t.name = name
-		t.font_size = font_size
-		t.color = color
-		t.placement_axis_x = horizontal
-		t.placement_axis_y = vertical
-	
-	var placeholder_aux = set_text.call(PLACEHOLDER, placeholder_content)
-	var content_aux = set_text.call(CONTENT, "")
-	
-	return [placeholder_aux, content_aux]
+	return [placeholder, content]
 
 
 ## [OVERWRITTEN] From: Component
@@ -72,6 +60,18 @@ func clear_input() -> void:
 
 func change_page_view() -> void:
 	var ly = contenedor.layout as Pages
-	ly.on_page 
+	
+	if content.content.is_empty():
+		ly.on_page = PLACEHOLDER_ORDER
 
- 
+
+func get_text(t_name: String, t_content: String) -> Text:
+	var t = Text.new()
+	t.content = t_content
+	t.name = t_name
+	t.font_size = font_size
+	t.color = color
+	t.placement_axis_x = horizontal
+	t.placement_axis_y = vertical
+	return t
+	

@@ -3,7 +3,7 @@ class_name Pages
 
 var on_page: int = 0:
 	set(value):
-		var pages_count = contenedor.contenedor_entes.size()
+		var pages_count = contenedor.entes.size()
 		
 		if value < 0:
 			on_page = pages_count - 1
