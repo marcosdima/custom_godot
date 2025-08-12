@@ -5,9 +5,9 @@ class_name Component
 
 ## [OVERWRITTEN] From: Ente
 func handle_resize() -> void:
-	super()
 	layout.spaces = self.get_layout_spaces()
 	layout.config = self.get_layout_config()
+	super()
 
 
 ## [OVERWRITE] Set contenedor layout spaces.
