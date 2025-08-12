@@ -28,7 +28,7 @@ func _notification(what: int) -> void:
 
 func set_viewport_area() -> void:
 	global_position = Vector2.ZERO
-	var _size_ = get_viewport_rect().size
+	var _size_ = get_parent_area_size()
 	
 	for child in self.get_children():
 		if child is Ente:

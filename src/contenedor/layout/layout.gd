@@ -6,34 +6,13 @@ enum LayoutType {
 	Grid,
 }
 
-var spaces: Dictionary:
-	get():
-		return spaces_handler.get_spaces()
-	set(value):
-		spaces_handler.spaces.set(contenedor.layout_type, value)
+var spaces: Dictionary
 var config: Dictionary
 var contenedor: Contenedor
-var spaces_handler: SpacesHandler:
-	get():
-		if !spaces_handler:
-			spaces_handler = SpacesHandler.new(self)
-		return spaces_handler
 
-## Prodecure to set the layout of 'c'.
-static func set_layout(c: Contenedor) -> void:
-	var ly = Layout.get_layout(c.layout_type)
-	c.layout = ly
-	ly.contenedor = c
-	ly.config = ly.get_default_config()
-	ly.spaces_handler.set_spaces()
-
-
-## Returns a Layout instance based on the layout type provided.
-static func get_layout(ly: LayoutType) -> Layout:
-	match ly:
-		LayoutType.Sausage: return Sausage.new()
-		LayoutType.Grid: return Grid.new()
-		_: return Pages.new()
+func _init(c: Contenedor) -> void:
+	contenedor = c
+	config = self.get_default_config()
 
 
 ## [OVERWRITE] Recalculate sizes and stuff.
@@ -45,6 +24,27 @@ func calculate_dimensions() -> void:
 func get_default_config() -> Dictionary:
 	return {}
  
+
+## [OVERWRITE] Returns an space instance.
+func get_space() -> Space:
+	return Space.new()
+
+
+## Sets a space for each element in contenedor 'entes'.
+func set_spaces() -> void:
+	var entes = contenedor.entes
+	var aux = {}
+	
+	for e in entes:
+		var k = e.name
+		var space = spaces.get(k) 
+		if !space:
+			space = self.get_space()
+			space.name = e.name
+		aux.set(k, space)
+	
+	spaces = aux
+
 
 ## Rerturns spaces ordered by their order value.
 func get_spaces_ordered() -> Array:

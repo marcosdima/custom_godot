@@ -6,30 +6,16 @@ class_name Text
 
 const ENTER = '\n'
 
-@export_multiline var content: String = "Text"
+@export_multiline var content: String = "Text":
+	set(value):
+		content = value
+		aux_children = []
 @export_group("Font", "font_")
 @export var font: FontFile = load("res://static/fonts/CaviarDreams.ttf")
-@export var font_size: int = 16:
-	set(value):
-		font_size = value
-		if Engine.is_editor_hint():
-			self.handle_resize()
+@export var font_size: int = 16
 @export var font_min_chars: int = 0
 
-## TODO: Implement it in Component.
-@export_group("Placement", "placement_")
-@export var placement_axis_x: Contenedor.Placement = Contenedor.Placement.Start
-@export var placement_axis_y: Contenedor.Placement = Contenedor.Placement.Start
-@export_subgroup("Spaces", "spaces_placement_") ## TODO: Implement.
-@export var spaces_placement_x: Contenedor.Placement = Contenedor.Placement.Start
-@export var spaces_placement_y: Contenedor.Placement = Contenedor.Placement.Start
-@export_group("")
-
-func handle_resize() -> void:
-	super()
-	contenedor.placement_axis_x = placement_axis_x
-	contenedor.placement_axis_y = placement_axis_y
-
+var aux_children = []
 
 ## [OVERWRITTEN] From: Component
 func get_layout_type() -> Layout.LayoutType:
@@ -38,14 +24,14 @@ func get_layout_type() -> Layout.LayoutType:
 
 ## [OVERWRITTEN] From: Component
 func get_layout_spaces() -> Dictionary:
-	var spaces = contenedor.layout.spaces.duplicate()
+	var spaces = layout.spaces
 	
 	for key in spaces:
-		var c: Char = contenedor.get_ente_by_key(key)
+		var c: Char = self.get_ente_by_key(key)
 		var space = spaces.get(key) as GridSpace
 		
 		var char_size = self.get_char_size(c)
-		var ente_size = contenedor.layout.get_cell_size()
+		var ente_size = layout.get_cell_size()
 		
 		space.column = c.column
 		space.row = c.row
@@ -60,19 +46,18 @@ func get_layout_spaces() -> Dictionary:
 
 ## [OVERWRITTEN] From: Component
 func get_children_to_set() -> Array:
-	var aux_children = []
-	var text_config = self.parse_text_to_config() 
-	
-	var i = 0
-	for r in range(text_config.size()):
-		var len_r = text_config[r]
-		for c in range(len_r):
-			var char_aux = Char.new()
-			char_aux.set_from(self, self.content[i], r, c, i)
-			aux_children.append(char_aux)
+	if aux_children.is_empty():
+		var text_config = self.parse_text_to_config() 
+		
+		var i = 0
+		for r in range(text_config.size()):
+			var len_r = text_config[r]
+			for c in range(len_r):
+				var char_aux = Char.new()
+				char_aux.set_from(self, self.content[i], r, c, i)
+				aux_children.append(char_aux)
+				i += 1
 			i += 1
-		i += 1
-	
 	return aux_children
 
 

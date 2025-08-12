@@ -8,6 +8,20 @@ class_name Margin
 @export var margin_left: int = 0
 @export var margin_right: int = 0
 
+func _init(
+	all: int = 0,
+	top: int = 0,
+	bottom: int = 0,
+	left: int = 0,
+	right: int = 0
+) -> void:
+	margin = all
+	margin_top = top
+	margin_bottom = bottom
+	margin_left = left
+	margin_right = right
+
+
 static func calculate_with_margin(m: Margin, curr: Rect2) -> Rect2:
 	# If margin was setted, then the value of each part will be overwritten.
 	var over_write = m.margin > 0
@@ -22,13 +36,6 @@ static func calculate_with_margin(m: Margin, curr: Rect2) -> Rect2:
 	
 	return Rect2(curr.position + pos_offset, curr.size - size_offset)
 
-static func create(t: int, b: int, l: int, r: int) -> Margin:
-	var m = Margin.new()
-	m.margin_top = t
-	m.margin_bottom = b
-	m.margin_left = l
-	m.margin_right = r
-	return m
 
 static func pancake() -> Margin:
-	return Margin.create(30, 30, 10, 10)
+	return Margin.new(30, 30, 10, 10)

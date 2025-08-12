@@ -2,32 +2,53 @@
 extends Component
 class_name Wrapper
 
-@export_group("Contenedor", "contenedor")
-@export var spaces: Dictionary
-@export var config: Dictionary
-@export var layout_type: Layout.LayoutType:
+@export var spaces: Dictionary:
+	get():
+		if spaces.is_empty() and layout:
+			spaces = layout.spaces
+		return spaces
+@export var config: Dictionary:
+	get():
+		if config.is_empty() and layout:
+			config = layout.config
+		return config
+@export var set_layout_type: Layout.LayoutType:
 	set(value):
-		layout_type = value
-		if contenedor:
-			contenedor.layout_type = value
-			spaces = contenedor.layout.spaces
-			config = contenedor.layout.get_default_config()
+		set_layout_type = value
+		if _initialized and on_editor:
+			layout_type = value
+			self.refresh()
+			spaces = layout.spaces
+			config = layout.config
+
+var aux_children = []
+
+func _ready() -> void:
+	aux_children = self.get_entes()
+	super()
+	layout.spaces = spaces
+	layout.config = config
+
 
 ## [OVERWRITTEN] From: Component
 func get_children_to_set() -> Array:
-	var entes = self.get_children().filter(func(e): return e is Ente)
+	var only_entes = self.get_entes()
 	
-	for e in entes:
-		# If the program starts, then delete component children.
-		if !Engine.is_editor_hint():
+	if on_editor:
+		aux_children = []
+	
+	for e: Ente in only_entes:
+		if !on_editor:
 			self.remove_child(e)
+		else:
+			aux_children.append(e)
 	
-	return entes
+	return aux_children
 
 
 ## [OVERWRITTEN] From: Component
 func get_layout_type() -> Layout.LayoutType:
-	return layout_type
+	return set_layout_type
 
 
 ## [OVERWRITTEN] From: Component
@@ -38,3 +59,14 @@ func get_layout_spaces() -> Dictionary:
 ## [OVERWRITTEN] From: Component
 func get_layout_config() -> Dictionary:
 	return config
+
+
+## [OVERWRITTE] Refresh routine.
+func refresh() -> void:
+	super()
+	spaces = layout.spaces
+	config = layout.config
+
+
+func get_entes() -> Array:
+	return self.get_children().filter(func(e): return e is Ente)

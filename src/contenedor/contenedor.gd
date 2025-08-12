@@ -6,38 +6,62 @@ enum Placement {
 	Middle,
 	End,
 }
-var placement_axis_x: Placement = Placement.Start ## var spaces_placement_x: Placement = Placement.Start
-var placement_axis_y: Placement = Placement.Start ## var spaces_placement_y: Placement = Placement.Start
+
+@export var reset: bool = false:
+	set(value):
+		if value:
+			reset = false
+			self.refresh()
+@export_group("Placement", "placement_")
+@export var placement_axis_x: Placement = Placement.Start ## var spaces_placement_x: Placement = Placement.Start
+@export var placement_axis_y: Placement = Placement.Start ## var spaces_placement_y: Placement = Placement.Start
 
 var entes: Array = []:
 	set(value):
 		entes = value
-		if !Engine.is_editor_hint():
-			for ente in entes:
-				self.add_child_def(ente)
-		layout.spaces_handler.set_spaces()
-var layout_type: Layout.LayoutType = Layout.LayoutType.Pages:
+		children_handler.set_children(entes)
+		layout.set_spaces()
+var real_size: Vector2:
 	set(value):
-		layout_type = value
-		Layout.set_layout(self)
+		real_size = value
+		self.children_handler.set_internal_size(value)
+
+var children_handler: ChildrenHandler
+var layout_handler: LayoutHandler
+
+var layout_type: Layout.LayoutType
 var layout: Layout
-var real_area: Rect2 = Rect2()
+
+func _ready() -> void:
+	super()
+	layout_type = self.get_layout_type()
+	children_handler = ChildrenHandler.new(self)
+	layout_handler = LayoutHandler.new(self)
+	entes = self.get_children_to_set()
+
 
 ## [OVERWRITTEN] From: Ente
 func handle_resize() -> void:
 	super()
+	real_size = size
 	layout.calculate_dimensions()
 
 
-## [OVERWRITTEN] From: Ente
-func set_area(r: Rect2) -> void:
-	real_area = r
-	super(r)
+## [OVERWRITTE] Get children to add to contenedor.
+func get_children_to_set() -> Array:
+	return []
 
 
-## [OVERWRITTEN] From: Ente
-func get_area() -> Rect2:
-	return real_area
+## [OVERWRITTE] Get children to add to contenedor.
+func get_layout_type() -> Layout.LayoutType:
+	return Layout.LayoutType.Pages
+
+
+## [OVERWRITTE] Refresh routine.
+func refresh() -> void:
+	layout_type = self.get_layout_type()
+	layout_handler.set_contenedor_layout()
+	entes = self.get_children_to_set()
 
 
 ## Calculate an offset accord to placement variables.

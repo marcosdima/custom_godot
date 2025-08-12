@@ -29,8 +29,14 @@ var content: Text:
 
 func _ready() -> void:
 	super()
-	self.connect_event(Event.OnFocus, self.change_page_view.call(true))
-	self.connect_event(Event.OnUnfocus, self.change_page_view.call(false))
+	self.connect_event(Event.OnFocus, self.change_page_view.bind(true))
+	self.connect_event(Event.OnUnfocus, self.change_page_view.bind(false))
+
+
+## [OVERWRITTEN] From: Ente
+func handle_resize() -> void:
+	super()
+	print(contenedor.entes)
 
 
 ## [OVERWRITTEN] From: Component
@@ -58,10 +64,12 @@ func clear_input() -> void:
 	content.content = ""
 
 
-func change_page_view() -> void:
+func change_page_view(focus: bool) -> void:
 	var ly = contenedor.layout as Pages
 	
-	if content.content.is_empty():
+	if focus:
+		ly.on_page = CONTENT_ORDER
+	elif content.content.is_empty() and focus:
 		ly.on_page = PLACEHOLDER_ORDER
 
 

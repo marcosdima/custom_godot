@@ -54,6 +54,7 @@ enum Event {
 		return background_border
 @export_group("", "")
 
+
 var input_handler: InputHandler:
 	get():
 		if !input_handler:
@@ -67,20 +68,25 @@ var test_border: bool = false:
 			background_border.color = Color.BLACK
 		else:
 			background_border.width = 0
+var on_editor: bool:
+	get():
+		return Engine.is_editor_hint()
+var _initialized: bool = false
 
 func _ready() -> void:
 	if !Engine.is_editor_hint():
 		immune_system.init(self)
 	self.emit(Event.OnReady)
+	_initialized = true
 
 
 func _draw() -> void:
 	var bgr = StyleBoxFlat.new()
-	bgr.bg_color = self.background_color
+	bgr.bg_color = background_color
 	
 	# Sets border width.
-	bgr.border_color = self.background_border.color
-	bgr.border_blend = self.background_border.blend
+	bgr.border_color = background_border.color
+	bgr.border_blend = background_border.blend
 	for key in ["top", "bottom", "left", "right"]:
 		var magnitude = self.background_border["width_" + key] if self.background_border.width <= 0 else self.background_border.width
 		bgr["border_width_" + key.to_snake_case()] = magnitude
@@ -107,16 +113,7 @@ func handle_resize() -> void:
 
 ## Returns ente area.
 func get_area() -> Rect2:
-	return Rect2(self.position, self.size)
-
-
-## Clean old children and set the new ones.
-func set_children(children: Array) -> void:
-	for c in self.get_children():
-		if c is Ente:
-			c.queue_free()
-	for c in children:
-		self.add_child_def(c)
+	return Rect2(position, size)
 
 
 ## Set area and emits resize.
@@ -153,19 +150,3 @@ func emit(e: Event) -> void:
 func connect_event(e: Event, do_this: Callable) -> void:
 	var event_key = Event.find_key(e).to_snake_case()
 	self.connect(event_key, do_this)
-
-
-## Add child.
-func add_child_def(c: Node):
-	if Engine.is_editor_hint():
-		self.add_child.call_deferred(c)
-	else:
-		self.add_child(c)
-
-
-## Remove child.
-func remove_child_def(c: Node):
-	if Engine.is_editor_hint():
-		c.remove_child.call_deferred(c)
-	else:
-		c.remove_child(c)

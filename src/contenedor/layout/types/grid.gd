@@ -16,7 +16,7 @@ func get_default_config() -> Dictionary:
 
 ## [OVERWRITTED]
 func calculate_dimensions() -> void:
-	var spaces_values = spaces.values() as Array
+	var spaces_values = self.get_spaces_ordered() as Array
 	var areas = {}
 	rows = {}
 	
@@ -76,7 +76,12 @@ func calculate_dimensions() -> void:
 		area.position += off_set
 		self.set_ente_area(ente_key, area)
 	
-	contenedor.custom_minimum_size = total_size
+	contenedor.children_handler.set_internal_size(total_size) 
+
+
+## [OVERWRITTED]
+func get_space() -> Space:
+	return GridSpace.new()
 
 
 func get_span(space: GridSpace) -> Vector2:
