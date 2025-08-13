@@ -43,7 +43,7 @@ func _ready() -> void:
 ## [OVERWRITTEN] From: Ente
 func handle_resize() -> void:
 	super()
-	real_size = size
+	real_size = Vector2.ZERO
 	layout.calculate_dimensions()
 
 
