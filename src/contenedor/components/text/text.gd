@@ -10,6 +10,7 @@ const ENTER = '\n'
 	set(value):
 		content = value
 		aux_children = []
+		self.refresh()
 @export_group("Font", "font_")
 @export var font: FontFile = load("res://static/fonts/CaviarDreams.ttf")
 @export var font_size: int = 16
@@ -48,13 +49,13 @@ func get_layout_spaces() -> Dictionary:
 func get_children_to_set() -> Array:
 	if aux_children.is_empty():
 		var text_config = self.parse_text_to_config() 
-		
 		var i = 0
+		
 		for r in range(text_config.size()):
 			var len_r = text_config[r]
 			for c in range(len_r):
 				var char_aux = Char.new()
-				char_aux.set_from(self, self.content[i], r, c, i)
+				char_aux.set_from(self, content[i], r, c, i)
 				aux_children.append(char_aux)
 				i += 1
 			i += 1
