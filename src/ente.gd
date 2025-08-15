@@ -55,11 +55,7 @@ enum Event {
 @export_group("", "")
 
 
-var input_handler: InputHandler:
-	get():
-		if !input_handler:
-			input_handler = InputHandler.new(self)
-		return input_handler
+var input_handler: InputHandler
 var test_border: bool = false:
 	set(value):
 		test_border = value
@@ -74,8 +70,9 @@ var on_editor: bool:
 var _initialized: bool = false
 
 func _ready() -> void:
-	if !Engine.is_editor_hint():
+	if !on_editor:
 		immune_system.init(self)
+	input_handler = InputHandler.new(self)
 	self.emit(Event.OnReady)
 	_initialized = true
 
@@ -100,7 +97,7 @@ func _draw() -> void:
 
 
 func _input(event: InputEvent) -> void:
-	self.input_handler.handle_input(event)
+	input_handler.handle_input(event)
 
 
 ''' ------------------------------------------------------------------------ '''
@@ -126,18 +123,7 @@ func set_area(r: Rect2) -> void:
 
 ## Set 'visible' as value.
 func change_visible(value: bool) -> void:
-	if !Engine.is_editor_hint():
-		var parasite: PropVariant
-		if value:
-			visible = value
-			parasite = Appear.new(0.5)
-		else:
-			parasite = Disappear.new(0.5)
-		
-		parasite.released.connect(func(): visible = value)
-		immune_system.let_parasite(parasite)
-	else:
-		visible = value
+	visible = value
 
 
 ## Emits event-key signal.

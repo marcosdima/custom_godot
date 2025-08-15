@@ -29,7 +29,11 @@ var real_size: Vector2:
 var children_handler: ChildrenHandler
 var layout_handler: LayoutHandler
 
-var layout_type: Layout.LayoutType
+var layout_type: Layout.LayoutType:
+	set(value):
+		if layout_handler and layout_type != value:
+			layout_handler.set_contenedor_layout()
+		layout_type = value
 var layout: Layout
 
 func _ready() -> void:
@@ -38,6 +42,7 @@ func _ready() -> void:
 	children_handler = ChildrenHandler.new(self)
 	layout_handler = LayoutHandler.new(self)
 	entes = self.get_children_to_set()
+	layout.calculate_dimensions()
 
 
 ## [OVERWRITTEN] From: Ente
@@ -60,26 +65,27 @@ func get_layout_type() -> Layout.LayoutType:
 ## [OVERWRITTE] Refresh routine.
 func refresh() -> void:
 	layout_type = self.get_layout_type()
-	layout_handler.set_contenedor_layout()
 	entes = self.get_children_to_set()
+	self.handle_resize()
 
 
 ## Calculate an offset accord to placement variables.
 func get_start_offset(size_: Vector2) -> Vector2:
-	var area = self.get_area()
-	
+	var area_size = self.get_area().size
 	var start = Vector2.ZERO
-	var size_x_minus_body = area.size.x - size_.x
+	var size_x_minus_body = area_size.x - size_.x
 	
-	match self.placement_axis_x:
-		Placement.Start: pass
-		Placement.Middle: start.x += size_x_minus_body / 2
-		Placement.End: start.x = size_x_minus_body
+	if area_size.x > size_.x:
+		match self.placement_axis_x:
+			Placement.Start: pass
+			Placement.Middle: start.x += size_x_minus_body / 2
+			Placement.End: start.x = size_x_minus_body
 	
-	match self.placement_axis_y:
-		Placement.Start: pass
-		Placement.Middle: start.y += (area.size.y - size_.y) / 2.5
-		Placement.End: start.y += area.size.y - size_.y
+	if area_size.y > size_.y:
+		match self.placement_axis_y:
+			Placement.Start: pass
+			Placement.Middle: start.y += (area_size.y - size_.y) / 2.5
+			Placement.End: start.y += area_size.y - size_.y
 	
 	return start
 

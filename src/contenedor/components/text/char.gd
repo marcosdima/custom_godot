@@ -16,7 +16,7 @@ func _draw():
 	
 	if font:
 		var font_color = text.color
-		var text_size = self.text.get_char_size(self)
+		var text_size = self.get_char_size()
 		
 		draw_char(
 			font,
@@ -35,3 +35,12 @@ func set_from(t: Text, v: String, r: int, c: int, str_pos: int) -> void:
 	self.value = v
 	self.name = str(r) + str(c)
 	self.pos = str_pos
+
+
+func get_char_size() -> Vector2:
+	return self.font.get_string_size(
+		value,
+		HORIZONTAL_ALIGNMENT_LEFT,
+		-1,
+		text.font_size,
+	)

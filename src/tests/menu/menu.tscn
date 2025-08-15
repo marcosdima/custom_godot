@@ -1,0 +1,174 @@
+[gd_scene load_steps=27 format=3 uid="uid://bwisg36emajw6"]
+
+[ext_resource type="Script" uid="uid://b2wrbdnrjftt8" path="res://addon/custom_godot/src/contenedor/variants/screen.gd" id="1_6oeb2"]
+[ext_resource type="Script" uid="uid://cq05t1pfwd4io" path="res://addon/custom_godot/src/contenedor/components/wrapper/wrapper.gd" id="2_52ues"]
+[ext_resource type="Script" uid="uid://b85wn2n2rbcgg" path="res://addon/custom_godot/src/utils/parasites/types/latent/latent.gd" id="3_gn7oe"]
+[ext_resource type="Script" uid="uid://yrj7klx706wd" path="res://addon/custom_godot/src/contenedor/layout/spaces/types/sausage_space.gd" id="3_ovu8p"]
+[ext_resource type="Script" uid="uid://dlp8mtg6vpc30" path="res://addon/custom_godot/src/utils/parasites/immune_system.gd" id="4_712q7"]
+[ext_resource type="Script" uid="uid://gartrahcek4h" path="res://addon/custom_godot/src/utils/resources/margin.gd" id="5_ovu8p"]
+[ext_resource type="Script" uid="uid://cdhh10dsq46av" path="res://addon/custom_godot/src/utils/resources/border.gd" id="6_pl3vv"]
+[ext_resource type="Script" uid="uid://dt8bi7x78bgdw" path="res://addon/custom_godot/src/contenedor/components/text/text.gd" id="7_712q7"]
+[ext_resource type="FontFile" uid="uid://3cc5vtw7rcm" path="res://static/fonts/CaviarDreams.ttf" id="8_ovu8p"]
+[ext_resource type="Script" uid="uid://cqoebgiff15gh" path="res://addon/custom_godot/src/tests/menu/test_buttons.gd" id="10_pl3vv"]
+[ext_resource type="Script" uid="uid://bpmwtncc3kirq" path="res://addon/custom_godot/src/utils/parasites/types/active/do/types/prop/specific/blink.gd" id="11_vyd6a"]
+
+[sub_resource type="Resource" id="Resource_5bqu6"]
+script = ExtResource("3_ovu8p")
+fill = 70
+order = 1
+name = "TestButtons"
+
+[sub_resource type="Resource" id="Resource_pl0ih"]
+script = ExtResource("3_ovu8p")
+fill = 30
+order = 0
+name = "Text"
+
+[sub_resource type="Resource" id="Resource_oo71l"]
+script = ExtResource("4_712q7")
+latent_parasites = Array[ExtResource("3_gn7oe")]([])
+
+[sub_resource type="Resource" id="Resource_vyd6a"]
+script = ExtResource("5_ovu8p")
+margin = 0
+margin_top = 0
+margin_bottom = 0
+margin_left = 0
+margin_right = 0
+
+[sub_resource type="Resource" id="Resource_xrj5k"]
+script = ExtResource("6_pl3vv")
+color = Color(0, 0, 0, 1)
+blend = false
+width = 0
+width_top = 0
+width_bottom = 0
+width_left = 0
+width_right = 0
+radius = 0
+corner_radius_top_left = 0
+corner_radius_top_right = 0
+corner_radius_bottom_right = 0
+corner_radius_bottom_left = 0
+
+[sub_resource type="Resource" id="Resource_4nabi"]
+script = ExtResource("11_vyd6a")
+duration = 1.0
+metadata/_custom_type_script = "uid://bpmwtncc3kirq"
+
+[sub_resource type="Resource" id="Resource_lwehq"]
+script = ExtResource("3_gn7oe")
+at_events = Array[int]([4])
+kind = SubResource("Resource_4nabi")
+metadata/_custom_type_script = "uid://b85wn2n2rbcgg"
+
+[sub_resource type="Resource" id="Resource_56adx"]
+script = ExtResource("4_712q7")
+latent_parasites = Array[ExtResource("3_gn7oe")]([SubResource("Resource_lwehq")])
+metadata/_custom_type_script = "uid://dlp8mtg6vpc30"
+
+[sub_resource type="Resource" id="Resource_ovu8p"]
+script = ExtResource("5_ovu8p")
+margin = 0
+margin_top = 0
+margin_bottom = 0
+margin_left = 0
+margin_right = 0
+
+[sub_resource type="Resource" id="Resource_pl3vv"]
+script = ExtResource("6_pl3vv")
+color = Color(0, 0, 0, 1)
+blend = false
+width = 0
+width_top = 0
+width_bottom = 0
+width_left = 0
+width_right = 0
+radius = 0
+corner_radius_top_left = 0
+corner_radius_top_right = 0
+corner_radius_bottom_right = 0
+corner_radius_bottom_left = 0
+
+[sub_resource type="Resource" id="Resource_6tice"]
+script = ExtResource("11_vyd6a")
+duration = 1.0
+metadata/_custom_type_script = "uid://bpmwtncc3kirq"
+
+[sub_resource type="Resource" id="Resource_2bjx0"]
+script = ExtResource("3_gn7oe")
+at_events = Array[int]([3])
+kind = SubResource("Resource_6tice")
+metadata/_custom_type_script = "uid://b85wn2n2rbcgg"
+
+[sub_resource type="Resource" id="Resource_327i1"]
+script = ExtResource("4_712q7")
+latent_parasites = Array[ExtResource("3_gn7oe")]([SubResource("Resource_2bjx0")])
+
+[sub_resource type="Resource" id="Resource_k2mjr"]
+script = ExtResource("5_ovu8p")
+margin = 0
+margin_top = 0
+margin_bottom = 0
+margin_left = 10
+margin_right = 10
+
+[sub_resource type="Resource" id="Resource_bfrpr"]
+script = ExtResource("6_pl3vv")
+color = Color(0, 0, 0, 1)
+blend = false
+width = 0
+width_top = 0
+width_bottom = 0
+width_left = 0
+width_right = 0
+radius = 0
+corner_radius_top_left = 0
+corner_radius_top_right = 0
+corner_radius_bottom_right = 0
+corner_radius_bottom_left = 0
+
+[node name="Menu" type="ScrollContainer"]
+offset_right = 1152.0
+offset_bottom = 648.0
+script = ExtResource("1_6oeb2")
+metadata/_custom_type_script = "uid://b2wrbdnrjftt8"
+
+[node name="Wrapper" type="Control" parent="."]
+layout_mode = 2
+script = ExtResource("2_52ues")
+spaces = {
+&"TestButtons": SubResource("Resource_5bqu6"),
+&"Text": SubResource("Resource_pl0ih")
+}
+config = {
+"space_between": 0,
+"vertical": true
+}
+set_layout_type = 1
+immune_system = SubResource("Resource_oo71l")
+margin = SubResource("Resource_vyd6a")
+background_border = SubResource("Resource_xrj5k")
+metadata/_custom_type_script = "uid://cq05t1pfwd4io"
+
+[node name="Text" type="Control" parent="Wrapper"]
+anchors_preset = 0
+script = ExtResource("7_712q7")
+content = "Menu"
+font = ExtResource("8_ovu8p")
+font_size = 150
+placement_axis_x = 1
+placement_axis_y = 1
+immune_system = SubResource("Resource_56adx")
+margin = SubResource("Resource_ovu8p")
+background_border = SubResource("Resource_pl3vv")
+metadata/_custom_type_script = "uid://dt8bi7x78bgdw"
+
+[node name="TestButtons" type="Control" parent="Wrapper"]
+anchors_preset = 0
+script = ExtResource("10_pl3vv")
+buttons = 3
+immune_system = SubResource("Resource_327i1")
+margin = SubResource("Resource_k2mjr")
+background_border = SubResource("Resource_bfrpr")
+metadata/_custom_type_script = "uid://cqoebgiff15gh"

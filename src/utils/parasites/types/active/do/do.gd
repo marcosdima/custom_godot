@@ -12,7 +12,7 @@ func do( _m) -> void:
 	printerr("This function, 'do', should be overwritten!")
 
 
-func execute() -> void:
+func activate() -> void:
 	var tween = host.create_tween()
 	tween.tween_method(
 		func(m):

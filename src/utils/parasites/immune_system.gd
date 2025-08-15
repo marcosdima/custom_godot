@@ -9,6 +9,7 @@ enum Types {
 
 var body: Ente
 var on_attack: bool = false
+var queue: Array = []
 
 func init(e: Ente) -> void:
 	body = e
@@ -27,4 +28,7 @@ func let_parasite(parasite: Parasite) -> void:
 		on_attack = true
 		parasite.host = body
 		parasite.activate()
-		parasite.released.connect(func(): on_attack = false)
+		parasite.released.connect(
+			func():
+				on_attack = false
+		)

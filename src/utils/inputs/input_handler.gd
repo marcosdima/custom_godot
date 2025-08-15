@@ -1,7 +1,7 @@
 class_name InputHandler
 
 var ente: Ente
-var data: InputData
+var data: InputData = InputData.new()
 
 var mouse_on = false
 var click_on = false
@@ -97,4 +97,4 @@ func _handle_key_event(input: InputEventKey) -> void:
 	else:
 		new_data.set_action(input.as_text_keycode())
 	
-	self.data = new_data
+	data = new_data

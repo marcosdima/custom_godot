@@ -13,8 +13,30 @@ class_name InputComponent
 
 func _input(event: InputEvent) -> void:
 	super(event)
+	
 	if event is InputEventKey:
-		self.handle_key_event(event)
+		var key = input_handler.data.values.get(InputData.KEY)
+		var action = input_handler.data.values.get(InputData.ACTION)
+		
+		if key and self.validate_value(key):
+			self.handle_key(key)
+		elif action:
+			self.handle_some_action(action, event.is_pressed())
+
+
+## [OVERWRITE] What to do if value was cleaned.
+func clear_input() -> void:
+	value = ""
+
+
+## [OVERWRITE] What to do at event key.
+func handle_key(_key: String) -> void:
+	pass
+
+
+## [OVERWRITE] What to do at some action.
+func handle_some_action(_action: InputData.Action, _pressed: bool) -> void:
+	pass
 
 
 func validate_value(new_value: String) -> bool:
@@ -36,15 +58,6 @@ func validate_value(new_value: String) -> bool:
 	return valid_lenght and !invalid_content
 
 
-func handle_key_event(_event: InputEventKey) -> void:
-	pass
-
-
 func set_value(v) -> void:
 	if self.validate_value(v):
 		self.value = v
-
-
-## [OVERWRITE] What to do if value was cleaned.
-func clear_input() -> void:
-	self.value = ""
