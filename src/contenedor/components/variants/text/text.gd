@@ -99,7 +99,7 @@ func parse_text_to_config() -> Dictionary:
 
 
 func get_font_size() -> int:
-	if font_proportional_size:
+	if font_proportional_size > 0 and font_proportional_size <= 100:
 		var t_size = size * (font_proportional_size / 100.0)
 		var aux = 16
 		
@@ -110,7 +110,7 @@ func get_font_size() -> int:
 			aux += 1
 			result_size = aux_char.get_char_size(aux)
 		
-		return aux
+		return aux - 1
 	else:
 		return font_size
 
