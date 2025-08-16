@@ -28,7 +28,7 @@ enum DefaultIcons {
 			self.set_texture()
 		return icon_texture
 @export var color: Color
-@export var default: DefaultIcons:
+@export var default: DefaultIcons = DefaultIcons.Play:
 	set(value):
 		default = value
 		self.set_texture()
@@ -36,6 +36,10 @@ enum DefaultIcons {
 var rotate = 0
 
 const icons_path = "res://static/images/icons"
+
+func _init(def: DefaultIcons = DefaultIcons.Play) -> void:
+	default = def
+
 
 func set_texture() -> void:
 	self.icon_texture = load(
