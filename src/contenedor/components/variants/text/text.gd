@@ -14,7 +14,7 @@ const ENTER = '\n'
 @export_group("Font", "font_")
 @export var font: FontFile = load("res://static/fonts/CaviarDreams.ttf")
 @export var font_size: int = 16
-@export var font_min_chars: int = 0
+@export var font_proportional_size: int = 0
 
 var aux_children = []
 
@@ -32,8 +32,7 @@ func get_children_to_set() -> Array:
 		for r in range(text_config.size()):
 			var len_r = text_config[r]
 			for c in range(len_r):
-				var char_aux = Char.new()
-				char_aux.set_from(self, content[i], r, c, i)
+				var char_aux = Char.new(self, content[i], r, c, i)
 				aux_children.append(char_aux)
 				i += 1
 			i += 1
@@ -97,6 +96,23 @@ func parse_text_to_config() -> Dictionary:
 	response[aux_line] = char_count
 	
 	return response
+
+
+func get_font_size() -> int:
+	if font_proportional_size:
+		var t_size = size * (font_proportional_size / 100.0)
+		var aux = 16
+		
+		var aux_char = Char.new(self, ".", 0, 0, 0)
+		var result_size = aux_char.get_char_size(aux)
+		
+		while result_size.x < t_size.x and result_size.y < t_size.y and aux < 1000:
+			aux += 1
+			result_size = aux_char.get_char_size(aux)
+		
+		return aux
+	else:
+		return font_size
 
 
 func update_content(new_content: String) -> void:

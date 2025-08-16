@@ -1,8 +1,8 @@
 [gd_scene load_steps=20 format=3 uid="uid://bgiquiu27edmk"]
 
 [ext_resource type="Script" uid="uid://b2wrbdnrjftt8" path="res://addon/custom_godot/src/contenedor/variants/screen.gd" id="1_7mo7d"]
-[ext_resource type="Script" uid="uid://cq05t1pfwd4io" path="res://addon/custom_godot/src/contenedor/components/wrapper/wrapper.gd" id="2_3ubbo"]
-[ext_resource type="Script" uid="uid://b5pjno5i87scx" path="res://addon/custom_godot/src/contenedor/components/input/types/text_input.gd" id="2_t1ii6"]
+[ext_resource type="Script" uid="uid://cq05t1pfwd4io" path="res://addon/custom_godot/src/contenedor/components/variants/wrapper.gd" id="2_3ubbo"]
+[ext_resource type="Script" uid="uid://b5pjno5i87scx" path="res://addon/custom_godot/src/contenedor/components/variants/input/types/text_input.gd" id="2_t1ii6"]
 [ext_resource type="Script" uid="uid://b85wn2n2rbcgg" path="res://addon/custom_godot/src/utils/parasites/types/latent/latent.gd" id="3_3ubbo"]
 [ext_resource type="Script" uid="uid://yrj7klx706wd" path="res://addon/custom_godot/src/contenedor/layout/spaces/types/sausage_space.gd" id="3_lw5vu"]
 [ext_resource type="Script" uid="uid://dlp8mtg6vpc30" path="res://addon/custom_godot/src/utils/parasites/immune_system.gd" id="4_mvl1o"]

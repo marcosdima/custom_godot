@@ -22,25 +22,26 @@ func _draw():
 			font,
 			Vector2(0, text_size.y * 0.75),
 			value,
-			text.font_size,
+			text.get_font_size(),
 			font_color
 		)
 
 
-func set_from(t: Text, v: String, r: int, c: int, str_pos: int) -> void:
-	self.text = t
-	self.font = t.font
-	self.column = c
-	self.row = r
-	self.value = v
-	self.name = str(r) + str(c)
-	self.pos = str_pos
+func _init(t: Text, v: String, r: int, c: int, str_pos: int) -> void:
+	text = t
+	font = t.font
+	column = c
+	row = r
+	value = v
+	name = str(r) + str(c)
+	pos = str_pos
 
 
-func get_char_size() -> Vector2:
-	return self.font.get_string_size(
+func get_char_size(f_size:int = 0) -> Vector2:
+	var aux = f_size if f_size else text.get_font_size()
+	return font.get_string_size(
 		value,
 		HORIZONTAL_ALIGNMENT_LEFT,
 		-1,
-		text.font_size,
+		aux,
 	)

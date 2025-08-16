@@ -1,13 +1,13 @@
 [gd_scene load_steps=27 format=3 uid="uid://bwisg36emajw6"]
 
 [ext_resource type="Script" uid="uid://b2wrbdnrjftt8" path="res://addon/custom_godot/src/contenedor/variants/screen.gd" id="1_6oeb2"]
-[ext_resource type="Script" uid="uid://cq05t1pfwd4io" path="res://addon/custom_godot/src/contenedor/components/wrapper/wrapper.gd" id="2_52ues"]
+[ext_resource type="Script" uid="uid://cq05t1pfwd4io" path="res://addon/custom_godot/src/contenedor/components/variants/wrapper.gd" id="2_52ues"]
 [ext_resource type="Script" uid="uid://b85wn2n2rbcgg" path="res://addon/custom_godot/src/utils/parasites/types/latent/latent.gd" id="3_gn7oe"]
 [ext_resource type="Script" uid="uid://yrj7klx706wd" path="res://addon/custom_godot/src/contenedor/layout/spaces/types/sausage_space.gd" id="3_ovu8p"]
 [ext_resource type="Script" uid="uid://dlp8mtg6vpc30" path="res://addon/custom_godot/src/utils/parasites/immune_system.gd" id="4_712q7"]
 [ext_resource type="Script" uid="uid://gartrahcek4h" path="res://addon/custom_godot/src/utils/resources/margin.gd" id="5_ovu8p"]
 [ext_resource type="Script" uid="uid://cdhh10dsq46av" path="res://addon/custom_godot/src/utils/resources/border.gd" id="6_pl3vv"]
-[ext_resource type="Script" uid="uid://dt8bi7x78bgdw" path="res://addon/custom_godot/src/contenedor/components/text/text.gd" id="7_712q7"]
+[ext_resource type="Script" uid="uid://dt8bi7x78bgdw" path="res://addon/custom_godot/src/contenedor/components/variants/text/text.gd" id="7_712q7"]
 [ext_resource type="FontFile" uid="uid://3cc5vtw7rcm" path="res://static/fonts/CaviarDreams.ttf" id="8_ovu8p"]
 [ext_resource type="Script" uid="uid://cqoebgiff15gh" path="res://addon/custom_godot/src/tests/menu/test_buttons.gd" id="10_pl3vv"]
 [ext_resource type="Script" uid="uid://bpmwtncc3kirq" path="res://addon/custom_godot/src/utils/parasites/types/active/do/types/prop/specific/blink.gd" id="11_vyd6a"]
@@ -129,6 +129,7 @@ corner_radius_bottom_right = 0
 corner_radius_bottom_left = 0
 
 [node name="Menu" type="ScrollContainer"]
+custom_minimum_size = Vector2(1152, 648)
 offset_right = 1152.0
 offset_bottom = 648.0
 script = ExtResource("1_6oeb2")
@@ -153,10 +154,13 @@ metadata/_custom_type_script = "uid://cq05t1pfwd4io"
 
 [node name="Text" type="Control" parent="Wrapper"]
 anchors_preset = 0
+offset_right = 1152.0
+offset_bottom = 194.4
 script = ExtResource("7_712q7")
-content = "Menu"
+content = "Menug"
 font = ExtResource("8_ovu8p")
-font_size = 150
+font_size = 186
+font_proportional_size = 80
 placement_axis_x = 1
 placement_axis_y = 1
 immune_system = SubResource("Resource_56adx")
@@ -166,6 +170,10 @@ metadata/_custom_type_script = "uid://dt8bi7x78bgdw"
 
 [node name="TestButtons" type="Control" parent="Wrapper"]
 anchors_preset = 0
+offset_left = 115.2
+offset_top = 194.4
+offset_right = 1036.8
+offset_bottom = 648.0
 script = ExtResource("10_pl3vv")
 buttons = 3
 immune_system = SubResource("Resource_327i1")
