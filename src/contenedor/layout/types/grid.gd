@@ -4,7 +4,6 @@ class_name Grid
 const ROWS = "rows"
 const COLUMNS = "columns"
 
-var rows = {}
 
 ## [OVERWRITTED]
 func get_default_config() -> Dictionary:
@@ -16,40 +15,40 @@ func get_default_config() -> Dictionary:
 
 ## [OVERWRITTED]
 func calculate_dimensions() -> void:
-	var spaces_values = self.get_spaces_ordered() as Array
+	var cell_size = self.get_cell_size()
+	var coord_spaces = {}
 	var areas = {}
-	rows = {}
+	var rows = {}
 	
 	## Takes rows count
 	var rows_count = contenedor.layout.config[Grid.ROWS]
 	var columns_count = contenedor.layout.config[Grid.COLUMNS]
-	for space in spaces_values:
+	for space in self.get_spaces_ordered():
 		var col = space.column + 1
 		var row = space.row + 1
+		
 		if col > columns_count:
 			columns_count = col
 		if row > rows_count:
 			rows_count = row
-	var cell_size = self.get_cell_size()
-	
-	var f = func(r, col):
-		for s in spaces_values:
-			var space = s as GridSpace
-			if space.row == r and space.column == col:
-				return space
+		
+		var key = self.get_key(space.row, space.column)
+		if !coord_spaces.has(key):
+			coord_spaces.set(key, space)
 	
 	var curr_row = Vector2.ZERO
-	for r in range(rows_count):
+	for row in range(rows_count):
 		var max_row_height = 0.0
+		var row_blank_space = 0.0
 		
 		for col in range(columns_count):
-			var space = f.call(r, col)
+			var key = self.get_key(row, col)
+			var space = coord_spaces.get(key)
+			
 			if space:
+				# Get cell real size.
 				var span = self.get_span(space)
 				var real_cell_size = cell_size * span
-				
-				if real_cell_size.y > max_row_height:
-					max_row_height = real_cell_size.y
 				
 				# Save ente relative area.
 				var area = Rect2()
@@ -57,12 +56,16 @@ func calculate_dimensions() -> void:
 				area.size = real_cell_size
 				areas[space.name] = area
 				
-				curr_row.x += real_cell_size.x
+				# Update acc variables.
+				curr_row.x += real_cell_size.x + row_blank_space
+				if real_cell_size.y > max_row_height:
+					max_row_height = real_cell_size.y
+				row_blank_space = 0
 			else:
-				curr_row.x += cell_size.x
+				row_blank_space += cell_size.x
 		
 		curr_row.y += max_row_height if max_row_height > 0 else cell_size.y
-		rows[r] = curr_row
+		rows[row] = curr_row
 		curr_row.x = 0 
 	
 	var total_size = Vector2.ZERO
@@ -101,3 +104,7 @@ func get_cell_size(rows_size: int = -1, columns_size:int = -1) -> Vector2:
 		config[ROWS] if rows_size < 0 else rows_size,
 	)
 	return s
+
+
+func get_key(row, column):
+	return str(row) + str(column)
