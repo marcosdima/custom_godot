@@ -2,16 +2,18 @@ class_name InputHandler
 
 var ente: Ente
 var data: InputData = InputData.new()
+var ente_real_area: Rect2
 
 var mouse_on = false
 var click_on = false
 var focus = false
 
 func _init(e: Ente) -> void:
-	self.ente = e
+	ente = e
 
 
 func handle_input(input: InputEvent) -> void:
+	ente_real_area = Rect2(ente.global_position, ente.size)
 	if input is InputEventMouse:
 		self._handle_mouse_event(input)
 	#TOFIX: Maybe this has to be handled in an static way.
@@ -26,7 +28,7 @@ static func get_evento_key(e: Ente.Event) -> String:
 '''╭─[ Mouse handlers ]─────────────────────────────────────────────────────────────────────────╮'''
 func _handle_mouse_event(input: InputEventMouse) -> void:
 	if input is InputEventMouseMotion:
-		var mouse_on_ente = self.ente.get_area().has_point(input.position)
+		var mouse_on_ente = ente_real_area.has_point(input.position)
 		if mouse_on_ente and !self.mouse_on:
 			self._handle_mouse_on()
 			# If mouse enters with click pressed...
@@ -37,12 +39,12 @@ func _handle_mouse_event(input: InputEventMouse) -> void:
 	elif input is InputEventMouseButton and input.button_index == MOUSE_BUTTON_LEFT:
 		if input.pressed and self.mouse_on:
 			self._handle_click_on()
-			if !self.focus:
-				self._handle_focus()
 		elif input.pressed and self.focus:
 			self._handle_un_focus()
 		elif input.is_released() and self.mouse_on:
 			self._handle_mouse_release()
+			if !self.focus:
+				self._handle_focus()
 			self._handle_mouse_still()
 
 
