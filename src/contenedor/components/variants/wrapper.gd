@@ -21,7 +21,6 @@ class_name Wrapper
 			spaces = layout.spaces
 			config = layout.config
 
-var aux_children = []
 
 func _ready() -> void:
 	aux_children = self.get_entes()

@@ -24,9 +24,13 @@ var entes: Array = []:
 var real_size: Vector2:
 	set(value):
 		real_size = value
-		self.children_handler.set_internal_size(value)
+		children_handler.set_internal_size(value)
 
-var children_handler: ChildrenHandler
+var children_handler: ChildrenHandler:
+	get():
+		if !children_handler:
+			children_handler = ChildrenHandler.new(self)
+		return children_handler
 var layout_handler: LayoutHandler
 
 var layout_type: Layout.LayoutType:
@@ -39,10 +43,9 @@ var layout: Layout
 func _ready() -> void:
 	super()
 	layout_type = self.get_layout_type()
-	children_handler = ChildrenHandler.new(self)
 	layout_handler = LayoutHandler.new(self)
 	entes = self.get_children_to_set()
-	layout.calculate_dimensions()
+	self.handle_resize()
 
 
 ## [OVERWRITTEN] From: Ente
@@ -84,7 +87,7 @@ func get_start_offset(size_: Vector2) -> Vector2:
 	if area_size.y > size_.y:
 		match self.placement_axis_y:
 			Placement.Start: pass
-			Placement.Middle: start.y += (area_size.y - size_.y) / 2.5
+			Placement.Middle: start.y += (area_size.y - size_.y) / 2
 			Placement.End: start.y += area_size.y - size_.y
 	
 	return start

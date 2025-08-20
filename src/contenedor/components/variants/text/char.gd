@@ -28,6 +28,7 @@ func _draw():
 
 
 func _init(t: Text, v: String, r: int, c: int, str_pos: int) -> void:
+	super()
 	text = t
 	font = t.font
 	column = c

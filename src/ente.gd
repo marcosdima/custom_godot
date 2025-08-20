@@ -54,8 +54,12 @@ enum Event {
 		return background_border
 @export_group("", "")
 
+var input_handler: InputHandler:
+	get():
+		if !input_handler:
+			input_handler = InputHandler.new(self)
+		return input_handler
 
-var input_handler: InputHandler
 var test_border: bool = false:
 	set(value):
 		test_border = value
@@ -69,12 +73,15 @@ var on_editor: bool:
 		return Engine.is_editor_hint()
 var _initialized: bool = false
 
+func _init() -> void:
+	pass
+
+
 func _ready() -> void:
 	if !on_editor:
 		immune_system.init(self)
-	input_handler = InputHandler.new(self)
-	self.emit(Event.OnReady)
 	_initialized = true
+	self.emit(Event.OnReady)
 
 
 func _draw() -> void:
@@ -93,7 +100,7 @@ func _draw() -> void:
 		var full_key = "corner_radius_" + key.to_snake_case()
 		bgr[full_key] = self.background_border[full_key] if self.background_border.radius <= 0 else self.background_border.radius
 	
-	draw_style_box(bgr, Rect2(Vector2.ZERO, self.size))
+	draw_style_box(bgr, Rect2(Vector2.ZERO, size))
 
 
 func _input(event: InputEvent) -> void:
