@@ -1,11 +1,8 @@
 extends Component
 class_name InputComponent
 
-@export var value: String
-@export var max_length: int = 10:
-	set(value):
-		max_length = value
-		self.handle_resize()
+@export var value: String = ""
+@export var max_length: int = 10
 @export_group("Prohibit", "no_")
 @export var no_alpha: bool = false
 @export var no_numeric: bool = false
@@ -14,7 +11,7 @@ class_name InputComponent
 func _input(event: InputEvent) -> void:
 	super(event)
 	
-	if event is InputEventKey:
+	if input_handler.focus and event is InputEventKey:
 		var key = input_handler.data.values.get(InputData.KEY)
 		var action = input_handler.data.values.get(InputData.ACTION)
 		
@@ -27,6 +24,7 @@ func _input(event: InputEvent) -> void:
 ## [OVERWRITE] What to do if value was cleaned.
 func clear_input() -> void:
 	value = ""
+	self.handle_resize()
 
 
 ## [OVERWRITE] What to do at event key.
@@ -52,7 +50,7 @@ func validate_value(new_value: String) -> bool:
 	signs_regex.compile(r"[^\w\s]")
 	var contains_signs = signs_regex.search(new_value)
 	
-	var valid_lenght = max_length >= new_value.length()
+	var valid_lenght = max_length >= (value + new_value).length()
 	var invalid_content = (no_alpha and contains_alpha) or (no_numeric and contains_numeric) or (no_signs and contains_signs) 
 	
 	return valid_lenght and !invalid_content
