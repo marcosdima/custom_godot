@@ -3,12 +3,12 @@ extends Ente
 class_name Icon
 
 enum DefaultIcons {
-	AirPods,
 	Bottle,
 	Clear,
 	Document,
 	Football,
 	Glasses,
+	Headphones,
 	Key,
 	List,
 	Lock,
@@ -17,6 +17,7 @@ enum DefaultIcons {
 	Notebook,
 	Play,
 	Plus,
+	Square,
 	TurnOff,
 	Umbrella,
 	Wallet,
@@ -37,17 +38,23 @@ var rotate = 0
 
 const icons_path = "res://static/images/icons"
 
+static func exists(icon: DefaultIcons) -> bool:
+	return FileAccess.file_exists(Icon.get_icon_path(icon))
+
+
+static func get_icon_path(icon: DefaultIcons) -> String:
+	return icons_path + "/" + DefaultIcons.find_key(icon).to_lower() + ".svg"
+
+
 func _init(def: DefaultIcons = DefaultIcons.Play) -> void:
+	super()
 	default = def
 
 
 func set_texture() -> void:
-	self.icon_texture = load(
-		self.icons_path
-		+ "/"
-		+ DefaultIcons.find_key(self.default).to_lower()
-		+ ".svg"
-	)
+	if Icon.exists(default):
+		var path = icons_path + "/" + DefaultIcons.find_key(default).to_lower() + ".svg"
+		icon_texture = load(path)
 
 
 func _draw() -> void:
@@ -66,3 +73,8 @@ func _draw() -> void:
 	draw_set_transform(center, angle, Vector2(1, 1))
 	draw_texture_rect(self.icon_texture, Rect2(-final_size / 2, final_size), false, self.color)
 	draw_set_transform(Vector2.ZERO, 0, Vector2.ONE)
+
+
+func set_default(def: DefaultIcons) -> void:
+	default = def
+	self.handle_resize()
