@@ -11,12 +11,11 @@ const ENTER = '\n'
 		content = value
 		if on_editor:
 			aux_children = []
+@export var min_content_lenght: int = 0
 @export_group("Font", "font_")
 @export var font: FontFile = load("res://static/fonts/CaviarDreams.ttf")
 @export var font_size: int = 16
 @export var font_proportional_size: int = 0
-
-var aux_children = []
 
 ## [OVERWRITTEN] From: Contenedor
 func get_layout_type() -> Layout.LayoutType:
@@ -70,8 +69,9 @@ func get_layout_spaces() -> Dictionary:
 ## [OVERWRITTEN] From: Component
 func get_layout_config() -> Dictionary:
 	var config = self.parse_text_to_config()
+	var max = config.values().max()
 	return {
-		Grid.COLUMNS: config.values().max(),
+		Grid.COLUMNS: max if max > min_content_lenght else min_content_lenght,
 		Grid.ROWS: config.size()
 	}
 
