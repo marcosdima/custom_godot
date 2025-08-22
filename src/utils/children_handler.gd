@@ -2,24 +2,18 @@ extends Control
 class_name ChildrenHandler
 
 var scroll: ScrollContainer
+var contenedor: Contenedor
+var follow_resize: bool = false
 
-func _init(e: Ente) -> void:
-	## Set name.
-	name = e.name + " - " + "ChildHandler"
-	
-	## Set scroll.
+func _init(set_contenedor: Contenedor) -> void:
 	scroll = ScrollContainer.new()
-	scroll.name = e.name + " - " + "Scroll"
+	scroll.name = "Scroll"
 	
-	
-	## Set 
-	e.add_child(scroll)
+	contenedor = set_contenedor
+	name = "ChildHandler"
+	contenedor.add_child(scroll)
 	scroll.add_child(self)
-	e.connect_event(
-		Ente.Event.Resize,
-		func():
-			self.set_scroll_area(e)
-	)
+	contenedor.connect_event(Ente.Event.Resize, set_scroll_area)
 
 
 ## Remove current children and set the new ones.
@@ -31,20 +25,20 @@ func set_children(children: Array) -> void:
 
 
 ## Set area and emits resize.
-func set_scroll_area(e: Ente) -> void:
-	var area = e.get_area()
-	scroll.size = area.size
-	size = area.size
+func set_scroll_area() -> void:
+	scroll.size = contenedor.get_area().size
+	scroll.position = Vector2.ZERO
 
 
 ## Set the real size to show the scroll bar.
 func set_internal_size(internal_size: Vector2) -> void:
-	custom_minimum_size = internal_size
+	custom_minimum_size = internal_size #- Vector2(0, scroll.get_h_scroll_bar().size.y) ## TODO: scroll bars can not be hidden by default, fix later...
 	
 	await get_tree().process_frame
 	
-	scroll.scroll_horizontal = int(scroll.get_h_scroll_bar().max_value)
-	scroll.scroll_vertical = int(scroll.get_v_scroll_bar().max_value)
+	if follow_resize:
+		scroll.scroll_horizontal = int(scroll.get_h_scroll_bar().max_value)
+		scroll.scroll_vertical = int(scroll.get_v_scroll_bar().max_value)
 
 
 ## Remove its children.

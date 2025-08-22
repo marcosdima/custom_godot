@@ -17,6 +17,11 @@ const ENTER = '\n'
 @export var font_size: int = 16
 @export var font_proportional_size: int = 0
 
+func _init() -> void:
+	super()
+	children_handler.follow_resize = true
+
+
 ## [OVERWRITTEN] From: Contenedor
 func get_layout_type() -> Layout.LayoutType:
 	return Layout.LayoutType.Grid
