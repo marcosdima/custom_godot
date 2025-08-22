@@ -17,7 +17,8 @@ func calculate_dimensions() -> void:
 	var setted = false
 	for space: Space in self.get_spaces_ordered():
 		var ente = contenedor.get_ente_by_key(space.name) as Ente
-		self.set_ente_area(space.name, contenedor.get_area())
+		var area = Rect2(Vector2.ZERO, contenedor.get_area().size)
+		self.set_ente_area(space.name, area)
 		
 		var show_target = !setted and space.order == on_page
 		ente.change_visible(show_target)
