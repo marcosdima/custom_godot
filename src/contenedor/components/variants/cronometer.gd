@@ -10,17 +10,16 @@ const PLAY = "PLAY"
 	set(value):
 		if value:
 			timer.start()
-@export var set_timer: int = 0:
+@export var set_cronos_time: int = 0:
 	set(value):
-		if value:
-			cronos.set_from_seconds(value)
-			self.set_time()
-			set_timer = value
+		set_cronos_time = value
+		cronos.set_from_seconds(set_cronos_time)
 
 var cronos: Cronos = Cronos.new()
 var timer: Timer = Timer.new()
 
 var time: Text
+var play: Icon
 
 func _ready() -> void:
 	super()
@@ -30,17 +29,8 @@ func _ready() -> void:
 	self.add_child.call_deferred(timer)
 	timer.timeout.connect(cronos.tick)
 	
-	cronos.on_tick.connect(
-		func():
-			time.content = str(cronos)
-			time.refresh()
-	)
-	
-	cronos.on_tick_nt.connect(
-		func():
-			timer.stop()
-			set_timer = set_timer
-	)
+	cronos.on_tick.connect(handle_tick)
+	cronos.on_tick_nt.connect(handle_end)
 
 
 ## [OVERWRITTED]
@@ -52,9 +42,26 @@ func get_layout_type() -> Layout.LayoutType:
 func get_children_to_set() -> Array:
 	time = Text.new()
 	time.name = TIME
-	time.font_size = 200
+	time.font_proportional_size = 50
 	time.content = str(cronos)
-	return [time]
+	time.placement_axis_x = Placement.Middle
+	time.placement_axis_y = Placement.Middle
+	time.margin = Margin.new(0, 10)
+	time.color = color
+	
+	play = Icon.new()
+	play.name = PLAY
+	play.color = color
+	play.on_click_released.connect(
+		func():
+			if timer.is_stopped():
+				play.set_default(Icon.DefaultIcons.Square)
+				start = true
+			else:
+				self.handle_end()
+	)
+	
+	return [time, play]
 
 
 ## [OVERWRITTED]
@@ -62,7 +69,9 @@ func get_layout_spaces() -> Dictionary:
 	for s: SausageSpace in layout.spaces.values():
 		match s.name:
 			TIME:
-				s.fill = 100
+				s.fill = 70
+			PLAY:
+				s.fill = 30
 	return layout.spaces
 
 
@@ -75,5 +84,17 @@ func get_layout_config() -> Dictionary:
 
 
 func set_time() -> void:
+	cronos.set_from_seconds(set_cronos_time)
 	time.content = str(cronos)
 	time.refresh()
+
+
+func handle_tick() -> void:
+	time.content = str(cronos)
+	time.refresh()
+
+
+func handle_end() -> void:
+	timer.stop()
+	self.set_time()
+	play.set_default(Icon.DefaultIcons.Play)
