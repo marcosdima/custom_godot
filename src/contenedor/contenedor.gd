@@ -63,10 +63,13 @@ func get_layout_type() -> Layout.LayoutType:
 
 ## [OVERWRITTE] Refresh routine.
 func refresh() -> void:
-	layout_type = self.get_layout_type()
-	layout_handler.set_contenedor_layout()
+	if layout_type != self.get_layout_type():
+		layout_type = self.get_layout_type()
+		layout_handler.set_contenedor_layout()
+	else:
+		layout.set_spaces()
 	entes = self.get_children_to_set()
-	self.handle_resize()
+	layout.calculate_dimensions()
 
 
 ## Calculate an offset accord to placement variables.
