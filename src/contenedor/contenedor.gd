@@ -33,11 +33,7 @@ var children_handler: ChildrenHandler:
 		return children_handler
 var layout_handler: LayoutHandler
 
-var layout_type: Layout.LayoutType:
-	set(value):
-		if layout_handler and layout_type != value:
-			layout_handler.set_contenedor_layout()
-		layout_type = value
+var layout_type: Layout.LayoutType
 var layout: Layout
 
 func _ready() -> void:
@@ -68,6 +64,7 @@ func get_layout_type() -> Layout.LayoutType:
 ## [OVERWRITTE] Refresh routine.
 func refresh() -> void:
 	layout_type = self.get_layout_type()
+	layout_handler.set_contenedor_layout()
 	entes = self.get_children_to_set()
 	self.handle_resize()
 
@@ -77,18 +74,19 @@ func get_start_offset(size_: Vector2) -> Vector2:
 	var area_size = self.get_area().size
 	var start = Vector2.ZERO
 	var size_x_minus_body = area_size.x - size_.x
+	var size_y_minus_body = area_size.y - size_.y
 	
 	if area_size.x > size_.x:
-		match self.placement_axis_x:
+		match placement_axis_x:
 			Placement.Start: pass
-			Placement.Middle: start.x += size_x_minus_body / 2
+			Placement.Middle: start.x = size_x_minus_body / 2
 			Placement.End: start.x = size_x_minus_body
 	
 	if area_size.y > size_.y:
-		match self.placement_axis_y:
+		match placement_axis_y:
 			Placement.Start: pass
-			Placement.Middle: start.y += (area_size.y - size_.y) / 2
-			Placement.End: start.y += area_size.y - size_.y
+			Placement.Middle: start.y = size_y_minus_body / 2
+			Placement.End: start.y = size_y_minus_body
 	
 	return start
 

@@ -18,8 +18,6 @@ class_name Wrapper
 		if _initialized and on_editor:
 			layout_type = value
 			self.refresh()
-			spaces = layout.spaces
-			config = layout.config
 
 
 func _ready() -> void:
@@ -62,6 +60,8 @@ func get_layout_config() -> Dictionary:
 
 ## [OVERWRITTE] Refresh routine.
 func refresh() -> void:
+	spaces = {}
+	config = {}
 	super()
 	spaces = layout.spaces
 	config = layout.config
