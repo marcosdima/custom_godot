@@ -35,7 +35,3 @@ static func calculate_with_margin(m: Margin, curr: Rect2) -> Rect2:
 	var size_offset = (Vector2(right, bottom) * unit) + pos_offset
 	
 	return Rect2(curr.position + pos_offset, curr.size - size_offset)
-
-
-static func pancake() -> Margin:
-	return Margin.new(30, 30, 10, 10)
