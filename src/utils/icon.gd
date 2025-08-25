@@ -6,6 +6,7 @@ enum DefaultIcons {
 	Bottle,
 	Clear,
 	Document,
+	Dot,
 	Football,
 	Glasses,
 	Headphones,
@@ -28,7 +29,10 @@ enum DefaultIcons {
 		if !icon_texture:
 			self.set_texture()
 		return icon_texture
-@export var color: Color
+@export var color: Color:
+	set(value):
+		color = value
+		self.queue_redraw()
 @export var default: DefaultIcons = DefaultIcons.Play:
 	set(value):
 		default = value
