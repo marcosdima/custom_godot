@@ -32,7 +32,7 @@ func set_scroll_area() -> void:
 
 ## Set the real size to show the scroll bar.
 func set_internal_size(internal_size: Vector2) -> void:
-	custom_minimum_size = internal_size #- Vector2(0, scroll.get_h_scroll_bar().size.y) ## TODO: scroll bars can not be hidden by default, fix later...
+	custom_minimum_size = internal_size
 	
 	await get_tree().process_frame
 	
