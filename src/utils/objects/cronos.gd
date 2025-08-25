@@ -12,6 +12,10 @@ var minutes: int = 0:
 	set(value):
 		minutes = self.validate_time(value)
 
+func _init(seconds: int = 0) -> void:
+	self.set_from_seconds(seconds)
+
+
 func _to_string() -> String:
 	var seconds_str = str(seconds) if seconds > 9 else "0" + str(seconds)
 	var minutes_str = str(minutes) if minutes > 9 else "0" + str(minutes)
