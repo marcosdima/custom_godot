@@ -47,9 +47,9 @@ func set_spaces() -> void:
 
 
 ## Rerturns spaces ordered by their order value.
-func get_spaces_ordered() -> Array:
+func get_spaces_ordered(ordered_by = func(a, b): return a.order < b.order) -> Array:
 	var spaces_values = spaces.values()
-	spaces_values.sort_custom(func(a, b): return a.order < b.order)
+	spaces_values.sort_custom(ordered_by)
 	return spaces_values
 
 
