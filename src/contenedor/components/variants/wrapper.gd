@@ -16,7 +16,6 @@ class_name Wrapper
 	set(value):
 		set_layout_type = value
 		if _initialized and on_editor:
-			layout_type = value
 			self.refresh()
 
 
