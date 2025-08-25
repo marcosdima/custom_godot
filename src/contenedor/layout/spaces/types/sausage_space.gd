@@ -1,4 +1,4 @@
 extends Space
 class_name SausageSpace
 
-@export var fill: int = 10
+@export var fill: float = 10.0
