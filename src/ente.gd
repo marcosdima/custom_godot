@@ -104,7 +104,8 @@ func _draw() -> void:
 
 
 func _input(event: InputEvent) -> void:
-	input_handler.handle_input(event)
+	if visible:
+		input_handler.handle_input(event)
 
 
 ''' ------------------------------------------------------------------------ '''
