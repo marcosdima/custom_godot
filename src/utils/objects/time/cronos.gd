@@ -4,7 +4,7 @@ signal on_tick
 signal on_tick_nt
 
 const MAX = 60
-
+## TODO: Update to ClockTime
 var seconds: int = 0:
 	set(value):
 		seconds = self.validate_time(value)
