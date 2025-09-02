@@ -51,6 +51,14 @@ func handle_resize() -> void:
 	layout.calculate_dimensions()
 
 
+## [OVERWRITTEN] From: Ente
+func change_visible(value: bool) -> void:
+	super(value)
+	for ente: Ente in entes:
+		ente.change_visible(value)
+	self.layout.calculate_dimensions() ## TODO: Because of disperse visibility changes, page layout does not work properly.
+
+
 ## [OVERWRITTE] Get children to add to contenedor.
 func get_children_to_set() -> Array:
 	return []
@@ -69,7 +77,7 @@ func refresh() -> void:
 	else:
 		layout.set_spaces()
 	entes = self.get_children_to_set()
-	layout.calculate_dimensions()
+	self.handle_resize()
 
 
 ## Calculate an offset accord to placement variables.
