@@ -20,7 +20,7 @@ func _draw():
 		
 		draw_char(
 			font,
-			Vector2(0, text_size.y * 0.75),
+			Vector2(0, text_size.y * 0.85), # TODO: Harcoded value.
 			value,
 			text.get_font_size(),
 			font_color

@@ -16,6 +16,7 @@ enum DefaultIcons {
 	Mate,
 	Money,
 	Notebook,
+	Pen,
 	Play,
 	Plus,
 	Square,

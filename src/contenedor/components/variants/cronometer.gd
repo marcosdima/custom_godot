@@ -2,6 +2,8 @@
 extends Component
 class_name Cronometer
 
+signal ended
+
 const MAX = 3660
 const TIME = "TIME"
 const PLAY = "PLAY"
@@ -9,26 +11,22 @@ const PLAY = "PLAY"
 @export var start: bool = false:
 	set(value):
 		if value:
+			play.set_default(Icon.DefaultIcons.Square)
 			timer.start()
 @export var set_cronos_time: int = 0:
 	set(value):
-		set_cronos_time = value
+		set_cronos_time = value if value > 0 else 0
 		cronos.set_from_seconds(set_cronos_time)
 
 var cronos: Cronos = Cronos.new()
-var timer: Timer = Timer.new()
+var timer: ManualTimer
 
 var time: Text
 var play: Icon
 
-func _ready() -> void:
+func _init() -> void:
 	super()
-	
-	timer.wait_time = 1.0
-	timer.one_shot = false
-	self.add_child.call_deferred(timer)
-	timer.timeout.connect(cronos.tick)
-	
+	timer = ManualTimer.new(1.0, cronos.tick, true)
 	cronos.on_tick.connect(handle_tick)
 	cronos.on_tick_nt.connect(handle_end)
 
@@ -54,8 +52,7 @@ func get_children_to_set() -> Array:
 	play.color = color
 	play.on_click_released.connect(
 		func():
-			if timer.is_stopped():
-				play.set_default(Icon.DefaultIcons.Square)
+			if !timer.running:
 				start = true
 			else:
 				self.handle_end()
@@ -90,11 +87,13 @@ func set_time() -> void:
 
 
 func handle_tick() -> void:
-	time.content = str(cronos)
-	time.refresh()
+	if time:
+		time.content = str(cronos)
+		time.refresh()
 
 
 func handle_end() -> void:
 	timer.stop()
 	self.set_time()
 	play.set_default(Icon.DefaultIcons.Play)
+	self.ended.emit()

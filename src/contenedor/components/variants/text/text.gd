@@ -17,6 +17,22 @@ const ENTER = '\n'
 @export var font_size: int = 16
 @export var font_proportional_size: int = 0
 
+static func create(
+	name_: String,
+	content_: String,
+	proportional: int = 60,
+	horizontal: Placement = Placement.Middle,
+	vertical: Placement = Placement.Middle,
+) -> Text:
+	var text = Text.new()
+	text.name = name_
+	text.content = content_
+	text.font_proportional_size = proportional
+	text.placement_axis_x = horizontal
+	text.placement_axis_y = vertical
+	return text
+
+
 func _init() -> void:
 	super()
 	children_handler.follow_resize = true

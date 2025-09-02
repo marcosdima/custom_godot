@@ -79,13 +79,13 @@ func change_page_view(focus: bool) -> void:
 
 
 func get_text(t_name: String, t_content: String) -> Text:
-	var t = Text.new()
-	t.content = t_content
-	t.name = t_name
-	t.font_size = font_size
-	t.font_proportional_size = font_proportional_size
-	t.color = color
-	t.min_content_lenght = min_chars
-	t.placement_axis_x = horizontal
-	t.placement_axis_y = vertical
-	return t
+	var text = Text.new()
+	text.content = t_content
+	text.name = t_name
+	text.font_size = font_size
+	text.font_proportional_size = font_proportional_size
+	text.color = color
+	text.min_content_lenght = min_chars
+	text.placement_axis_x = horizontal
+	text.placement_axis_y = vertical
+	return text
