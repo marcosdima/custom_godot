@@ -20,7 +20,7 @@ func _notification(what: int) -> void:
 
 
 func set_viewport_area() -> void:
-	var _size_ = get_parent_area_size() if screen_size.is_zero_approx() or !Engine.is_editor_hint() else screen_size
+	var _size_ = get_viewport_rect().size if screen_size.is_zero_approx() or !Engine.is_editor_hint() else screen_size
 	custom_minimum_size = _size_
 	
 	await get_tree().process_frame

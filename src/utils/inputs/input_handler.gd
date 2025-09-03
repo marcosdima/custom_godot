@@ -14,11 +14,11 @@ func _init(e: Ente) -> void:
 
 func handle_input(input: InputEvent) -> void:
 	ente_real_area = Rect2(ente.global_position, ente.size)
+	
 	if input is InputEventMouse:
 		self._handle_mouse_event(input)
-	#TOFIX: Maybe this has to be handled in an static way.
-	elif input is InputEventKey:
-		self._handle_key_event(input)
+	elif input is InputEventScreenTouch:
+		self._handle_screen_touch(input)
 
 
 static func get_evento_key(e: Ente.Event) -> String:
@@ -40,11 +40,32 @@ func _handle_mouse_event(input: InputEventMouse) -> void:
 		if input.pressed and self.mouse_on:
 			self._handle_click_on()
 		elif input.pressed and self.focus:
-			self._handle_un_focus()
+			self._handle_unfocus()
 		elif input.is_released() and self.mouse_on:
 			self._handle_mouse_release()
 			if !self.focus:
 				self._handle_focus()
+			else:
+				self._handle_mouse_still()
+
+
+func _handle_screen_touch(input: InputEventScreenTouch) -> void:
+	var touch_on_ente = ente_real_area.has_point(input.position)
+	
+	if touch_on_ente and !mouse_on:
+		self._handle_mouse_on()
+	elif !touch_on_ente and mouse_on:
+		self._handle_mouse_out()
+	
+	if mouse_on and input.pressed:
+		self._handle_click_on()
+	elif input.pressed and focus:
+		self._handle_unfocus()
+	elif input.is_released() and mouse_on:
+		self._handle_mouse_release()
+		if !focus:
+			self._handle_focus()
+		else:
 			self._handle_mouse_still()
 
 
@@ -68,7 +89,7 @@ func _handle_focus() -> void:
 	self.ente.emit(Ente.Event.OnFocus)
 
 
-func _handle_un_focus() -> void:
+func _handle_unfocus() -> void:
 	self.focus = false
 	self.ente.emit(Ente.Event.OnUnfocus)
 
@@ -83,7 +104,7 @@ func _handle_mouse_release() -> void:
 
 
 '''╭─[ Key Handlers ]─────────────────────────────────────────────────────────────────────────╮'''
-func _handle_key_event(input: InputEventKey) -> void:
+func handle_key_event(input: InputEventKey) -> void:
 	var new_data = InputData.new()
 	var unicode = input.unicode
 	

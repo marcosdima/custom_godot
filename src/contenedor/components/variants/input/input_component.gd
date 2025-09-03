@@ -8,10 +8,16 @@ class_name InputComponent
 @export var no_numeric: bool = false
 @export var no_signs: bool = false
 
-func _input(event: InputEvent) -> void:
-	super(event)
-	
-	if input_handler.focus and event is InputEventKey:
+func _init() -> void:
+	super()
+	self.on_focus.connect(handle_on_focus)
+	self.on_unfocus.connect(handle_on_unfocus)
+
+
+func handle_gui_input(event: InputEvent) -> void:
+	if input_handler.focus and event is InputEventKey and event.is_pressed():
+		self.input_handler.handle_key_event(event)
+		
 		var key = input_handler.data.values.get(InputData.KEY)
 		var action = input_handler.data.values.get(InputData.ACTION)
 		
@@ -35,6 +41,14 @@ func handle_key(_key: String) -> void:
 ## [OVERWRITE] What to do at some action.
 func handle_some_action(_action: InputData.Action, _pressed: bool) -> void:
 	pass
+
+
+func handle_on_focus() -> void:
+	Alambre.call_input(self)
+
+
+func handle_on_unfocus() -> void:
+	Alambre.end_input_call(self)
 
 
 func validate_value(new_value: String) -> bool:

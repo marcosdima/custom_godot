@@ -9,6 +9,8 @@ func _init(set_contenedor: Contenedor) -> void:
 	scroll = ScrollContainer.new()
 	scroll.name = "Scroll"
 	
+	self.mouse_filter = Control.MOUSE_FILTER_PASS
+	
 	contenedor = set_contenedor
 	name = "ChildHandler"
 	contenedor.add_child(scroll)
@@ -34,7 +36,7 @@ func set_scroll_area() -> void:
 func set_internal_size(internal_size: Vector2) -> void:
 	custom_minimum_size = internal_size
 	
-	await get_tree().process_frame
+	## TODO: Remove? await get_tree().process_frame
 	
 	if follow_resize:
 		scroll.scroll_horizontal = int(scroll.get_h_scroll_bar().max_value)

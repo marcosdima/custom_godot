@@ -20,12 +20,7 @@ const CONTENT = "Content"
 
 var placeholder: Text
 var content: Text
-
-func _ready() -> void:
-	super()
-	self.connect_event(Event.OnFocus, self.change_page_view.bind(true))
-	self.connect_event(Event.OnUnfocus, self.change_page_view.bind(false))
-
+var line_text: LineEdit
 
 ## [OVERWRITTEN] From: Component
 func get_children_to_set() -> Array:
@@ -63,6 +58,18 @@ func handle_some_action(action: InputData.Action, pressed: bool) -> void:
 func clear_input() -> void:
 	content.content = ""
 	content.refresh()
+	super()
+	self.change_page_view(false)
+
+
+## [OVERWRITTEN] from InputComponent
+func handle_on_focus() -> void:
+	super()
+	self.change_page_view(true)
+
+
+## [OVERWRITTEN] from InputComponent
+func handle_on_unfocus() -> void:
 	super()
 	self.change_page_view(false)
 
