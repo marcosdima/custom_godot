@@ -1,22 +1,25 @@
 extends Control
 class_name ChildrenHandler
 
+const NAME = "ChildHandler"
+const SCROLL_NAME = "Scroll"
+
 var scroll: ScrollContainer
 var contenedor: Contenedor
+
 var follow_resize: bool = false
 
-func _init(set_contenedor: Contenedor) -> void:
-	scroll = ScrollContainer.new()
-	scroll.name = "Scroll"
-	
-	self.mouse_filter = Control.MOUSE_FILTER_PASS
-	
-	contenedor = set_contenedor
-	name = "ChildHandler"
-	contenedor.add_child(scroll)
-	scroll.add_child(self)
-	contenedor.connect_event(Ente.Event.Resize, set_scroll_area)
-
+func _init(contenedor_: Contenedor, set_scroll: bool = false) -> void:
+	contenedor = contenedor_
+	name = NAME
+	if set_scroll:
+		scroll = ScrollContainer.new()
+		scroll.name = SCROLL_NAME
+		contenedor.add_child(scroll)
+		scroll.add_child(self)
+		contenedor.connect_event(Ente.Event.Resize, set_scroll_area)
+	else:
+		contenedor.add_child(self)
 
 ## Remove current children and set the new ones.
 func set_children(children: Array) -> void:
@@ -34,13 +37,11 @@ func set_scroll_area() -> void:
 
 ## Set the real size to show the scroll bar.
 func set_internal_size(internal_size: Vector2) -> void:
-	custom_minimum_size = internal_size
-	
-	## TODO: Remove? await get_tree().process_frame
-	
-	if follow_resize:
-		scroll.scroll_horizontal = int(scroll.get_h_scroll_bar().max_value)
-		scroll.scroll_vertical = int(scroll.get_v_scroll_bar().max_value)
+	if scroll:
+		custom_minimum_size = internal_size
+		if follow_resize:
+			scroll.scroll_horizontal = int(scroll.get_h_scroll_bar().max_value)
+			scroll.scroll_vertical = int(scroll.get_v_scroll_bar().max_value)
 
 
 ## Remove its children.
