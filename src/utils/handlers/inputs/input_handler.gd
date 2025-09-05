@@ -13,6 +13,9 @@ func _init(e: Ente) -> void:
 
 
 func handle_input(input: InputEvent) -> void:
+	if !ente.visible:
+		return
+	
 	ente_real_area = Rect2(ente.global_position, ente.size)
 	
 	if input is InputEventMouse:
@@ -27,6 +30,9 @@ static func get_evento_key(e: Ente.Event) -> String:
 
 '''╭─[ Mouse handlers ]─────────────────────────────────────────────────────────────────────────╮'''
 func _handle_mouse_event(input: InputEventMouse) -> void:
+	if !Alambre.is_computer():
+		return
+	
 	if input is InputEventMouseMotion:
 		var mouse_on_ente = ente_real_area.has_point(input.position)
 		if mouse_on_ente and !self.mouse_on:
@@ -54,14 +60,17 @@ func _handle_screen_touch(input: InputEventScreenTouch) -> void:
 	
 	if touch_on_ente and !mouse_on:
 		self._handle_mouse_on()
+		self._handle_click_on()
 	elif !touch_on_ente and mouse_on:
+		if focus:
+			self._handle_unfocus()
 		self._handle_mouse_out()
 	
-	if mouse_on and input.pressed:
-		self._handle_click_on()
-	elif input.pressed and focus:
-		self._handle_unfocus()
-	elif input.is_released() and mouse_on:
+	# InputEventScreenTouch is sended multiple times.
+	if input.pressed or !touch_on_ente:
+		return
+	
+	if click_on:
 		self._handle_mouse_release()
 		if !focus:
 			self._handle_focus()
