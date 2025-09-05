@@ -10,7 +10,7 @@ const ENTER = '\n'
 	set(value):
 		content = value
 		if on_editor:
-			aux_children = []
+			self.refresh()
 @export var min_content_lenght: int = 0
 @export_group("Font", "font_")
 @export var font: FontFile = load("res://static/fonts/CaviarDreams.ttf")
@@ -32,8 +32,8 @@ static func create(
 	text.placement_axis_y = vertical
 	return text
 
-
-func _init() -> void:
+## [OVERWRITTEN] From: Ente
+func initialization_routine() -> void:
 	super()
 	children_handler.follow_resize = true
 
@@ -45,24 +45,19 @@ func get_layout_type() -> Layout.LayoutType:
 
 ## [OVERWRITTEN] From: Contenedor
 func get_children_to_set() -> Array:
-	if aux_children.is_empty():
-		var text_config = self.parse_text_to_config() 
-		var i = 0
-		
-		for r in range(text_config.size()):
-			var len_r = text_config[r]
-			for c in range(len_r):
-				var char_aux = Char.new(self, content[i], r, c, i)
-				aux_children.append(char_aux)
-				i += 1
+	var aux_children = []
+	var text_config = self.parse_text_to_config() 
+	var i = 0
+	
+	for r in range(text_config.size()):
+		var len_r = text_config[r]
+		for c in range(len_r):
+			var char_aux = Char.new(self, content[i], r, c, i)
+			aux_children.append(char_aux)
 			i += 1
+		i += 1
+	
 	return aux_children
-
-
-## [OVERWRITTEN] From: Contenedor
-func refresh() -> void:
-	aux_children = []
-	super()
 
 
 ## [OVERWRITTEN] From: Component

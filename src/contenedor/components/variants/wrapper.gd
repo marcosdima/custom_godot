@@ -15,16 +15,12 @@ class_name Wrapper
 @export var set_layout_type: Layout.LayoutType:
 	set(value):
 		set_layout_type = value
+		layout_type = set_layout_type
 		if _initialized and on_editor:
+			LayoutHandler.set_layout(self)
 			self.refresh()
 
-
-func _ready() -> void:
-	aux_children = self.get_entes()
-	super()
-	layout.spaces = spaces
-	layout.config = config
-
+var aux_children = []
 
 ## [OVERWRITTEN] From: Component
 func get_children_to_set() -> Array:
@@ -34,10 +30,9 @@ func get_children_to_set() -> Array:
 		aux_children = []
 	
 	for e: Ente in only_entes:
-		if !on_editor:
+		if !on_editor: 
 			self.remove_child(e)
-		else:
-			aux_children.append(e)
+		aux_children.append(e)
 	
 	return aux_children
 

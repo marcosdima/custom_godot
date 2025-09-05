@@ -59,7 +59,6 @@ var input_handler: InputHandler:
 		if !input_handler:
 			input_handler = InputHandler.new(self)
 		return input_handler
-
 var test_border: bool = false:
 	set(value):
 		test_border = value
@@ -80,7 +79,7 @@ func _init() -> void:
 func _ready() -> void:
 	if !on_editor:
 		immune_system.init(self)
-	_initialized = true
+	self.initialization_routine()
 	self.emit(Event.OnReady)
 
 
@@ -104,11 +103,15 @@ func _draw() -> void:
 
 
 func _input(event: InputEvent) -> void:
-	if visible:
-		input_handler.handle_input(event)
+	input_handler.handle_input(event)
 
 
 ''' ------------------------------------------------------------------------ '''
+
+## [OVERWRITE] What to do to initilizate.
+func initialization_routine() -> void:
+	_initialized = true
+	self.handle_resize()
 
 
 ## [OVERWRITE] What to do at resize.
@@ -123,6 +126,8 @@ func get_area() -> Rect2:
 
 ## Set area and emits resize.
 func set_area(r: Rect2) -> void:
+	if r.is_equal_approx(get_area()):
+		return
 	self.set_position(r.position)
 	size = r.size
 	self.handle_resize()

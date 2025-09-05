@@ -12,42 +12,35 @@ enum Placement {
 		if value:
 			reset = false
 			self.refresh()
+@export var set_scroll: bool = false
 @export_group("Placement", "placement_")
-@export var placement_axis_x: Placement = Placement.Start ## var spaces_placement_x: Placement = Placement.Start
-@export var placement_axis_y: Placement = Placement.Start ## var spaces_placement_y: Placement = Placement.Start
+@export var placement_axis_x: Placement = Placement.Start 
+@export var placement_axis_y: Placement = Placement.Start
 
-var entes: Array = []:
-	set(value):
-		entes = value
-		children_handler.set_children(entes)
-		layout.set_spaces()
+var children_handler: ChildrenHandler
+var layout: Layout
+var layout_type: Layout.LayoutType = Layout.LayoutType.Pages
+var entes: Array = []
 var real_size: Vector2:
 	set(value):
-		real_size = value
-		children_handler.set_internal_size(value)
+		if !value.is_zero_approx():
+			real_size = value
+			children_handler.set_internal_size(value)
 
-var children_handler: ChildrenHandler:
-	get():
-		if !children_handler:
-			children_handler = ChildrenHandler.new(self)
-		return children_handler
-var layout_handler: LayoutHandler
-
-var layout_type: Layout.LayoutType
-var layout: Layout
-
-func _ready() -> void:
-	super()
-	layout_type = self.get_layout_type()
-	layout_handler = LayoutHandler.new(self)
+## [OVERWRITTEN] From: Ente
+func initialization_routine() -> void:
+	children_handler = ChildrenHandler.new(self, set_scroll)
 	entes = self.get_children_to_set()
-	self.handle_resize()
+	
+	children_handler.set_children(entes)
+	LayoutHandler.set_layout(self)
+	
+	super()
 
 
 ## [OVERWRITTEN] From: Ente
 func handle_resize() -> void:
 	super()
-	real_size = Vector2.ZERO
 	layout.calculate_dimensions()
 
 
@@ -64,19 +57,11 @@ func get_children_to_set() -> Array:
 	return []
 
 
-## [OVERWRITTE] Get children to add to contenedor.
-func get_layout_type() -> Layout.LayoutType:
-	return Layout.LayoutType.Pages
-
-
 ## [OVERWRITTE] Refresh routine.
 func refresh() -> void:
-	if layout_type != self.get_layout_type():
-		layout_type = self.get_layout_type()
-		layout_handler.set_contenedor_layout()
-	else:
-		layout.set_spaces()
 	entes = self.get_children_to_set()
+	children_handler.set_children(entes) ## TODO: Fix refresh editor bug.
+	layout.set_spaces()
 	self.handle_resize()
 
 
