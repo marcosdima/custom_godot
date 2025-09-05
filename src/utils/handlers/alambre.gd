@@ -28,8 +28,12 @@ static func call_input(component: InputComponent) -> void:
 
 static func end_input_call(component: InputComponent) -> void:
 	if Alambre._validate_action():
-		instance.input_emulator.grab_focus()
+		instance.input_emulator.release_focus()
 		instance.input_emulator.gui_input.disconnect(component.handle_gui_input)
+
+
+static func is_computer() -> bool:
+	return !(OS.get_name() == "Android" or OS.get_name() == "iOS")
 
 
 func _set_input_emulator() -> void:
