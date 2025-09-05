@@ -33,19 +33,19 @@ func calculate_dimensions() -> void:
 	
 	var aux = 0.0
 	var area = Rect2(Vector2.ZERO, contenedor_size)
+	var magnitude = 0.0
 	
 	for i in range(spaces.size()):
-		var last = i == spaces.size() -1
+		aux += magnitude
 		var space: SausageSpace = spaces_ordered[i]
-		var magnitude = space.fill * magnitude_unit
+		magnitude = space.fill * magnitude_unit
 		
 		area.position[key] = aux
 		area.size[key] = magnitude
 		
 		self.set_ente_area(space.name, area)
-		aux += magnitude + (space_between if !last else 0.0)
 	
-	contenedor_size[key] = aux 
+	contenedor_size[key] = aux + magnitude
 	contenedor.real_size = contenedor_size
 
 
