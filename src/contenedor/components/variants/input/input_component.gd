@@ -17,14 +17,13 @@ func _init() -> void:
 func handle_gui_input(event: InputEvent) -> void:
 	if input_handler.focus and event is InputEventKey and event.is_pressed():
 		self.input_handler.handle_key_event(event)
-		
 		var key = input_handler.data.values.get(InputData.KEY)
 		var action = input_handler.data.values.get(InputData.ACTION)
 		
 		if key and self.validate_value(key):
 			self.handle_key(key)
 		elif action:
-			self.handle_some_action(action, event.is_pressed())
+			self.handle_some_action(action)
 
 
 ## [OVERWRITE] What to do if value was cleaned.
@@ -39,7 +38,7 @@ func handle_key(_key: String) -> void:
 
 
 ## [OVERWRITE] What to do at some action.
-func handle_some_action(_action: InputData.Action, _pressed: bool) -> void:
+func handle_some_action(_action: InputData.Action) -> void:
 	pass
 
 

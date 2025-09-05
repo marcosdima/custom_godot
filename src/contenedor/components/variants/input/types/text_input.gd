@@ -44,13 +44,12 @@ func handle_key(key: String) -> void:
 
 
 ## [OVERWRITE] What to do at some action.
-func handle_some_action(action: InputData.Action, pressed: bool) -> void:
+func handle_some_action(action: InputData.Action) -> void:
 	match action:
 		InputData.Action.Remove:
-			if !pressed:
-				content.remove_last_char()
-				value = content.content
-				self.handle_resize()
+			content.remove_last_char()
+			value = content.content
+			self.handle_resize()
 		_: pass
 
 
