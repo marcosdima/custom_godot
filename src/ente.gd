@@ -126,7 +126,7 @@ func get_area() -> Rect2:
 
 ## Set area and emits resize.
 func set_area(r: Rect2) -> void:
-	if r.is_equal_approx(get_area()):
+	if r.is_equal_approx(get_area()) and !on_editor:
 		return
 	self.set_position(r.position)
 	size = r.size
