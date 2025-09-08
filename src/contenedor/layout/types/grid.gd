@@ -94,7 +94,7 @@ func calculate_dimensions() -> void:
 		area.position += off_set
 		self.set_ente_area(ente_key, area)
 	
-	contenedor.children_handler.set_internal_size(total_size) 
+	contenedor.real_size = total_size 
 
 
 ## [OVERWRITTED]

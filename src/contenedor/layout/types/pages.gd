@@ -23,5 +23,6 @@ func calculate_dimensions() -> void:
 		var show_target = !setted and space.order == on_page
 		ente.change_visible(show_target)
 		if show_target:
-			contenedor.real_size = ente.size if !(ente is Contenedor) or (Vector2.ZERO == ente.real_size) else ente.real_size
+			var set_real_size = ente is Contenedor and Vector2.ZERO < ente.real_size
+			contenedor.real_size = ente.real_size if set_real_size else ente.size
 			setted = true
