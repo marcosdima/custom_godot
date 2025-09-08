@@ -1,5 +1,11 @@
 class_name ClockTime
 
+enum DisplayWith {
+	Seconds = 0,
+	Minutes = 1,
+	Hours = 2,
+}
+
 ## Constants used as dictionary keys
 const HOURS: String = "hour"
 const MINUTES: String = "minute"
@@ -45,9 +51,21 @@ func _init(_hours: int = 0, _minutes: int = 0, _seconds: int = 0) -> void:
 	seconds = _seconds
 
 
-## Returns the time as a string in "HH:MM:SS" format
-func as_string() -> String:
-	return "%02d:%02d:%02d" % [hours, minutes, seconds]
+## Returns the time as a string in "HH:MM:SS" format (Can be changed by display)
+func as_string(
+	display: DisplayWith = DisplayWith.Hours
+) -> String:
+	var prefix: String = "%02d"
+	
+	# Set array with seco
+	var parts: Array = [prefix % seconds]
+	
+	if display >= DisplayWith.Minutes:
+		parts.push_front(prefix % minutes)
+	if display == DisplayWith.Hours:
+		parts.push_front(prefix % hours)
+	
+	return ":".join(parts)
 
 
 ## Returns the time as a dictionary { "hour": h, "minute": m, "second": s }
@@ -79,3 +97,9 @@ static func from_dictionary(dictionary: Dictionary) -> ClockTime:
 		dictionary.get(MINUTES, 0),
 		dictionary.get(SECONDS, 0)
 	)
+
+
+static func from_seconds(total_seconds: int) -> ClockTime:
+	var new = ClockTime.new()
+	new.set_from_seconds(total_seconds)
+	return new
