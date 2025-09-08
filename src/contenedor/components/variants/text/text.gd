@@ -1,21 +1,13 @@
-@tool
 extends Component
 class_name Text
 
-## TODO: Upper case letters with accent can interfere with below-baseline letters.
-
 const ENTER = '\n'
 
-@export_multiline var content: String = "Text":
-	set(value):
-		content = value
-		if on_editor:
-			self.refresh()
-@export var min_content_lenght: int = 0
-@export_group("Font", "font_")
-@export var font: FontFile = load("res://static/fonts/CaviarDreams.ttf")
-@export var font_size: int = 16
-@export var font_proportional_size: int = 0
+var content: String = "Text"
+var min_content_lenght: int = 0
+var font: FontFile = load("res://static/fonts/CaviarDreams.ttf")
+var font_size: int = 16
+var font_proportional_size: int = 0
 
 static func create(
 	name_: String,
@@ -31,6 +23,32 @@ static func create(
 	text.placement_axis_x = horizontal
 	text.placement_axis_y = vertical
 	return text
+
+
+func set_from_resource(res: TextResourse) -> void:
+	content = res.content
+	font_size = res.font_size
+	font_proportional_size = res.font_proportional_size
+	min_content_lenght = res.min_chars
+	placement_axis_x = res.horizontal
+	placement_axis_y = res.vertical
+
+
+func _init(
+	content_: String = "",
+	font_size_: int = 0,
+	font_proportional_size_: int = 100,
+	min_content_lenght_: int = 0,
+	horizontal: Contenedor.Placement = Contenedor.Placement.Middle,
+	vertical: Contenedor.Placement = Contenedor.Placement.End
+) -> void:
+	content = content_
+	font_size = font_size_
+	font_proportional_size = font_proportional_size_
+	min_content_lenght = min_content_lenght_
+	placement_axis_x = horizontal
+	placement_axis_y = vertical
+
 
 ## [OVERWRITTEN] From: Ente
 func initialization_routine() -> void:
