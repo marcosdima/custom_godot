@@ -12,10 +12,13 @@ enum Placement {
 		if value:
 			reset = false
 			self.refresh()
+@export_group("Scroll", "set_")
 @export var set_scroll: bool = false
+@export var set_follow_resize: bool = false
 @export_group("Placement", "placement_")
 @export var placement_axis_x: Placement = Placement.Start 
 @export var placement_axis_y: Placement = Placement.Start
+@export_group("", "")
 
 var children_handler: ChildrenHandler
 var layout: Layout
@@ -30,6 +33,7 @@ var real_size: Vector2:
 ## [OVERWRITTEN] From: Ente
 func initialization_routine() -> void:
 	children_handler = ChildrenHandler.new(self, set_scroll)
+	children_handler.follow_resize = set_follow_resize
 	entes = self.get_children_to_set()
 	
 	children_handler.set_children(entes)
