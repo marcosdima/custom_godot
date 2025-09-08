@@ -33,19 +33,24 @@ func clear_input() -> void:
 
 
 ## [OVERWRITE] What to do at event key.
-func handle_key(_key: String) -> void:
-	pass
+func handle_key(key: String) -> void:
+	self.set_value(value + key)
 
 
 ## [OVERWRITE] What to do at some action.
-func handle_some_action(_action: InputData.Action) -> void:
-	pass
+func handle_some_action(action: InputData.Action) -> void:
+	match action:
+		InputData.Action.Remove:
+			self.set_value(value.erase(value.length() - 1))
+		_: pass
 
 
+## [OVERWRITE] What to do at focus.
 func handle_on_focus() -> void:
 	Alambre.call_input(self)
 
 
+## [OVERWRITE] What to do at unfocus.
 func handle_on_unfocus() -> void:
 	Alambre.end_input_call(self)
 
@@ -70,5 +75,8 @@ func validate_value(new_value: String) -> bool:
 
 
 func set_value(v) -> void:
-	if self.validate_value(v):
-		self.value = v
+	value = v
+
+
+func get_value() -> String:
+	return value

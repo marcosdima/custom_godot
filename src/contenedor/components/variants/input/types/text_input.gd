@@ -8,26 +8,36 @@ const CONTENT_ORDER = 1
 const PLACEHOLDER = "Placeholder"
 const CONTENT = "Content"
 
-@export_group("Text", "")
-@export var placeholder_content: String = "Text"
-@export var font_size: int = 100
-@export var font_proportional_size: int = 0
-@export var min_chars: int = 0
-@export_subgroup("Placement", "") ## TODO: Implement at component.
-@export var horizontal: Contenedor.Placement = Contenedor.Placement.Middle
-@export var vertical: Contenedor.Placement = Contenedor.Placement.End
-@export_group("", "")
+@export var placeholder_content: String = ""
+@export var text: TextResourse:
+	get():
+		if !text:
+			text = TextResourse.new()
+		text.min_chars = max_length
+		return text
 
 var placeholder: Text
 var content: Text
 var line_text: LineEdit
 
+## [OVERWRITTEN] From: Ente
+func initialization_routine() -> void:
+	set_follow_resize = true
+	super()
+
+
 ## [OVERWRITTEN] From: Component
 func get_children_to_set() -> Array:
-	if !placeholder or !content:
+	content = self.get_text(CONTENT, value)
+	
+	var aux = [content]
+	if placeholder_content.is_empty():
+		placeholder = null
+	else:
 		placeholder = self.get_text(PLACEHOLDER, placeholder_content)
-		content = self.get_text(CONTENT, value)
-	return [placeholder, content]
+		aux.append(placeholder)
+	
+	return aux
 
 
 ## [OVERWRITTEN] From: Component
@@ -35,22 +45,6 @@ func get_layout_spaces() -> Dictionary:
 	for space: Space in layout.spaces.values():
 		space.order = PLACEHOLDER_ORDER if space.name == PLACEHOLDER else CONTENT_ORDER
 	return layout.spaces
-
-
-## [OVERWRITTEN] from InputComponent
-func handle_key(key: String) -> void:
-	content.add_char(key)
-	value = content.content
-
-
-## [OVERWRITE] What to do at some action.
-func handle_some_action(action: InputData.Action) -> void:
-	match action:
-		InputData.Action.Remove:
-			content.remove_last_char()
-			value = content.content
-			self.handle_resize()
-		_: pass
 
 
 ## [OVERWRITTEN] from InputComponent
@@ -73,10 +67,23 @@ func handle_on_unfocus() -> void:
 	self.change_page_view(false)
 
 
+## [OVERWRITTEN] from InputComponent
+func set_value(v) -> void:
+	super(v)
+	self.update_content()
+
+
+
+## [OVERWRITE] Called when new value was setted successfully-
+func update_content() -> void:
+	content.content = value
+	self.handle_resize()
+
+
 func change_page_view(focus: bool) -> void:
 	var ly = layout as Pages
 	
-	if focus:
+	if focus or !placeholder:
 		ly.on_page = CONTENT_ORDER
 	elif content.content.is_empty():
 		ly.on_page = PLACEHOLDER_ORDER
@@ -84,14 +91,9 @@ func change_page_view(focus: bool) -> void:
 	layout.calculate_dimensions()
 
 
-func get_text(t_name: String, t_content: String) -> Text:
-	var text = Text.new()
-	text.content = t_content
-	text.name = t_name
-	text.font_size = font_size
-	text.font_proportional_size = font_proportional_size
-	text.color = color
-	text.min_content_lenght = min_chars
-	text.placement_axis_x = horizontal
-	text.placement_axis_y = vertical
-	return text
+func get_text(t_name: String, t_content: String, new_text = Text.new()) -> Text:
+	new_text.set_from_resource(text)
+	new_text.name = t_name
+	new_text.color = color
+	new_text.content = t_content
+	return new_text
