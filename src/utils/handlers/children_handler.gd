@@ -12,20 +12,30 @@ var follow_resize: bool = false
 func _init(contenedor_: Contenedor, set_scroll: bool = false) -> void:
 	contenedor = contenedor_
 	name = NAME
+	mouse_filter = Control.MOUSE_FILTER_PASS
+	
 	if set_scroll:
+		# Set ScrollContainer.
 		scroll = ScrollContainer.new()
 		scroll.name = SCROLL_NAME
-		contenedor.add_child(scroll)
 		scroll.add_child(self)
+		
+		contenedor.add_child(scroll)
 		contenedor.connect_event(Ente.Event.Resize, set_scroll_area)
 	else:
 		contenedor.add_child(self)
+
+
+func _sort_children() -> void:
+	pass
+
 
 ## Remove current children and set the new ones.
 func set_children(children: Array) -> void:
 	self.clean()
 	for child in children:
 		if !child.get_parent():
+			child.mouse_filter = Control.MOUSE_FILTER_PASS
 			self.add_child(child)
 
 
@@ -39,9 +49,12 @@ func set_scroll_area() -> void:
 func set_internal_size(internal_size: Vector2) -> void:
 	if scroll:
 		custom_minimum_size = internal_size
+		
+		await get_tree().process_frame
+		
 		if follow_resize:
-			scroll.scroll_horizontal = int(scroll.get_h_scroll_bar().max_value)
-			scroll.scroll_vertical = int(scroll.get_v_scroll_bar().max_value)
+			scroll.scroll_horizontal = int(internal_size.x)
+			scroll.scroll_vertical = int(internal_size.y)
 
 
 ## Remove its children.
