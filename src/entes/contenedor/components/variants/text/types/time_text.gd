@@ -15,4 +15,4 @@ func _init(
 
 func set_new_time(new_time: ClockTime) -> void:
 	time = new_time
-	self.update_content(time.as_string(set_display))
+	self.update_text(time.as_string(set_display))

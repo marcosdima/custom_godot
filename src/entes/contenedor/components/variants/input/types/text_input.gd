@@ -73,11 +73,11 @@ func set_value(v) -> void:
 	self.update_content()
 
 
-
 ## [OVERWRITE] Called when new value was setted successfully-
 func update_content() -> void:
-	content.content = value
-	self.handle_resize()
+	if content:
+		content.update_text(value)
+		self.handle_resize()
 
 
 func change_page_view(focus: bool) -> void:

@@ -3,6 +3,7 @@ class_name InputComponent
 
 @export var value: String = ""
 @export var max_length: int = 10
+@export var keyboard_type: DisplayServer.VirtualKeyboardType = DisplayServer.VirtualKeyboardType.KEYBOARD_TYPE_DEFAULT
 @export_group("Prohibit", "no_")
 @export var no_alpha: bool = false
 @export var no_numeric: bool = false
@@ -41,18 +42,19 @@ func handle_key(key: String) -> void:
 func handle_some_action(action: InputData.Action) -> void:
 	match action:
 		InputData.Action.Remove:
-			self.set_value(value.erase(value.length() - 1))
+			if !value.is_empty():
+				self.set_value(value.erase(value.length() - 1))
 		_: pass
 
 
 ## [OVERWRITE] What to do at focus.
 func handle_on_focus() -> void:
-	Alambre.call_input(self)
+	Alambre.call_input(self, keyboard_type)
 
 
 ## [OVERWRITE] What to do at unfocus.
 func handle_on_unfocus() -> void:
-	Alambre.end_input_call(self)
+	Alambre.end_input_call()
 
 
 func validate_value(new_value: String) -> bool:

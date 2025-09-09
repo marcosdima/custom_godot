@@ -149,15 +149,15 @@ func get_font_size() -> int:
 		return font_size
 
 
-func update_content(new_content: String) -> void:
+func update_text(new_content: String) -> void:
 	content = new_content
 	self.refresh()
 
 
 func add_char(char_: String) -> void:
-	self.update_content(content + char_)
+	self.update_text(content + char_)
 
 
 func remove_last_char() -> void:
 	if content.length() > 0:
-		self.update_content(content.erase(content.length() - 1))
+		self.update_text(content.erase(content.length() - 1))
