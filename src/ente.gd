@@ -32,16 +32,8 @@ enum Event {
 	MouseStill,
 }
 
-@export var immune_system: ImmuneSystem:
-	get():
-		if !immune_system:
-			immune_system = ImmuneSystem.new()
-		return immune_system
-@export var margin: Margin:
-	get():
-		if !margin:
-			margin = Margin.new()
-		return margin
+@export var immune_system: ImmuneSystem = ImmuneSystem.new()
+@export var margin: Margin = Margin.new()
 @export_group("Background", "background")
 @export var background_color: Color = Color.TRANSPARENT:
 	set(value):
@@ -52,14 +44,8 @@ enum Event {
 		if !background_border:
 			background_border = Border.new()
 		return background_border
-@export_group("", "")
-
-var input_handler: InputHandler:
-	get():
-		if !input_handler:
-			input_handler = InputHandler.new(self)
-		return input_handler
-var test_border: bool = false:
+@export_group("Test", "test_")
+@export var test_border: bool = false:
 	set(value):
 		test_border = value
 		if value:
@@ -67,6 +53,13 @@ var test_border: bool = false:
 			background_border.color = Color.BLACK
 		else:
 			background_border.width = 0
+@export_group("", "")
+
+var input_handler: InputHandler:
+	get():
+		if !input_handler:
+			input_handler = InputHandler.new(self)
+		return input_handler
 var on_editor: bool:
 	get():
 		return Engine.is_editor_hint()
@@ -107,6 +100,7 @@ func _input(event: InputEvent) -> void:
 
 
 ''' ------------------------------------------------------------------------ '''
+
 
 ## [OVERWRITE] What to do to initilizate.
 func initialization_routine() -> void:
