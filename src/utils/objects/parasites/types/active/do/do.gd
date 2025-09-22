@@ -1,8 +1,8 @@
 extends Active
 class_name Do
 
-@export var start_value = 0.0
-@export var end_value = 1.0
+@export var start_value: float = 0.0
+@export var end_value: float = 1.0
 
 func handle_start() -> void:
 	printerr("This function, 'handle_start', should be overwritten!")
@@ -17,8 +17,8 @@ func activate() -> void:
 	tween.tween_method(
 		func(m):
 			self.do(m),
-		self.start_value,
-		self.end_value,
-		self.duration,
+		start_value,
+		end_value,
+		duration,
 	)
 	tween.finished.connect(release)
