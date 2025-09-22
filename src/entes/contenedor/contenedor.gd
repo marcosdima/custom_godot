@@ -32,19 +32,24 @@ var real_size: Vector2:
 
 ## [OVERWRITTEN] From: Ente
 func initialization_routine() -> void:
-	children_handler = ChildrenHandler.new(self, set_scroll)
-	children_handler.follow_resize = set_follow_resize
 	entes = self.get_children_to_set()
-	
-	children_handler.set_children(entes)
+	children_handler = (
+		ChildrenHandler.new()
+			.setup(self, set_scroll, set_follow_resize)
+			.set_children(entes)
+	)
 	LayoutHandler.set_layout(self)
-	
 	super()
 
 
 ## [OVERWRITTEN] From: Ente
 func handle_resize() -> void:
 	super()
+	
+	## Set children needs to wait for the next frame to work.
+	if children_handler.get_children().is_empty():
+		await get_tree().process_frame
+	
 	layout.calculate_dimensions()
 
 

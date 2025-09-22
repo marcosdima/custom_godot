@@ -9,10 +9,15 @@ var contenedor: Contenedor
 
 var follow_resize: bool = false
 
-func _init(contenedor_: Contenedor, set_scroll: bool = false) -> void:
+func setup(
+	contenedor_: Contenedor,
+	set_scroll: bool = false,
+	follow_resize_: bool = false,
+) -> ChildrenHandler:
 	contenedor = contenedor_
 	name = NAME
 	mouse_filter = Control.MOUSE_FILTER_PASS
+	follow_resize = follow_resize_
 	
 	if set_scroll:
 		# Set ScrollContainer.
@@ -24,6 +29,8 @@ func _init(contenedor_: Contenedor, set_scroll: bool = false) -> void:
 		contenedor.connect_event(Ente.Event.Resize, set_scroll_area)
 	else:
 		contenedor.add_child(self)
+	
+	return self
 
 
 func _sort_children() -> void:
@@ -31,12 +38,13 @@ func _sort_children() -> void:
 
 
 ## Remove current children and set the new ones.
-func set_children(children: Array) -> void:
+func set_children(children: Array) -> ChildrenHandler:
 	self.clean()
 	for child in children:
 		if !child.get_parent():
 			child.mouse_filter = Control.MOUSE_FILTER_PASS
 			self.add_child(child)
+	return self
 
 
 ## Set area and emits resize.
