@@ -9,6 +9,8 @@ var font: FontFile = load("res://static/fonts/CaviarDreams.ttf")
 var font_size: int = 16
 var font_proportional_size: int = 0
 
+var aux_max_font_size: float = 0.0
+
 static func create(
 	name_: String,
 	content_: String,
@@ -23,15 +25,6 @@ static func create(
 	text.placement_axis_x = horizontal
 	text.placement_axis_y = vertical
 	return text
-
-
-func set_from_resource(res: TextResourse) -> void:
-	content = res.content
-	font_size = res.font_size
-	font_proportional_size = res.font_proportional_size
-	min_content_lenght = res.min_chars
-	placement_axis_x = res.horizontal
-	placement_axis_y = res.vertical
 
 
 func _init(
@@ -56,6 +49,12 @@ func initialization_routine() -> void:
 	children_handler.follow_resize = true
 
 
+## [OVERWRITTEN] From: Ente
+func handle_resize() -> void:
+	aux_max_font_size = 0.0
+	super()
+
+
 ## [OVERWRITTEN] From: Contenedor
 func get_layout_type() -> Layout.LayoutType:
 	return Layout.LayoutType.Grid
@@ -70,7 +69,7 @@ func get_children_to_set() -> Array:
 	for r in range(text_config.size()):
 		var len_r = text_config[r]
 		for c in range(len_r):
-			var char_aux = Char.new(self, content[i], r, c, i)
+			var char_aux = Char.new().setup(self, content[i], r, c, i)
 			aux_children.append(char_aux)
 			i += 1
 		i += 1
@@ -86,8 +85,11 @@ func get_layout_spaces() -> Dictionary:
 		var c: Char = self.get_ente_by_key(key)
 		var space = spaces.get(key) as GridSpace
 		
-		var char_size = c.get_char_size()
-		var ente_size = layout.get_cell_size()
+		var char_size: Vector2 = c.get_char_size()
+		var ente_size: Vector2 = layout.get_cell_size()
+		
+		if ente_size.is_zero_approx() or char_size.is_zero_approx():
+			continue
 		
 		space.column = c.column
 		space.row = c.row
@@ -133,20 +135,36 @@ func parse_text_to_config() -> Dictionary:
 
 
 func get_font_size() -> int:
-	if font_proportional_size > 0 and font_proportional_size <= 100:
-		var t_size = size * (font_proportional_size / 100.0)
-		var aux = 16
-		
-		var aux_char = Char.new(self, ".", 0, 0, 0)
-		var result_size = aux_char.get_char_size(aux)
-		
-		while result_size.x < t_size.x and result_size.y < t_size.y and aux < 1000:
-			aux += 1
-			result_size = aux_char.get_char_size(aux)
-		
-		return aux - 1
-	else:
+	if font_proportional_size <= 0 or content.is_empty():
 		return font_size
+	elif aux_max_font_size != 0:
+		return aux_max_font_size
+	
+	var text_size = size * (font_proportional_size / 100.0)
+	var config = self.parse_text_to_config()
+	var n_lines = config.size()
+	var max_chars = config.values().max()
+	
+	var high = 1000
+	var low = 16
+	var best = low
+	var aux_char = Char.new().setup(self, "X")
+	
+	while low < high:
+		var mid = (low + high) / 2
+		
+		var result_size = aux_char.get_char_size(mid)
+		var total_height = n_lines * result_size.y
+		var total_width = max_chars * result_size.x
+		
+		if total_width < text_size.x and total_height < text_size.y:
+			low = mid + 1
+			best = mid
+		else:
+			high = mid - 1
+	
+	aux_max_font_size = best
+	return aux_max_font_size
 
 
 func update_text(new_content: String) -> void:
